@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\Auth\AuthController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Middleware\Admin\AdminAuthMiddleware;
 use App\Http\Middleware\Admin\AuthLoginMiddleware;
+use App\Livewire\Admin\AdminList;
 use Illuminate\Support\Facades\Route;
-use App\Livewire\Admin\Admin;
 
 Route::middleware(AuthLoginMiddleware::class)->group(function () {
 
@@ -15,7 +16,6 @@ Route::middleware(AuthLoginMiddleware::class)->group(function () {
 
     Route::post('/login', [AuthController::class, 'login'])
         ->name('login');
-
 
     Route::get('/forgot-password', function () {
         return view('admin.auth.forgot-password');
@@ -37,6 +37,7 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
         Route::post('change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
     });
     Route::prefix('admin')->group(function () {
-        Route::get('index', Admin::class)->name('admin.index');
+        Route::get('index', AdminList::class)->name('admin.index');
     });
+    Route::resource('permissions', PermissionController::class);
 });

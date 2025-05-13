@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('role_permissions', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('admin_permissions', function (Blueprint $table) {
+            $table->unsignedBigInteger('admin_id')->references('id')->on('admins')->onDelete('cascade');
+            $table->unsignedBigInteger('permission_id')->references('id')->on('permissions')->onDelete('cascade');
         });
     }
 
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('role_permissions');
+        Schema::dropIfExists('admin_permissions');
     }
 };

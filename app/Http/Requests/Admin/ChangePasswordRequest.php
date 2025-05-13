@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+
 class ChangePasswordRequest extends FormRequest
 {
     /**
@@ -23,23 +24,23 @@ class ChangePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'current_password' => ['required','min:8','string',
-        function ($attribute,$value,$fail){
-            if(!Hash::check($value,Auth::guard('admin')->user()->password)){
-                $fail('The current password is incorrect.');
-            }
-           
-        }
-    
-    ],
-            'password' => ['required','string','min:6','confirmed',
-            function($attribute,$value,$fail){if(Hash::check($value,Auth::guard('admin')->user()->password)){
-                $fail('Dont use previous password');
-            }
-        }
-        ],
-            'password_confirmation' => 'required|string|min:6',
+            'current_password' => ['required', 'min:8', 'string',
+                function ($attribute, $value, $fail) {
+                    if (! Hash::check($value, Auth::guard('admin')->user()->password)) {
+                        $fail('The current password is incorrect.');
+                    }
 
+                },
+
+            ],
+            'password' => ['required', 'string', 'min:6', 'confirmed',
+                function ($attribute, $value, $fail) {
+                    if (Hash::check($value, Auth::guard('admin')->user()->password)) {
+                        $fail('Dont use previous password');
+                    }
+                },
+            ],
+            'password_confirmation' => 'required|string|min:6',
 
         ];
     }

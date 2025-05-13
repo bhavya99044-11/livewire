@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ActionRequest extends FormRequest
 {
@@ -15,8 +16,13 @@ class ActionRequest extends FormRequest
 
     public function rules(): array
     {
+
         return [
-            'values' => ['required', 'array', 'min:1'],
+            'values' => ['required', 'array', 'min:1', function ($attributes, $value, $fail) {
+                if (in_array(Auth::guard('admin')->user()->id, $value)) {
+                    $fail('self update not allowed');
+                }
+            }],
         ];
     }
 

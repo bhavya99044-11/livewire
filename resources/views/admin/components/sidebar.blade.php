@@ -10,8 +10,8 @@
 
     <body class="bg-gray-100">
         <label for="sidebar-toggle"
-            class="fixed top-1 left-1 z-30 md:hidden cursor-pointer bg-indigo-600 text-white p-2 rounded-md">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            class="fixed top-5 left-3 z-30 md:hidden cursor-pointer bg-indigo-600 text-white p-1 rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12" />
                 <line x1="3" y1="6" x2="21" y2="6" />
@@ -23,7 +23,7 @@
         <div class="fixed group inset-0 bg-black opacity-50 z-20 hidden peer-checked:block md:hidden"></div>
 
         <aside id="sidebar"
-            class="fixed group top-0 mt-16 left-0 z-20 h-full bg-sideBarColor  -translate-x-full peer-checked:translate-x-0 md:translate-x-0 md:w-16  transition-all duration-300 group">
+            class="fixed group top-0 active md:w-64 mt-16 left-0 z-20 h-full bg-sideBarColor  -translate-x-full peer-checked:translate-x-0 md:translate-x-0 md:w-16  transition-all duration-300 group">
             <div
                 class="flex group-[.active]:justify-between md:opacity-100 max-h-0 md:max-h-[2000px] opacity-0  items-center  justify-center h-16 px-4  border-b border-indigo-800">
                 <h2
@@ -44,28 +44,37 @@
             <nav class="py-4">
 
                 <ul class="space-y-2 px-2 ">
-                    <li title="Dashboard" class="peer border-b border-indigo-700 pb-2 mb-1 ">
+                    <li title="Dashboard" class="peer  border-indigo-700 ">
                         <a href="{{route('admin.dashboard')}}"
-                            class="flex items-center text-center overflow-hidden  peer-[.active]:sideBarBorder gap-x-4 text-gray-300  hover:sideBarBorder hover:text-white p-2 rounded-md">
+                            class="flex @if(request()->is('*dashboard*')) bg-indigo-600/50 text-white @endif hover:bg-indigo-600/50 rounded-md items-center text-center overflow-hidden  peer-[.active]:sideBarBorder gap-x-4 text-gray-300  hover:sideBarBorder hover:text-white p-2 rounded-md">
                            <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid  fa-house"></i></div>
                         
                             <span
                                 class="text-sm font-medium opacity-100 md:opacity-0 group-[.active]:opacity-100 transition-opacity duration-300">Dashboard</span>
                         </a>
                     </li>
-                    <li title="admin" class="peer border-b border-indigo-700 pb-2 mb-1 ">
+                    <div class="flex w-full h-[1px]  bg-indigo-700"></div>
+                    <li title="admin" class="peer    ">
                         <a href="{{route('admin.admin.index')}}"
-                            class="flex items-center jusify-center gap-x-4  text-gray-300 peer-[.active]:sideBarBorder hover:sideBarBorder hover:text-white p-2 rounded-md">
-                            <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid fa-user-tie"></i></div>
+                        class="flex @if(request()->is('*admin/admin*')) bg-indigo-600/50 text-white @endif hover:bg-indigo-600/50 rounded-md items-center text-center overflow-hidden  peer-[.active]:sideBarBorder gap-x-4 text-gray-300  hover:sideBarBorder hover:text-white p-2 rounded-md">
+                        <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid fa-user-tie"></i></div>
                             <span
                                 class="text-sm font-medium opacity-100 md:opacity-0 group-[.active]:opacity-100 transition-opacity duration-300">Admin</span>
                         </a>
                     </li>
-                  
-                    <li class="peer group/menu border-b border-indigo-700 pb-2 mb-1 ">
-
-                        <div
-                            class="justify-between flex items-center peer-[.active]:sideBarBorder hover:sideBarBorder gap-4  rounded-md  p-2 pl-2">
+                    <div class="flex w-full h-[1px] bg-indigo-700"></div>
+                    <li title="admin" class="peer    ">
+                        <a href="{{route('admin.permissions.index')}}"
+                        class="flex @if(request()->is('*permissions*')) bg-indigo-600/50 text-white @endif hover:bg-indigo-600/50 rounded-md items-center text-center overflow-hidden  peer-[.active]:sideBarBorder gap-x-4 text-gray-300  hover:sideBarBorder hover:text-white p-2 rounded-md">
+                        <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid fa-table-cells-column-lock"></i></div>
+                            <span
+                                class="text-sm font-medium opacity-100 md:opacity-0 group-[.active]:opacity-100 transition-opacity duration-300">Permissions</span>
+                        </a>
+                    </li>
+                    <div class="flex w-full h-[1px] bg-indigo-700"></div>
+                    <li class="peer group/menu   rounded-md ">
+                        <a
+                            class="justify-between @if(request()->is('*jhasd*')) bg-indigo-600/50 text-white @endif flex hover:bg-indigo-600/50 rounded-md items-center peer-[.active]:sideBarBorder hover:sideBarBorder gap-4   p-2 pl-2">
                             <div href="#"
                                 class="flex items-center gap-x-4 peer-[.active]:sideBarBorder hover:text-white text-gray-300 ">
                                 <div class="h-5 w-5 flex items-center ml-2"> <i class="fa-solid fa-chart-simple"></i></div>
@@ -75,19 +84,21 @@
                             <div>
                                 <img class="group-[.active]/menu:rotate-180 text-white w-4 h-4" src="{{ asset('down-arrow-svgrepo-com.svg') }}" />
                             </div>
-                        </div>
+                        </a>
                         <ul
-                            class="bg-white/10 group-[.active]/menu:mt-2  md:ml-0 rounded-md max-h-0 group-[.active]/menu:max-h-[400px] overflow-hidden transition-all duration-200">
+                            class="group-[.active]/menu:mt-2  md:ml-4 rounded-md max-h-0 group-[.active]/menu:max-h-[400px] overflow-hidden transition-all duration-200">
 
-                           <li> 
+                           <li class=" rounded-md"> 
                             <a
-                                class="flex items-center gap-x-4 text-gray-300 hover:sideBarBorder hover:text-white p-2  rounded-md">
-                                <i class="fa-solid fa-chart-simple fa-sm ml-1"></i>
+                                class="flex hover:!bg-indigo-600/50  items-center gap-x-4 text-gray-300 hover:sideBarBorder hover:text-white p-2  rounded-md">
+                                <div class="h-5 w-5 flex items-center ml-2"> <i class="fa-solid fa-chart-simple"></i></div>
                                 <span class="text-sm font-medium ">Team</span>
                             </a>
                            </li>
                         </ul>
                     </li>
+                    <div class="flex w-full h-[1px] bg-indigo-700"></div>
+
                 </ul>
             </nav>
 

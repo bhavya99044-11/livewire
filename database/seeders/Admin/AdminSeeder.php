@@ -14,12 +14,12 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin::create([
-        //     'name' => 'Admin',
-        //     'email' => 'admin@gmail.com',
-        //     'password' => Hash::make('Admin@1234'),
-        //     'role' => AdminRoles::SUPER_ADMIN->value,
-        // ]);
+        Admin::create([
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('Admin@1234'),
+            'role' => AdminRoles::SUPER_ADMIN->value,
+        ]);
 
         Admin::factory()->count(10)->create();
 

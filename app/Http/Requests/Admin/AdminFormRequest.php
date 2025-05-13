@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
-use Illuminate\Foundation\Http\FormRequest;
-use App\Enums\Status;
 use App\Enums\AdminRoles;
+use App\Enums\Status;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class AdminFormRequest extends FormRequest
@@ -18,6 +18,7 @@ class AdminFormRequest extends FormRequest
     {
         return true;
     }
+
     public function __construct($adminId = null)
     {
         $this->adminId = $adminId;

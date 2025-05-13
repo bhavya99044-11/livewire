@@ -5,7 +5,7 @@
 @livewireStyles
 @include('admin.components.header')
 @include('admin.components.sidebar')
-<section id="content" class="md:ml-16 md:pt-16 transition-all duration-300">
+<section id="content" class="md:ml-64 md:pt-16 transition-all duration-300">
     {{ $slot }}
 </section>
 @include('admin.components.footer')
@@ -20,6 +20,7 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes'
         })
+        console.log(action,dataMessage,values)
             if (result.isConfirmed) {
                 Livewire.dispatch(action, {
                     values
@@ -62,6 +63,7 @@
 
 
         const deleteData = document.querySelectorAll('.delete');
+        console.log(deleteData)
         deleteData.forEach((item) => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();

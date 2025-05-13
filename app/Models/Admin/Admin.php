@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class Admin extends Authenticatable
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'email',
@@ -15,4 +16,9 @@ class Admin extends Authenticatable
         'status',
         'role',
     ];
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'admin_permissions');
+    }
 }
