@@ -21,4 +21,9 @@ class Admin extends Authenticatable
     {
         return $this->belongsToMany(Permission::class, 'admin_permissions');
     }
+
+    public function hasPermission($permission)
+    {
+        return $this->permissions->contains('slug', $permission);
+    }
 }

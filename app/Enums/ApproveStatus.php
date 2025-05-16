@@ -2,32 +2,24 @@
 
 namespace App\Enums;
 
-enum Status: Int
+enum ApproveStatus: Int
 {
-    case ACTIVE = 1;
-    case INACTIVE = 0;
+    case APPROVED=1;
+    case PENDING=0;
 
     public static function values(): array
     {
         return array_column(self::cases(), 'value');
     }
 
-    public function color(): string
-    {
-        return match ($this) {
-            self::ACTIVE => '#009E60',
-            self::INACTIVE => '#FF5733'
-        };
-    }
-
     public function label(): string
     {
         return match ($this) {
-            self::ACTIVE => 'Active',
-            self::INACTIVE => 'Inactive'
+            self::APPROVED => 'Approved',
+            self::PENDING => 'Pending'
         };
     }
-    public static function toJsObject(): array
+      public static function toJsObject(): array
     {
         return collect(self::cases())->mapWithKeys(fn($case) => [
             $case->value => [

@@ -2,29 +2,21 @@
 
 namespace App\Enums;
 
-enum Status: Int
+enum ShopStatus: Int
 {
-    case ACTIVE = 1;
-    case INACTIVE = 0;
+    case OPEN =  1;
+    case CLOSE=0;
 
     public static function values(): array
     {
         return array_column(self::cases(), 'value');
     }
 
-    public function color(): string
-    {
-        return match ($this) {
-            self::ACTIVE => '#009E60',
-            self::INACTIVE => '#FF5733'
-        };
-    }
-
     public function label(): string
     {
         return match ($this) {
-            self::ACTIVE => 'Active',
-            self::INACTIVE => 'Inactive'
+            self::CLOSE => 'Close',
+            self::OPEN => 'Open'
         };
     }
     public static function toJsObject(): array

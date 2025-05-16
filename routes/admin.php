@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\Auth\AuthController;
+use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\VendorController;
 use App\Http\Middleware\Admin\AdminAuthMiddleware;
 use App\Http\Middleware\Admin\AuthLoginMiddleware;
 use App\Livewire\Admin\AdminList;
@@ -36,8 +38,15 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
         Route::get('change-password', [ProfileController::class, 'changePasswordView'])->name('profile.change-password');
         Route::post('change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
     });
-    Route::prefix('admin')->group(function () {
+    Route::middleware(['role:super_admin'])->prefix('admin')->group(function () {
         Route::get('index', AdminList::class)->name('admin.index');
     });
-    Route::resource('permissions', PermissionController::class);
+    Route::middleware(['role:super_admin'])->resource('permissions', PermissionController::class);
+    Route::resource('vendors', VendorController::class);
+    Route::prefix('vendors')->group(function(){
+        Route::get('list/data',[ VendorController::class,'showData'])->name('vendors.data');
+        Route::post('/update-status', [VendorController::class, 'updateStatus'])->name('vendors.update-status');
+        Route::post('/update-action', [VendorController::class, 'updateAction'])->name('vendors.update-action');
+    });
+    Route::resource('domains', DomainController::class);
 });

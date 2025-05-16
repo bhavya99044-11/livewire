@@ -4,6 +4,7 @@ namespace Database\Seeders\Admin;
 
 use App\Enums\AdminRoles;
 use App\Models\Admin\Admin;
+use App\Models\Admin\Permission;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,13 +15,13 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        Admin::create([
+        $admin = Admin::create([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('Admin@1234'),
             'role' => AdminRoles::SUPER_ADMIN->value,
         ]);
-
+        $admin->permissions()->attach(Permission::all()->pluck('id')->toArray());
         Admin::factory()->count(10)->create();
 
     }

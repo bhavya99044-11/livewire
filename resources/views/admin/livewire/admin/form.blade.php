@@ -48,21 +48,6 @@
                                     @enderror
                                 </div>
                             @endunless
-
-                            <!-- Role -->
-                            <div class="">
-                                <label class="block text-gray-700">Role</label>
-                                <select wire:model.defer="role" class="max-w-full md:w-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white px-2 text-sm md:text-base py-1 border border-gray-500 rounded">
-                                    <option class="" value="">Select Role</option>
-                                    @foreach ($enumRoles as $roleOption)
-                                        <option value="{{ $roleOption->value }}">{{ $roleOption->label() }}</option>
-                                    @endforeach
-                                </select>
-                                @error('role')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
-
                             <!-- Status -->
                             <div>
                                 <label class="block text-gray-700">Status</label>
@@ -87,8 +72,11 @@
                         </div>     
                        
                     @else
-                        <div>
-                            <div class="grid grid-cols-2 md:grid-cols-3 md:gap-4 gap-2">
+                        <div class="">
+                            <div class="grid grid-cols-2 min-w-[300px] min-h-[100px] md:grid-cols-3 md:gap-4 gap-2">
+                                @if($permissionData->isEmpty())
+                                    <span class="col-span-2">No permissions available</span>
+                                @else
                                 @foreach ($permissionData as $permissionItem)
                                     <label class="flex items-center space-x-2 overflow-hidden">
                                         <input type="checkbox" wire:model="permission"
@@ -98,6 +86,7 @@
                                       </span>
                                     </label>
                                 @endforeach
+                                @endif
                             </div>
                             @error('permission')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>

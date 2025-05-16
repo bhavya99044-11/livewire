@@ -1,6 +1,8 @@
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 @stack('styles')
 @livewireStyles
 @include('admin.components.header')
@@ -20,7 +22,6 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes'
         })
-        console.log(action,dataMessage,values)
             if (result.isConfirmed) {
                 Livewire.dispatch(action, {
                     values
@@ -63,7 +64,6 @@
 
 
         const deleteData = document.querySelectorAll('.delete');
-        console.log(deleteData)
         deleteData.forEach((item) => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();

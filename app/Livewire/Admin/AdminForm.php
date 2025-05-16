@@ -8,15 +8,15 @@ use App\Http\Requests\Admin\AdminFormRequest;
 use App\Http\Requests\Admin\PermissionFormCheckbox;
 use App\Models\Admin\Admin as AdminModel;
 use App\Models\Admin\Permission;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class AdminForm extends Component
 {
-
-
     public $isModal = false;
 
     public $isUpdate = false;
@@ -35,8 +35,6 @@ class AdminForm extends Component
 
     public $password;
 
-    public $role;
-
     public $status;
 
     public $adminId;
@@ -47,16 +45,22 @@ class AdminForm extends Component
 
     protected $listeners = ['openRolesModal'];
 
+    public $user;
+
     public function mount()
     {
-
-        $this->permissionData = Permission::all();
+        DB::enableQueryLog();
+        $this->user = Auth::guard('admin')->user();
+        // dd($this->user);
+        $this->permissionData = Permission::where('module', '!=', 'admin')->where('module', '!=', 'permission')->get();
         $this->enumStatus = Status::cases();
         $this->enumRoles = AdminRoles::cases();
     }
 
     public function render()
     {
+        DB::enableQueryLog();
+
         return view('admin.livewire.admin.form');
     }
 
@@ -77,6 +81,7 @@ class AdminForm extends Component
     #[On('createAdmin')]
     public function create()
     {
+
         $this->resetInputFields();
         $this->isModal = true;
         $this->isUpdate = false;
@@ -85,13 +90,13 @@ class AdminForm extends Component
     #[On('editAdmin')]
     public function edit($id)
     {
+
         try {
             $this->resetInputFields();
             $admin = AdminModel::findOrFail($id);
             $this->adminId = $admin->id;
             $this->name = $admin->name;
             $this->email = $admin->email;
-            $this->role = $admin->role;
             $this->status = $admin->status;
             $this->permission = $admin->permissions?->pluck('id')->toArray();
             $this->isModal = true;
@@ -109,15 +114,15 @@ class AdminForm extends Component
 
     public function store()
     {
-        $request = new PermissionFormCheckbox;
-        $this->validate($request->rules());
+        // $request = new PermissionFormCheckbox;
+        // $this->validate($request->rules());
         try {
             DB::beginTransaction();
             $admin = AdminModel::create([
                 'name' => $this->name,
                 'email' => $this->email,
                 'password' => Hash::make($this->password),
-                'role' => $this->role,
+                'role' => $this->enumRoles::ADMIN->value,
                 'status' => $this->status,
             ]);
             $admin->permissions()->attach($this->permission);
@@ -134,8 +139,9 @@ class AdminForm extends Component
 
     public function update()
     {
-        $request = new PermissionFormCheckbox;
-        $this->validate($request->rules());
+
+        // $request = new PermissionFormCheckbox;
+        // $this->validate($request->rules());
         try {
             DB::beginTransaction();
             $admin = AdminModel::findOrFail($this->adminId);
@@ -143,7 +149,6 @@ class AdminForm extends Component
                 'name' => $this->name,
                 'email' => $this->email,
                 'password' => $this->password ? Hash::make($this->password) : $admin->password,
-                'role' => $this->role,
                 'status' => $this->status,
             ]);
             $admin->permissions()->sync($this->permission);
@@ -164,11 +169,5 @@ class AdminForm extends Component
         $request = new AdminFormRequest($this->adminId);
         $this->validate($request->rules());
         $this->nextPage = true;
-    }
-
-    function openRolesModal($id){
-        // $this->adminId=$id;
-        // $this->admin=Admin::findOrFail($id);
-        // $this->nextPage = true;
     }
 }

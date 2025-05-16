@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Enums\AdminRoles;
 use App\Enums\Status;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -45,7 +44,6 @@ class AdminFormRequest extends FormRequest
                 'string',
                 'min:8',
             ],
-            'role' => ['required', Rule::in(AdminRoles::values())],
             'status' => ['required', Rule::in(Status::values())],
         ];
     }

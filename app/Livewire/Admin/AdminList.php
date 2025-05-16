@@ -36,8 +36,10 @@ class AdminList extends Component
     public function render()
     {
         $admins = AdminModel::when($this->searchAdmin, function ($query) {
-            $query->where('name', 'LIKE', "%{$this->searchAdmin}%")
-                ->where('email', 'LIKE', "%{$this->searchAdmin}%");
+            $query->where(function ($q) {
+                $q->where('name', 'LIKE', "%{$this->searchAdmin}%")
+                    ->orWhere('email', 'LIKE', "%{$this->searchAdmin}%");
+            });
         })
             ->when($this->statusActiveInactive, function ($query) {
                 $query->where('status', $this->statusActiveInactive);
@@ -103,6 +105,9 @@ class AdminList extends Component
     {
         try {
             $admin = AdminModel::findOrFail($id);
+            if ($admin->role == AdminRoles::SUPER_ADMIN->value) {
+                return $this->dispatch('success', message: "Super admin can't be deleted.");
+            }
             $admin->delete();
             $this->dispatch('success', message: 'Admin deleted successfully.');
             $this->resetPage();
@@ -111,7 +116,8 @@ class AdminList extends Component
         }
     }
 
-    public function rolesEdit($id){
-        $this->dispatch('openRolesModal',$id);
+    public function rolesEdit($id)
+    {
+        $this->dispatch('openRolesModal', $id);
     }
 }

@@ -1,5 +1,7 @@
 @php
     use App\Enums\AdminRoles;
+
+    $user = Auth::guard('admin')->user();
 @endphp
 
 
@@ -12,7 +14,7 @@
             <div class="md:flex grid grid-cols-2 items-center gap-x-2 gap-y-1 md:flex-row md:gap-4">
                 <div>
                     <label class="text-sm capitalize">per page</lable>
-                         <select wire:model.live.debounce.500ms="perPage"
+                        <select wire:model.live.debounce.500ms="perPage"
                             class="bg-white px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                             <option selected value="10">10</option>
                             <option value="20">20</option>
@@ -27,7 +29,7 @@
 
                 <div class="flex items-center  gap-2">
                     <span class="text-sm">Status</span>
-                     <select wire:model.live="statusActiveInactive"
+                    <select wire:model.live="statusActiveInactive"
                         class="py-2 px-3 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                         <option value="" selected>All</option>
                         <option value="active">Active</option>
@@ -44,20 +46,24 @@
                     </select>
                 </div>
                 <div class="flex items-center  gap-2">
-                    <span class="text-sm">Actions</span> <select id="adminActions"
-                        class=" px-3 py-2 border bg-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        <option value="" hidden selected>Select Action</option>
-                        <option value="activateAdmin">Activate Selected</option>
-                        <option value="deactivateAdmin">Deactivate Selected</option>
-                        <option value="deleteSelectedAdmin">Delete Selected</option>
-                    </select>
+                    @if ($user->hasPermission('admin-action'))
+                        <span class="text-sm">Actions</span> <select id="adminActions"
+                            class=" px-3 py-2 border bg-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                            <option value="" hidden selected>Select Action</option>
+                            <option value="activateAdmin">Activate Selected</option>
+                            <option value="deactivateAdmin">Deactivate Selected</option>
+                            <option value="deleteSelectedAdmin">Delete Selected</option>
+                        </select>
+                    @endif
                 </div>
             </div>
             <div class="flex md:block md:w-auto w-full justify-center md:justify-end">
-                <a wire:click="$dispatch('createAdmin')"
-                    class="w-fit cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                    <i class="fas fa-plus"></i> Create Admin
-                </a>
+                @if ($user->hasPermission('admin-add'))
+                    <a wire:click="$dispatch('createAdmin')"
+                        class="w-fit cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                        <i class="fas fa-plus"></i> Create Admin
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -112,9 +118,8 @@
 
                                     <td class="px-6 py-4 text-center whitespace-nowrap">
                                         <button wire:click="rolesEdit({{ $admin->id }})"
-                                            class="px-2 border border-[{{ AdminRoles::from($admin->role)->color()}}]  inline-flex text-xs capitalize leading-5 font-semibold rounded-full bg-blue-100 "
-                                            style="border-color: {{ AdminRoles::from($admin->role)->color() }}; color: {{ AdminRoles::from($admin->role)->color() }}; background-color:{{AdminRoles::from($admin->role)->bgColor()}};"
-                                            >
+                                            class="px-2 border border-[{{ AdminRoles::from($admin->role)->color() }}]  inline-flex text-xs capitalize leading-5 font-semibold rounded-full bg-blue-100 "
+                                            style="border-color: {{ AdminRoles::from($admin->role)->color() }}; color: {{ AdminRoles::from($admin->role)->color() }}; background-color:{{ AdminRoles::from($admin->role)->bgColor() }};">
                                             {{ AdminRoles::from($admin->role)->label() }}
                                         </button>
                                     </td>
@@ -125,14 +130,20 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button title="Edit" wire:click="$dispatch('editAdmin',{id:{{ $admin->id }}})"
-                                            class="@if ($admin->id == \Auth::guard('admin')->user()->id) disabled:opacity-50  !cursor-not-allowed @endif cursor-pointer text-blue-600 hover:text-blue-900 mr-3"
-                                            @if ($admin->id == \Auth::guard('admin')->user()->id) disabled @endif><i
-                                                class="fas fa-edit"></i></button>
-                                        <button title="Delete" id="deleteAdmin" data-id="{{ $admin->id }}"
-                                            class="@if ($admin->id == \Auth::guard('admin')->user()->id) !cursor-not-allowed @endif delete cursor-pointer disabled:opacity-50 text-red-600 hover:text-red-900"
-                                            @if ($admin->id == \Auth::guard('admin')->user()->id) disabled @endif><i
-                                                class="fa-solid fa-trash"></i></button>
+                                        @if (Auth::guard('admin')->user()->hasPermission('admin-edit'))
+                                            <button title="Edit"
+                                                wire:click="$dispatch('editAdmin',{id:{{ $admin->id }}})"
+                                                class="@if ($admin->id == \Auth::guard('admin')->user()->id) disabled:opacity-50  !cursor-not-allowed @endif cursor-pointer text-blue-600 hover:text-blue-900 mr-3"
+                                                @if ($admin->id == \Auth::guard('admin')->user()->id) disabled @endif><i
+                                                    class="fas fa-edit"></i></button>
+                                        @endif
+
+                                        @if (Auth::guard('admin')->user()->hasPermission('admin-delete'))
+                                            <button title="Delete" data-id="{{ $admin->id }}"
+                                                class="@if ($admin->id == \Auth::guard('admin')->user()->id) !cursor-not-allowed @endif delete cursor-pointer disabled:opacity-50 text-red-600 hover:text-red-900"
+                                                @if ($admin->id == \Auth::guard('admin')->user()->id) disabled @endif><i
+                                                    class="fa-solid fa-trash"></i></button>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -175,7 +186,6 @@
                     item => item.value)
                 if (selectCheck.length > 0) {
                     await swalConfirmation(action, 'are you sure?', selectCheck)
-                    console.log(1)
                     selectBoxes.forEach((item) => {
                         item.checked = false
                     })

@@ -156,6 +156,7 @@
 @push('scripts')
 <script>
     $(document).ready(function () {
+       if(@json(auth()->guard('admin')->user()->hasPermission('permission-add')))
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -169,6 +170,7 @@
         "<'flex justify-between items-center mt-4'<'text-sm'i><'text-sm'p>>",
     // other settings
     initComplete: function () {
+       if(@json(auth()->guard('admin')->user()->hasPermission('permission-add'))){
         // Append your custom button to the new container
         $('.custom-btn-wrapper').html(`
             <div class="flex md:block permission-button md:w-auto w-full justify-end">
@@ -178,6 +180,7 @@
                 </button>
             </div>
         `);
+       }
     },
             processing: true,
             serverSide: true,
@@ -256,13 +259,7 @@
                 success: function (response) {
                     $('#permissionModal').addClass('hidden');
                     table.ajax.reload();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.success,
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
+                    swalSuccess(response.success)
                 },
                 error: function (xhr) {
                     if (xhr.status === 422) {
@@ -271,18 +268,10 @@
                             $('#error-' + field).addClass('show').text(errors[field][0]);
                         }
                         if (errors?.slug) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: errors.slug[0]
-                            });
+                            swalError(errors.slug[0])
                         }
                     } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: xhr.responseJSON.message
-                        });
+                        swalError(errors.slug[0])
                     }
                 }
             });
@@ -305,20 +294,10 @@
                         type: 'DELETE',
                         success: function (response) {
                             table.ajax.reload();
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Deleted',
-                                text: 'Permission has been deleted.',
-                                timer: 1500,
-                                showConfirmButton: false
-                            });
+                           swalSuccess('Permission has been deleted')
                         },
                         error: function (xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: xhr.responseJSON.message
-                            });
+                           swalError(xhr.responseJSON.message)
                         }
                     });
                 }

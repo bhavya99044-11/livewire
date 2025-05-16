@@ -28,7 +28,6 @@ enum AdminRoles: string
         };
     }
 
-    
     public function bgColor(): string
     {
         return match ($this) {

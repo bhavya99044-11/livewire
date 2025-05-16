@@ -1,117 +1,172 @@
-<div class="container mx-auto p-6">
-    <!-- Search and Create Button -->
-    <div class="flex justify-between mb-6">
-        <input wire:model.live="searchAdmin" type="text" placeholder="Search admins..." class="border rounded-lg p-2 w-1/3">
-        <button wire:click="$dispatch('createAdmin')" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Create Admin</button>
-    </div>
-
-    <!-- Admin Table -->
-    <table class="w-full border-collapse bg-white shadow-md rounded-lg">
-        <thead>
-            <tr class="bg-[#3A2F2F] text-white">
-                <th class="p-3">Name</th>
-                <th class="p-3">Email</th>
-                <th class="p-3">Role</th>
-                <th class="p-3">Status</th>
-                <th class="p-3">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($admins as $admin)
-                <tr class="border-b">
-                    <td class="p-3">{{ $admin->name }}</td>
-                    <td class="p-3">{{ $admin->email }}</td>
-                    <td class="p-3">{{ $admin->role }}</td>
-                    <td class="p-3">{{ $admin->status }}</td>
-                    <td class="p-3 flex space-x-2">
-                        <button wire:click="$dispatch('editAdmin')" class="text-blue-500">Edit</button>
-                        <button wire:click="$dispatch('deleteAdmin', {{ $admin->id }})" class="text-red-500">Delete</button>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="p-3 text-center">No admins found.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    <!-- Pagination -->
-    <div class="mt-6">
-        {{ $admins->links() }}
-    </div>
-
-    <!-- Bulk Actions -->
-    <div class="mt-4 flex space-x-4">
-        <button wire:click="$dispatch('activateAdmin', [/* Selected IDs */])" class="bg-green-500 text-white px-4 py-2 rounded-lg">Activate Selected</button>
-        <button wire:click="$dispatch('deactivateAdmin', [/* Selected IDs */])" class="bg-yellow-500 text-white px-4 py-2 rounded-lg">Deactivate Selected</button>
-        <button wire:click="$dispatch('deleteAdmin', [/* Selected IDs */])" class="bg-red-500 text-white px-4 py-2 rounded-lg">Delete Selected</button>
-    </div>
-
-    <!-- Admin Form Component -->
-    <livewire:admin.admin-form />
-</div>
-
 <div>
     @if ($isModal)
-        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-2xl w-[400px] p-6 shadow-lg">
-                <h2 class="text-2xl font-bold mb-4">{{ $isUpdate ? 'Edit Admin' : 'Create Admin' }}</h2>
-                <form wire:submit.prevent="{{ $isUpdate ? 'update' : 'store' }}">
-                    <!-- Name -->
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Name</label>
-                        <input wire:model="name" type="text" class="w-full border rounded-lg p-2">
-                        @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    </div>
+        <div class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+            <div  class="bg-white rounded-lg mb-6 shadow-lg max-w-[500px] p-6 relative">
+                <!-- Close Button -->
+                <div class="flex mb-2 items-center flex-row justify-between">
+                    <!-- Modal Header -->
+                    <h2 class="text-xl font-semibold ">{{ $adminId ? 'Edit Admin' : 'Create Admin' }}</h2>
+                    <button wire:click="close()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa-solid fa-lg fa-xmark"></i>             
+                    </button>
+                </div>
+                <!-- Modal Form -->
+                <form  class="!mb-0" id="adminForm"  wire:ignore.self>
+                    @if ($nextPage == null)
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Name -->
+                            <div>
+                                <label class="block text-gray-700">Name</label>
+                                <input type="text" wire:model.defer="name" name="name"
+                                    class="w-full focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-1 border border-gray-500 rounded" />
+                                @error('name')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
 
-                    <!-- Email -->
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Email</label>
-                        <input wire:model="email" type="email" class="w-full border rounded-lg p-2">
-                        @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    </div>
+                            <!-- Email -->
+                            <div>
+                                <label class="block text-gray-700">Email</label>
+                                <input type="email" wire:model.defer="email" name="email"
+                                    class="w-full focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-1 border border-gray-500 rounded" />
+                                @error('email')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
 
-                    <!-- Password -->
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Password {{ $isUpdate ? '(Leave blank to keep unchanged)' : '' }}</label>
-                        <input wire:model="password" type="password" class="w-full border rounded-lg p-2">
-                        @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    </div>
+                            <!-- Password -->
+                            @unless ($adminId)
+                                <div>
+                                    <label class="block text-gray-700">Password</label>
+                                    <input type="password" wire:model.defer="password" name="password"
+                                        class="w-full px-2 py-1 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded" />
+                                    @error('password')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endunless
+                            <!-- Status -->
+                            <div>
+                                <label class="block text-gray-700">Status</label>
+                                <select wire:model.defer="status" name="status"
+                                    class="max-w-full md:w-full text-sm md:text-base px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 border bg-white border-gray-500 rounded">
+                                    <option value="">Select Status</option>
+                                    @foreach ($enumStatus as $statusOption)
+                                        <option value="{{ $statusOption->value }}">{{ $statusOption->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('status')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end">
+                            <button type="submit"  class="bg-blue-500 text-white px-2 py-1 rounded">
+                                Next
+                            </button>
+                        </div>     
+                    @else
+                        <div class="">
+                            <div class="grid grid-cols-2 min-w-[300px] min-h-[100px] md:grid-cols-3 md:gap-4 gap-2">
+                                @if($permissionData->isEmpty())
+                                    <span class="col-span-2">No permissions available</span>
+                                @else
+                                    @foreach ($permissionData as $permissionItem)
+                                        <label class="flex items-center space-x-2 overflow-hidden">
+                                            <input type="checkbox" wire:model="permission" name="permission[]"
+                                                value="{{ $permissionItem->id }}" class="shrink-0" @if(in_array($permissionItem->id,$permission)) checked @endif  >        
+                                            <span title="{{ $permissionItem->module }} {{ $permissionItem->name }}" class="w-full truncate text-sm text-gray-800">
+                                                {{ $permissionItem->module }} {{ $permissionItem->name }}                     
+                                            </span>
+                                        </label>
+                                    @endforeach
+                                @endif
+                            </div>
+                            @error('permission')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
 
-                    <!-- Role -->
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Role</label>
-                        <select wire:model="role" class="w-full border rounded-lg p-2">
-                            <option value="">Select Role</option>
-                            @foreach ($enumRoles as $role)
-                                <option value="{{ $role->value }}">{{ $role->value }}</option>
-                            @endforeach
-                        </select>
-                        @error('role') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Status -->
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Status</label>
-                        <select wire:model="status" class="w-full border rounded-lg p-2">
-                            <option value="">Select Status</option>
-                            @foreach ($enumStatus as $status)
-                                <option value="{{ $status->value }}">{{ $status->value }}</option>
-                            @endforeach
-                        </select>
-                        @error('status') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="flex justify-end space-x-4">
-                        <button type="button" wire:click="close" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Cancel</button>
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">
-                            {{ $isUpdate ? 'Update' : 'Create' }}
-                        </button>
-                    </div>
+                            <div class="mt-6 flex justify-end">
+                                {{-- <button type="button" wire:click="$set('nextPage',null)" class="bg-gray-500 mr-2 hover:opacity-90 text-white px-2 py-1 rounded">
+                                    Back
+                                </button> --}}
+                                {{-- <button type="button" class="bg-blue-500 text-white px-2 py-1 rounded">
+                                    {{ $adminId ? 'Update' : 'Create' }}
+                                </button> --}}
+                            </div>
+                        </div>
+                    @endif
                 </form>
             </div>
         </div>
     @endif
+
+    <!-- jQuery and jQuery Validation -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="
+    https://cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/jquery.validate.min.js
+    "></script>
+        <script>
+    document.addEventListener("livewire:initialized", () => {
+        const form = $("#adminForm");
+
+                    // $(document).on('click',"#nextForm",function(){
+                    //    $('#adminForm').submit();
+                    // })
+                  
+
+                    const validator=form.validate({
+                    rules: {
+                        name: {
+                            required: true
+                        },
+                        email: {
+                            required: true,
+                            email: true
+                        },
+                        password: {
+                            required: function(element) {
+                                return {{ $adminId ? 'false' : 'true' }};
+                            },
+                            minlength: 6
+                        },
+                        status: {
+                            required: true
+                        },
+                        'permission[]': {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        name: "Please enter a name",
+                        email: {
+                            required: "Please enter an email address",
+                            email: "Please enter a valid email address"
+                        },
+                        password: {
+                            required: "Please enter a password",
+                            minlength: "Password must be at least 6 characters long"
+                        },
+                        status: "Please select a status",
+                        'permission[]': "Please select at least one permission"
+                    },
+                    submitHandler: function(e) {
+                        e.preventDefault();
+                        alert(1);
+                        console.log('jQuery Validation Passed'); 
+                        //@this.call('submitForm');
+                    }
+                });
+
+                $(document).on('submit',"#adminForm", function(e) { 
+
+                      console.log('Form Submission Intercepted');
+                      e.preventDefault()
+                    if (!$(this).valid()) {
+                        console.log('Validation Failed'); 
+                        return false;
+                    }
+                });
+        });
+    </script>
 </div>
