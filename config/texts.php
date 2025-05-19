@@ -31,7 +31,7 @@ return [
     */
 
     'openai' => [
-        'api_key' => '',
+        // 'api_key' => '',
         'model' => env('OPENAI_MODEL', 'gpt-3.5'),
         'timeout' => 10,
         'retries' => 3,
