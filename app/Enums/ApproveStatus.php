@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum ApproveStatus: Int
 {
-    case APPROVED=1;
     case PENDING=0;
+    case APPROVED=1;
 
     public static function values(): array
     {

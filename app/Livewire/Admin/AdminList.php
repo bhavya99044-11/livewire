@@ -7,6 +7,7 @@ use App\Enums\Status;
 use App\Http\Requests\Admin\ActionRequest;
 use App\Models\Admin\Admin as AdminModel;
 use Livewire\Attributes\On;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -26,7 +27,7 @@ class AdminList extends Component
 
     public $enumStatus;
 
-    public function mount()
+    public function mount($id=null)
     {
         $this->enumStatus = Status::cases();
         $this->enumRoles = AdminRoles::cases();
@@ -39,8 +40,8 @@ class AdminList extends Component
             $query->where(function ($q) {
                 $q->where('name', 'LIKE', "%{$this->searchAdmin}%")
                     ->orWhere('email', 'LIKE', "%{$this->searchAdmin}%");
-            });
-        })
+               });
+            })
             ->when($this->statusActiveInactive, function ($query) {
                 $query->where('status', $this->statusActiveInactive);
             })

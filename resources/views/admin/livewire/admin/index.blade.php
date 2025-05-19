@@ -2,10 +2,25 @@
     use App\Enums\AdminRoles;
 
     $user = Auth::guard('admin')->user();
+    use App\Enums\Status;
 @endphp
 
 
 <section class="bg-gray-100">
+    @php
+        $breadCrumbs = [
+            [
+                'name' => 'dashboard',
+                'url' => route('admin.dashboard'),
+            ],
+            [
+                'name' => 'Admin List',
+                'url' => route('admin.admin.index'),
+            ],
+        ];
+
+    @endphp
+    @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Admin Management</h1>
 
@@ -48,7 +63,7 @@
                 <div class="flex items-center  gap-2">
                     @if ($user->hasPermission('admin-action'))
                         <span class="text-sm">Actions</span> <select id="adminActions"
-                            class=" px-3 py-2 border bg-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                            class=" px-3 py-2 border bg-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" disabled>
                             <option value="" hidden selected>Select Action</option>
                             <option value="activateAdmin">Activate Selected</option>
                             <option value="deactivateAdmin">Deactivate Selected</option>
@@ -89,7 +104,7 @@
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Status</th>
                             <th scope="col"
-                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions</th>
                         </tr>
                     </thead>
@@ -118,18 +133,18 @@
 
                                     <td class="px-6 py-4 text-center whitespace-nowrap">
                                         <button wire:click="rolesEdit({{ $admin->id }})"
-                                            class="px-2 border border-[{{ AdminRoles::from($admin->role)->color() }}]  inline-flex text-xs capitalize leading-5 font-semibold rounded-full bg-blue-100 "
+                                            class="px-2 border border-[{{ AdminRoles::from($admin->role)->color() }}]  inline-flex text-xs capitalize leading-5  rounded-full bg-blue-100 "
                                             style="border-color: {{ AdminRoles::from($admin->role)->color() }}; color: {{ AdminRoles::from($admin->role)->color() }}; background-color:{{ AdminRoles::from($admin->role)->bgColor() }};">
                                             {{ AdminRoles::from($admin->role)->label() }}
                                         </button>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span
-                                            class="px-2 inline-flex capitalize text-xs leading-5 font-semibold rounded-full  @if ($admin->status == 'active') text-green-800 bg-green-100 @else text-red-600 bg-red-100 @endif">
-                                            {{ $admin->status }}
+                                            class="px-2 border inline-flex capitalize text-xs leading-5  rounded-full  @if ($admin->status == '1') text-green-800 border-green-800 bg-green-100 @else border-red-600 text-red-600 bg-red-100 @endif">
+                                            {{ Status::from($admin->status)->label() }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                         @if (Auth::guard('admin')->user()->hasPermission('admin-edit'))
                                             <button title="Edit"
                                                 wire:click="$dispatch('editAdmin',{id:{{ $admin->id }}})"
@@ -193,10 +208,25 @@
                     adminAction.value = ''
                 }
             })
+            $('#allSelect').on('change',function(){
+                if(this.checked)
+                    $('#adminActions').prop('disabled',false)
+                else
+                $('#adminActions').prop('disabled',true)
+                
+            })
+
+            $('.selectAdmin').on('change',function(){
+               const selectedAdmins=Array.from(document.querySelectorAll('.selectAdmin')).filter((item)=>item.checked==true)
+               if(selectedAdmins.length<=0)
+                $('#adminActions').prop('disabled',true)
+               else
+               $('#adminActions').prop('disabled',false)
+            })
+            
         }
         initAction();
-
-        // Re-run after any Livewire DOM update
+                // Re-run after any Livewire DOM update
         Livewire.hook('commit', () => {
             initAction();
         });

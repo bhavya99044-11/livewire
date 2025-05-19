@@ -49,9 +49,17 @@ class DomainController extends Controller
     {
         try {
             $domain->delete();
-            return redirect()->route('admin.domains.index')->with('success', 'Domain deleted successfully');
+            return response()->json([
+                'message'=>'Domain Deleted',
+                'error'=>null,
+                'data'=>[],
+            ],200);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to delete domain: ' . $e->getMessage());
+            return response()->json([
+                'message'=>'Domain not deleted',
+                'error'=>$e->getMessage(),
+                'data'=>[],
+            ],$e->getCode());
         }
     }
 }

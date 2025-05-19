@@ -73,6 +73,23 @@
 
 @section('content')
 <section class="bg-gray-100">
+
+    @php
+    $breadCrumbs=[
+        [
+            'name'=>'dashboard',
+            'url'=>route('admin.dashboard'),
+    ],
+    [
+        'name'=>'Permission List',
+        'url'=>route('admin.permissions.index')
+    ]
+    ]
+    
+    @endphp
+    
+    @include('admin.components.bread-crumb',['breadCrumbs'=>$breadCrumbs])
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Permissions Management</h1>
@@ -94,11 +111,11 @@
                                 #
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 !uppercase tracking-wider">
                                 Module
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 !uppercase tracking-wider">
                                 Name
                             </th>
                             <th scope="col"
@@ -196,17 +213,17 @@
                 {
                     data: 'module',
                     name: 'module',
-                    className: 'px-6 py-4 whitespace-nowrap capitalize text-sm text-gray-500'
+                    className: 'px-6 py-4 whitespace-nowrap capitalize  text-sm '
                 },
                 {
                     data: 'name',
                     name: 'name',
-                    className: 'px-6 py-4 whitespace-nowrap capitalize text-sm text-gray-500'
+                    className: 'px-6 py-4 whitespace-nowrap capitalize  text-sm '
                 },
                 {
                     data: 'slug',
                     name: 'slug',
-                    className: 'px-6 py-4 whitespace-nowrap text-sm text-gray-500'
+                    className: 'px-6 py-4 whitespace-nowrap text-sm '
                 },
                 {
                     data: 'action',
@@ -234,12 +251,17 @@
             $('.error-message').removeClass('show').text('');
             var id = $(this).data('id');
 
-            $.get("{{ route('admin.permissions.index') }}/" + id, function (data) {
-                $('#permission_id').val(data.id);
-                $('#module').val(data.module);
-                $('#name').val(data.name);
+            $.get("{{ route('admin.permissions.index') }}/" + id, function (response) {
+            
+                if(response.data){
+                $('#permission_id').val(response.data.id);
+                $('#module').val(response.data.module);
+                $('#name').val(response.data.name);
                 $('#modalTitle').text('Edit Permission');
                 $('#permissionModal').removeClass('hidden');
+                }else{
+                    swalError(response.message)
+                }
             });
         });
 
@@ -259,7 +281,7 @@
                 success: function (response) {
                     $('#permissionModal').addClass('hidden');
                     table.ajax.reload();
-                    swalSuccess(response.success)
+                    swalSuccess(response.message)
                 },
                 error: function (xhr) {
                     if (xhr.status === 422) {
@@ -267,11 +289,10 @@
                         for (let field in errors) {
                             $('#error-' + field).addClass('show').text(errors[field][0]);
                         }
-                        if (errors?.slug) {
-                            swalError(errors.slug[0])
-                        }
+                            swalError(response.message)
+                        
                     } else {
-                        swalError(errors.slug[0])
+                        swalError(response.message)
                     }
                 }
             });
@@ -293,8 +314,9 @@
                         url: "{{ route('admin.permissions.index') }}/" + id,
                         type: 'DELETE',
                         success: function (response) {
+                            console.log(response)
                             table.ajax.reload();
-                           swalSuccess('Permission has been deleted')
+                           swalSuccess(response.message)
                         },
                         error: function (xhr) {
                            swalError(xhr.responseJSON.message)

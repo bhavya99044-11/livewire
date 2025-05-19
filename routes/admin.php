@@ -9,6 +9,12 @@ use App\Http\Middleware\Admin\AdminAuthMiddleware;
 use App\Http\Middleware\Admin\AuthLoginMiddleware;
 use App\Livewire\Admin\AdminList;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\App;
+
+Route::get('/test', function () {
+    App::setLocale('es');
+    return text('test_key', 'Hello world');
+});
 
 Route::middleware(AuthLoginMiddleware::class)->group(function () {
 
@@ -42,8 +48,8 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
         Route::get('index', AdminList::class)->name('admin.index');
     });
     Route::middleware(['role:super_admin'])->resource('permissions', PermissionController::class);
-    Route::resource('vendors', VendorController::class);
-    Route::prefix('vendors')->group(function(){
+    Route::middleware(['route-access:vendor'])->resource('vendors', VendorController::class);
+    Route::middleware(['route-access:vendor'])->prefix('vendors')->group(function(){
         Route::get('list/data',[ VendorController::class,'showData'])->name('vendors.data');
         Route::post('/update-status', [VendorController::class, 'updateStatus'])->name('vendors.update-status');
         Route::post('/update-action', [VendorController::class, 'updateAction'])->name('vendors.update-action');

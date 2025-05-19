@@ -81,13 +81,25 @@ $superAdmin=\App\Enums\AdminRoles::SUPER_ADMIN->value  ;
                     </li>
                     <div class="flex w-full h-[1px] bg-indigo-700"></div>
                     @endif
-                    @if($user->role==$superAdmin)
+                    
+                    @if($user->hasAccess('vendor'))
                     <li title="admin" class="peer    ">
                         <a href="{{route('admin.vendors.index')}}"
                         class="flex @if(request()->is('*vendors*')) bg-indigo-600/50 text-white @endif hover:bg-indigo-600/50 rounded-md items-center text-center overflow-hidden  peer-[.active]:sideBarBorder gap-x-4 text-gray-300  hover:sideBarBorder hover:text-white p-2 rounded-md">
                         <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid fa-table-cells-column-lock"></i></div>
                             <span
                                 class="text-sm font-medium opacity-100 md:opacity-0 group-[.active]:opacity-100 transition-opacity duration-300">Vendors</span>
+                        </a>
+                    </li>
+                    <div class="flex w-full h-[1px] bg-indigo-700"></div>
+                    @endif
+                    @if($user->role==$superAdmin)
+                    <li title="admin" class="peer    ">
+                        <a href="{{route('admin.domains.index')}}"
+                        class="flex @if(request()->is('*domains*')) bg-indigo-600/50 text-white @endif hover:bg-indigo-600/50 rounded-md items-center text-center overflow-hidden  peer-[.active]:sideBarBorder gap-x-4 text-gray-300  hover:sideBarBorder hover:text-white p-2 rounded-md">
+                        <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid fa-table-cells-column-lock"></i></div>
+                            <span
+                                class="text-sm font-medium opacity-100 md:opacity-0 group-[.active]:opacity-100 transition-opacity duration-300">Domains</span>
                         </a>
                     </li>
                     <div class="flex w-full h-[1px] bg-indigo-700"></div>

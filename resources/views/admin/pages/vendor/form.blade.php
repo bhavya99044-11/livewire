@@ -10,8 +10,61 @@ $approveStatuses = ApproveStatus::cases();
     $generalStatuses = Status::cases();
 @endphp
 
+@push('styles')
+<style>
+    .select2-container{
+        min-width: 200px;
+    }
+    .form-input {
+            padding: 0.5rem;
+            border-width: 1px;
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+            border-style: solid;
+            border-color: #d1d5db;
+            outline: none;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .parent {
+            position: relative;
+        }
+
+        .flex.flex-row.items-center {
+            margin-bottom: 1rem;
+        }
+</style>
+@endpush
 
 @section('content')
+@php
+$breadCrumbs=[
+    [
+        'name'=>'dashboard',
+        'url'=>route('admin.dashboard'),
+],
+[
+    'name'=>'Vendor List',
+    'url'=>route('admin.vendors.index')
+],
+[
+    'name'=>'Vendor Form',
+    'url'=>null
+],
+]
+
+@endphp
+
+@include('admin.components.bread-crumb',['breadCrumbs'=>$breadCrumbs])
     <section class="bg-gray-100">
         <div class="container mx-auto px-4 py-8">
             <h1 class="text-2xl font-bold text-gray-800 mb-6">{{ isset($vendor) ? 'Edit Vendor' : 'Add Vendor' }}</h1>
@@ -91,7 +144,7 @@ $approveStatuses = ApproveStatus::cases();
                             </label>
                             <div class="shrink-0 w-12 h-12 rounded-full border border-gray-300 overflow-hidden">
                                 <img id="logoPreview" class="w-full h-full object-cover" 
-                                     src="{{ isset($vendor) && $vendor->logo_url ? asset('storage/logos/'.$vendor->logo_url) : '' }}" 
+                                     src="{{ isset($vendor) && $vendor->logo_url ? asset('storage/logos/'.$vendor->logo_url) : asset('storage/logos/default_image.png') }}" 
                                      alt="Logo Preview">
                             </div>
                         </div>
@@ -151,10 +204,11 @@ $approveStatuses = ApproveStatus::cases();
                     <div class="mb-2 gap-2 flex flex-row items-center">
                         <label for="is_approve" class="block text-gray-700">Approve :</label>
                         <div class="parent flex flex-col">
-                        <select name="is_approve" class="bg-white form-input">
+                        <select name="is_approved" id="isApproveSelecet" class="bg-white form-input" @if( isset($vendor) &&  $vendor->is_approved==1) disabled @endif>
                             @foreach ($approveStatuses as $status)
                                 <option value="{{ $status->value }}"
-                                    {{ old('is_approve', $vendor->is_approve ?? '') == $status->value ? 'selected' : '' }}>
+
+                                    {{ old('is_approve', $vendor->is_approved ?? '') == $status->value ? 'selected' : '' }}>
                                     {{ $status->label() }}
                                 </option>
                             @endforeach
@@ -215,12 +269,15 @@ $approveStatuses = ApproveStatus::cases();
                         </div>
                         {{-- Domain --}}
                         <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="domain" class="block text-gray-700">Domain :</label>
+                            <label for="domain_id" class="block text-gray-700">Domain :</label>
                             <div class="parent flex flex-col">
-                                <input type="text" name="domain" class="form-input" 
-                                       value="{{ old('domain', isset($vendor) ? $vendor->domain : '') }}">
-                            </div>
-                        </div>
+                            <select name="domain_id[]" id="domainSelect" multiple="multiple"  class="bg-white form-input">
+                                
+                                @foreach ($domains as $domain)
+                                    <option  value={{$domain->id}} @if(isset($vendor) && $vendor['domains']->contains('id',$domain->id)) selected @endif>{{$domain->name}}</option>
+                                @endforeach
+                            </select>
+                        </div></div>
                     </div>
                     <button type="submit"
                         class="w-fit ms-auto cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
@@ -248,6 +305,10 @@ $approveStatuses = ApproveStatus::cases();
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
+        });
+
+        $('#domainSelect').select2({
+            placeholder: "Domains",
         });
 
         $(document).ready(function() {
@@ -397,8 +458,9 @@ $approveStatuses = ApproveStatus::cases();
                    
                     e.preventDefault();
                     var formData = new FormData(form); // Use FormData for file upload
+                   if(@json(isset($vendor)))
                     formData.append('_method', 'PATCH');
-                    console.log(formData);
+
                     $.ajax({
                       
                         url: form.action,
@@ -410,12 +472,16 @@ $approveStatuses = ApproveStatus::cases();
                         contentType: false,
                         processData: false,
                         success: function(response) {
+                            if($('#isApproveSelecet').val()==1){
+                                $('#isApproveSelecet').prop('disabled',true)
+                            }
+                            swalSuccess(response.message);
                             // Swal.fire('Success!', response.message, 'success').then(() => {
                             //     window.location.href = '{{ route("admin.vendors.index") }}';
                             // });
                         },
                         error: function() {
-                            Swal.fire('Error!', 'Something went wrong.', 'error');
+                            swalError(response.message);
                         }
                     });
                 }
@@ -424,34 +490,3 @@ $approveStatuses = ApproveStatus::cases();
     </script>
 @endpush
 
-@push('styles')
-    <style>
-        .form-input {
-            padding: 0.5rem;
-            border-width: 1px;
-            border-top: 0;
-            border-left: 0;
-            border-right: 0;
-            border-style: solid;
-            border-color: #d1d5db;
-            outline: none;
-            transition: box-shadow 0.2s ease;
-        }
-
-        .form-input:focus {
-            border-top: 0;
-            border-left: 0;
-            border-right: 0;
-            outline: none;
-            border-color: #3b82f6;
-        }
-
-        .parent {
-            position: relative;
-        }
-
-        .flex.flex-row.items-center {
-            margin-bottom: 1rem;
-        }
-    </style>
-@endpush

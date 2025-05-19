@@ -26,4 +26,9 @@ class Admin extends Authenticatable
     {
         return $this->permissions->contains('slug', $permission);
     }
+
+    public function hasAccess($permission){
+        return $this->permissions()->where('module',$permission)->exists();
+        // dd($permission);
+    }
 }

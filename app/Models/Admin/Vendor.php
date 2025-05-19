@@ -46,4 +46,8 @@ class Vendor extends Model
         'longitude' => 'decimal:8',
         'packaging_processing_charges' => 'float',
     ];
+
+    public function domains(){
+        return $this->belongsToMany(Domain::class,'domain_vendors');
+    }
 }

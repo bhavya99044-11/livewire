@@ -66,19 +66,37 @@ class PermissionController extends Controller
             }
             DB::commit();
 
-            return response()->json(['message' => 'Permission created successfully.'], 201);
+            return response()->json([
+                'message' => __('messages.permission.create.success'),
+                'error' => null,
+                'data' => $permission
+            ], 201);
         } catch (\Exception $e) {
-            DB::rollback();
-
-            return response()->json(['message' => "Can't create permission"], 201);
+            DB::rollBack();
+            return response()->json([
+                'message' => __('messages.permission.create.error'),
+                'error' => $e->getMessage(),
+                'data' => []
+            ], $e->getCode() ?: 500);
         }
     }
 
     public function show($id)
     {
-        $permission = Permission::findOrFail($id);
-
-        return response()->json($permission);
+        try {
+            $permission = Permission::findOrFail($id);
+            return response()->json([
+                'message' => __('messages.permission.show.success'),
+                'error' => null,
+                'data' => $permission
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => __('messages.permission.show.error'),
+                'error' => $e->getMessage(),
+                'data' => []
+            ], $e->getCode() ?: 404);
+        }
     }
 
     public function update(PermissionRequest $request, $id)
@@ -91,9 +109,17 @@ class PermissionController extends Controller
                 'slug' => Str::slug(Str::lower($request->module) . ' ' . Str::lower($request->name)),
             ]);
 
-            return response()->json(['message' => 'Permission updated successfully.'], 201);
+            return response()->json([
+                'message' => __('messages.permission.update.success'),
+                'error' => null,
+                'data' => $permission
+            ], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => "Can't update permission"], $e->getCode());
+            return response()->json([
+                'message' => __('messages.permission.update.error'),
+                'error' => $e->getMessage(),
+                'data' => []
+            ], $e->getCode() ?: 500);
         }
     }
 
@@ -101,14 +127,26 @@ class PermissionController extends Controller
     {
         try {
             if (AdminPermission::where('permission_id', $id)->exists()) {
-                return response()->json(['message' => "Can't delete permission already assigned to user"], 500);
+                return response()->json([
+                    'message' => __('messages.permission.delete.error'),
+                    'error' => __('messages.permission.delete.already_assigned'),
+                    'data' => []
+                ], 400);
             }
-            Permission::findOrFail($id)->delete();
+            $permission = Permission::findOrFail($id);
+            $permission->delete();
 
-            return response()->json(['message' => 'Permission deleted successfully.'], 200);
+            return response()->json([
+                'message' => __('messages.permission.delete.success'),
+                'error' => null,
+                'data' => []
+            ], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Permission deleted successfully.'], $e->getCode());
+            return response()->json([
+                'message' => __('messages.permission.delete.error'),
+                'error' => $e->getMessage(),
+                'data' => []
+            ], $e->getCode() ?: 500);
         }
     }
-    
 }

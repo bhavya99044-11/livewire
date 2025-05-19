@@ -10,6 +10,22 @@ $status = Status::cases();
 @endphp
 
 @section('content')
+
+@php
+$breadCrumbs=[
+    [
+        'name'=>'dashboard',
+        'url'=>route('admin.dashboard'),
+],
+[
+    'name'=>'Vendor List',
+    'url'=>route('admin.vendors.index')
+]
+]
+
+@endphp
+
+@include('admin.components.bread-crumb',['breadCrumbs'=>$breadCrumbs])
 <section class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Vendor Management</h1>
@@ -45,7 +61,7 @@ $status = Status::cases();
                 <div>
                     <label class="text-sm capitalize" for="updateAction">Actions </label>
                     <select id="updateAction"
-                        class="bg-white px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        class="bg-white px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" disabled>
                         <option  value="0" selected disabled>Select Action</option>
                         <option data-field="status" value="1" >Active Selected Status</option>
                         <option data-field="status" value="0" >Inactive Selecetd Status</option>
@@ -150,29 +166,29 @@ $status = Status::cases();
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vendor.contact_number}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vendor.shop_name}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                                        <span class="status-field inline-flex text-xs capitalize leading-5 font-semibold rounded-full px-3 py-1 cursor-pointer
+                                        <span class="status-field inline-flex text-xs capitalize leading-5  rounded-full px-3 py-1 cursor-pointer
                                             ${vendor.status === '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}"
                                             data-id="${vendor.id}" data-field="status" data-name="status" data-value="${vendor.status}">
                                             ${response.data.enumStatus[vendor.status]?.label || vendor.status}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                                        <span class="status-field inline-flex text-xs capitalize leading-5 font-semibold rounded-full px-3 py-1 cursor-pointer
+                                        <span class="status-field inline-flex text-xs capitalize leading-5 rounded-full px-3 py-1 cursor-pointer
                                             ${vendor.is_shop == '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}"
                                             data-id="${vendor.id}" data-field="is_shop" data-name="shop" data-value="${vendor.is_shop}">
                                             ${response.data.enumShopStatus[vendor.is_shop]?.label || vendor.is_shop}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                                        <button class="status-field inline-flex text-xs capitalize leading-5 font-semibold rounded-full px-3 py-1 cursor-pointer
+                                        <button  class="status-field inline-flex text-xs capitalize leading-5  rounded-full px-3 py-1 cursor-pointer
                                             ${vendor.is_approved == '1' ? 'text-green-700 bg-green-100 border border-green-700 cursor-not-allowed ' : 'text-red-700 bg-red-100 border border-red-700'}"
                                             data-id="${vendor.id}" data-field="is_approved" data-name="approve" data-value="${vendor.is_approved}" ${vendor.is_approved == '1'?'Disabled':''}>
                                             ${response.data.enumApproveStatus[vendor.is_approved]?.label || vendor.is_approved}
                                         </button>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <a href="/admin/vendors/${vendor.id}/edit" class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded"><i class="fas fa-edit"></i></a>
-                                        <button data-id="${vendor.id}" class="delete-btn hover:text-red-800 text-red-500 py-1 rounded"><i class="fas fa-trash"></i></button>
+                                        <a title="Edit" href="/admin/vendors/${vendor.id}/edit" class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded"><i class="fas fa-edit"></i></a>
+                                        <button title=Delete" data-id="${vendor.id}" class="delete-btn hover:text-red-800 text-red-500 py-1 rounded"><i class="fas fa-trash"></i></button>
                                     </td>
                                 </tr>`;
                             });
@@ -226,7 +242,7 @@ $status = Status::cases();
                         $('#pagination').html(paginationHtml);
                     },
                     error: function() {
-                        Swal.fire('Error', 'Could not load vendors', 'error');
+                        swalError('Could not load vendors');
                     }
                 });
             }
@@ -275,11 +291,11 @@ $status = Status::cases();
                                 _token: $('meta[name="csrf-token"]').attr('content')
                             },
                             success: function(response) {
-                                Swal.fire('Success!', response.message, 'success');
+                                swalSuccess(response.message);
                                 loadVendors(currentPage);
                             },
                             error: function(xhr) {
-                                Swal.fire('Error!', xhr.responseJSON?.message || 'Failed to update status.', 'error');
+                                swalError('Failed to update status.');
                             }
                         });
                     }
@@ -303,21 +319,33 @@ $status = Status::cases();
                             url: `/admin/vendors/${id}`,
                             method: 'DELETE',
                             success: function(response) {
-                                Swal.fire('Deleted!', response.message, 'success');
-                                loadVendors(currentPage);
+                                swalSuccess(response.message);
                             },
                             error: function() {
-                                Swal.fire('Error!', 'Failed to delete vendor.', 'error');
+                                swalError('Failed to delete vendor.');
                             }
                         });
                     }
                 });
             });
 
+            $('#updateAction').on('click', function(item) {
+                console.log(1)
+            });
+
+            $('#allSelect').on('change',function(item){
+               if(this.checked)
+               $('#updateAction').prop('disabled',false);
+               else
+               $('#updateAction').prop('disabled',true);
+
+            })
+
             $('#updateAction').on('change', function(item) {
+               
                 const dataField = $(this).find(':selected').data('field');
                 const value=this.value;
-                const checkbox=Array.from(document.querySelectorAll('.vendorCheckbox')).filter(item=>{
+                var checkbox=Array.from(document.querySelectorAll('.vendorCheckbox')).filter(item=>{
                     return item.checked==true
                 }).map((item)=>{
                    return item.getAttribute('data-id')
@@ -341,11 +369,11 @@ $status = Status::cases();
                                 _token: $('meta[name="csrf-token"]').attr('content')
                             },
                             success: function(response) {
-                                Swal.fire('Success!', response.message, 'success');
+                                swalSuccess(response.message);
                                 loadVendors(currentPage);
                             },
                             error: function(xhr) {
-                                Swal.fire('Error!', xhr.responseJSON?.message || 'Failed to update status.', 'error');
+                                swalError('Failed to update status.');
                             }
                         });
                     }
@@ -356,6 +384,20 @@ $status = Status::cases();
             // Select all checkbox handler
             });
 
+          
+           $(document).on('change','.vendorCheckbox',function(){
+            var checkbox=Array.from(document.querySelectorAll('.vendorCheckbox')).filter(item=>{
+                    return item.checked==true
+                }).map((item)=>{
+                   return item.getAttribute('data-id')
+                })
+                console.log(checkbox.length)
+                if(checkbox.length<=0){
+                    $('#updateAction').prop('disabled',true);
+                }else{
+                    $('#updateAction').prop('disabled',false);
+                }
+           })
 
             $('#allSelect').on('change', function() {
                 $('.vendorCheckbox').prop('checked', $(this).prop('checked'));

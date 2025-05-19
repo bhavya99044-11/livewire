@@ -11,6 +11,8 @@ use App\Models\Admin\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -33,7 +35,7 @@ class AdminForm extends Component
 
     public $email;
 
-    public $password;
+    public $password;   
 
     public $status;
 
@@ -49,9 +51,11 @@ class AdminForm extends Component
 
     public function mount()
     {
-        DB::enableQueryLog();
+        Log::info($this->adminId);
+        // if($this->adminId){
+        //     $this->adminUser=
+        // }
         $this->user = Auth::guard('admin')->user();
-        // dd($this->user);
         $this->permissionData = Permission::where('module', '!=', 'admin')->where('module', '!=', 'permission')->get();
         $this->enumStatus = Status::cases();
         $this->enumRoles = AdminRoles::cases();
@@ -59,8 +63,6 @@ class AdminForm extends Component
 
     public function render()
     {
-        DB::enableQueryLog();
-
         return view('admin.livewire.admin.form');
     }
 
@@ -69,7 +71,6 @@ class AdminForm extends Component
         $this->name = null;
         $this->email = null;
         $this->password = null;
-        $this->role = null;
         $this->status = null;
         $this->adminId = null;
         $this->isUpdate = false;
@@ -81,7 +82,6 @@ class AdminForm extends Component
     #[On('createAdmin')]
     public function create()
     {
-
         $this->resetInputFields();
         $this->isModal = true;
         $this->isUpdate = false;
@@ -90,7 +90,6 @@ class AdminForm extends Component
     #[On('editAdmin')]
     public function edit($id)
     {
-
         try {
             $this->resetInputFields();
             $admin = AdminModel::findOrFail($id);
@@ -114,15 +113,13 @@ class AdminForm extends Component
 
     public function store()
     {
-        // $request = new PermissionFormCheckbox;
-        // $this->validate($request->rules());
         try {
             DB::beginTransaction();
             $admin = AdminModel::create([
                 'name' => $this->name,
                 'email' => $this->email,
                 'password' => Hash::make($this->password),
-                'role' => $this->enumRoles::ADMIN->value,
+                'role' => AdminRoles::ADMIN->value,
                 'status' => $this->status,
             ]);
             $admin->permissions()->attach($this->permission);
@@ -139,11 +136,12 @@ class AdminForm extends Component
 
     public function update()
     {
-
+        //For permission checkbox validation 
         // $request = new PermissionFormCheckbox;
         // $this->validate($request->rules());
         try {
             DB::beginTransaction();
+            App::setLocale('es');
             $admin = AdminModel::findOrFail($this->adminId);
             $admin->update([
                 'name' => $this->name,
@@ -153,13 +151,12 @@ class AdminForm extends Component
             ]);
             $admin->permissions()->sync($this->permission);
             DB::commit();
-            $this->dispatch('success', message: 'Admin updated successfully.');
+            $this->dispatch('success', message: text('messages.welcome', 'Welcome to Laravel News'));
             $this->resetInputFields();
             $this->isModal = false;
             $this->dispatch('adminList');
         } catch (\Exception $e) {
             DB::rollBack();
-
             $this->dispatch('error', message: 'Error while updating: '.$e->getMessage());
         }
     }

@@ -1,7 +1,28 @@
 @extends('layouts.admin')
 
 @section('content')
+@php
+$breadCrumbs=[
+    [
+        'name'=>'dashboard',
+        'url'=>route('admin.dashboard'),
+],
+[
+    'name'=>'Domain Form',
+    'url'=>null
+],
+]
+
+@endphp
+
+@include('admin.components.bread-crumb',['breadCrumbs'=>$breadCrumbs])
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- Other meta tags, styles, etc. -->
+</head>
 <section class="bg-gray-100 min-h-screen">
+    @csrf
+
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Domain Management</h1>
 
@@ -75,7 +96,7 @@
                                 <button onclick="openEditModal({{ $domain->id }}, '{{ addslashes($domain->name) }}', '{{ $domain->url }}')" class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                    <button type="submit" class="deleteDomain" class="text-red-500 hover:text-red-800 px-2 py-1 rounded">
+                                    <button data-id="{{$domain->id}}" type="submit" class="deleteDomain text-red-500 hover:text-red-800 px-2 py-1 rounded">
                                         <i class="fas fa-trash"></i>
                                     </button>
                             </td>
@@ -184,8 +205,39 @@
                 checkbox.checked = this.checked;
             });
         });
+        
+        document.querySelectorAll('.deleteDomain').forEach(function(element){
+            element.addEventListener('click',function(){
+            var id = $(this).data('id');
 
-        document.querySelectorAll('.deleteDomain').addEventListener('click',fun)
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('admin.domains.index') }}/" + id,
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: 'DELETE',           
+                        success: function (response) {
+                          window.location.reload();
+                           swalSuccess(response.message)
+                        },
+                        error: function (xhr) {
+                           swalError(xhr.responseJSON.message)
+                        }
+                    });
+                }
+            });
+            })
+        })
     </script>
 @endpush
 @endsection

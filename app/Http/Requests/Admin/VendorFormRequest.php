@@ -55,8 +55,8 @@ class VendorFormRequest extends FormRequest
             'open_time' => 'nullable|date_format:H:i',
             'close_time' => 'nullable|date_format:H:i',
             'packaging_processing_charges' => 'numeric',
-            'domain_id' => 'nullable|string|max:255',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|max:2048',
+            
         ];
     }
 
