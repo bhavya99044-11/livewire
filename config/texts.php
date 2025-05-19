@@ -31,7 +31,7 @@ return [
     */
 
     'openai' => [
-        'api_key' => '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',
+        'api_key' => '',
         'model' => env('OPENAI_MODEL', 'gpt-3.5'),
         'timeout' => 10,
         'retries' => 3,
