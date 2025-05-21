@@ -49,7 +49,7 @@
                                 </div>
                             @endunless
                             <!-- Status -->
-                            <div>
+                            <div class="col-span-2">
                                 <label class="block text-gray-700">Status</label>
                                 <select wire:model.defer="status"
                                     class="max-w-full md:w-full text-sm md:text-base px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 border bg-white border-gray-500 rounded">

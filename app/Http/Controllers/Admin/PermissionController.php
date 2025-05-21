@@ -60,10 +60,10 @@ class PermissionController extends Controller
                 'slug' => $request->validated('slug'),
             ]);
 
-            $admins = Admin::where('role', AdminRoles::SUPER_ADMIN->value)->get();
-            foreach ($admins as $admin) {
-                $admin->permissions()->syncWithoutDetaching([$permission->id]);
-            }
+            $admins = Admin::where('role', AdminRoles::SUPER_ADMIN->value)->pluck('id');
+            
+                $permission->admins()->syncWithoutDetaching($admins->toArray());
+            
             DB::commit();
 
             return response()->json([

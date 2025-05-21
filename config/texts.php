@@ -19,7 +19,6 @@ return [
     */
 
     'default_translator' => 'openai',
-
     /*
     |--------------------------------------------------------------------------
     | OpenAI Configuration
@@ -29,14 +28,12 @@ return [
     | API key, preferred model, request timeout, and retry attempts.
     |
     */
-
     'openai' => [
         // 'api_key' => '',
         'model' => env('OPENAI_MODEL', 'gpt-3.5'),
         'timeout' => 10,
         'retries' => 3,
     ],
-
     /*
     |--------------------------------------------------------------------------
     | Google Translator Configuration
@@ -46,13 +43,11 @@ return [
     | your API key, request timeout, and retry attempts.
     |
     */
-
     'google' => [
         'api_key' => env('GOOGLE_TRANSLATOR_API_KEY'),
         'timeout' => 10,
         'retries' => 3,
     ],
-
     /*
     |--------------------------------------------------------------------------
     | Languages
@@ -62,14 +57,14 @@ return [
     | The keys are the language codes, and the values are the readable names.
     |
     */
-
     'languages' => [
         'en' => 'English',
         'es' => 'Spanish',
         'fr' => 'French',
     ],
-    'supported_languages' => ['en', 'es', 'fr'], // add 'es' for Spanish
 
+    'supported_languages' => ['en', 'es', 'fr'], // add 'es' for Spanish
+    
 ];
 
 

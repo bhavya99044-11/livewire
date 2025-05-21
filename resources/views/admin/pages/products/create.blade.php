@@ -4,6 +4,9 @@
 
 @push('styles')
 <style >
+  .ck.ck-powered-by{
+    display: none;
+  }
     @layer components {
       .animate-fade-in {
         animation: fadeIn 0.3s ease-out forwards;
@@ -34,8 +37,8 @@ use App\Enums\ProductType;
 use App\Enums\ProductStatus;
 
 $status=Status::cases();
-$products=ProductType::cases();
-
+$productTypes=ProductType::cases();
+$vendorId=request()->route('vendor_id');
 $breadCrumbs=[
     [
         'name'=>'dashboard',
@@ -155,81 +158,132 @@ $breadCrumbs=[
             </div>
             
             <div class="space-y-6">
-              {{-- <div class="rounded-lg border bg-white shadow-sm">
-                <div class="p-6">
-                  <h3 class="text-lg font-semibold mb-4">Product Images</h3>
-                  
-                  <div class="flex items-end space-x-2 mb-4">
-                    <button 
-                      type="button" 
-                      id="addImage"
-                      class="h-10 w-10 flex items-center justify-center rounded-md border border-gray-300"
-                    >
-                    <i class="fa-solid fa-upload"></i>
-                    <input id="hiddenImageInput" type="file" class="hidden" multiple></input>
-                    </button>
-                  </div>
-                  
-                  <div id="imagesContainer" class="border hidden rounded-md p-8 text-center text-gray-500">
-                   
-                  </div>
-                  <div id="defaultImageDiv" class="border flex flex-col rounded-md p-8 text-center text-gray-500">
-                    <i class="fa-solid text-2xl fa-ban"></i>
-                    <p>No images added yet</p>
-                    <p class="text-sm"> You can add max 5 images.</p>
-                </div>
-                </div>
-              </div> --}}
+
               
               <div class="rounded-lg border bg-white shadow-sm">
                 <div class="p-6">
                   <h3 class="text-lg font-semibold mb-4">Product Items</h3>
-                  
-                  <div class="flex  space-x-2 mb-4">
-                 <div id="parentSpec" class="flex flex-col space-y-2">  
-                  <div id="cloneSpec"  class="flex gap-1 flex-row ">
-                     <div class="flex-1 space-y-2">
-                      <input
-                        id="specName"
-                        name="spec[0][name]"
-                        class="w-full field-name rounded-md border border-gray-300 p-2"
-                        placeholder="e.g., Material"
-                      />
-                      <span class="text-red-500 span-name text-sm"></span>
+              
+                  <div class="flex flex-col space-x-2 mb-4">
+                    <div id="parentItem" class="flex flex-col space-y-2">
                     </div>
-                    <div class="flex-1 space-y-2">
-                      <input
-                        id="specValue"
-                        name="spec[0][value]"
-                        class="w-full field-value rounded-md border border-gray-300 p-2"
-                        placeholder="e.g., Cotton"
-                      />
-                      <span class="text-red-500 span-value text-sm"></span>
-                    </div>
-                    <div class="flex">
-                      <button 
-                        type="button" 
-                        id="addSpec"
-                        class="h-10 w-10 flex items-center justify-center rounded-md border border-gray-300"
-                      >
-                      <i class="fa-solid fa-plus"></i>
-                      </button>
-                    </div>
-                    
-                  </div> 
-                 </div>
+
+                      <div class="flex justify-end mt-2">
+                        <button 
+                type="button" 
+                id="addItemBtn"
+                class="inline-flex items-center rounded-md bg-brand-primary px-4 py-2 text-white hover:bg-brand-primary/90"
+            >
+                <i class="fa-solid fa-plus mr-2"></i>
+                Add Items
+            </button>
+                      </div>
+                  </div>
+              
                 </div>
-                  
-                    
+              </div>
+              
+            </div>
+          </div>
+
+          </form>
+            </div>
+                    <!-- Step 2: Sub Products (initially hidden) -->
+        <div id="step-2" class="hidden animate-fade-in">
+          <div class="rounded-lg border bg-white shadow-sm">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Sub Products for <span id="product-name-display">Product</span></h3>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="space-y-4">
+                  <div class="space-y-2">
+                    <label for="sizeType" class="block text-sm font-medium">Size Type</label>
+                    <input
+                      id="sizeType"
+                      name="sizeType"
+                      class="w-full rounded-md border border-gray-300 p-2"
+                      placeholder="e.g., US, UK, EU, cm"
+                    />
                   </div>
                   
-                  <div id="specs-container" class="border border-dashed rounded-md p-4 text-center text-gray-500">
-                    <p>No specifications added yet</p>
+                  <div class="space-y-2">
+                    <label for="size" class="block text-sm font-medium">Size</label>
+                    <input
+                      id="size"
+                      name="size"
+                      class="w-full rounded-md border border-gray-300 p-2"
+                      placeholder="e.g., S, M, L, XL, 42"
+                    />
+                  </div>
+                  
+                  <div class="space-y-2">
+                    <label for="sku" class="block text-sm font-medium">SKU</label>
+                    <input
+                      id="sku"
+                      name="sku"
+                      class="w-full rounded-md border border-gray-300 p-2"
+                      placeholder="Enter Stock Keeping Unit"
+                    />
+                  </div>
+                </div>
+                
+                <div class="space-y-4">
+                  <div class="space-y-2">
+                    <label for="subProductStatus" class="block text-sm font-medium">Status</label>
+                    <select
+                      id="subProductStatus"
+                      name="subProductStatus"
+                      class="w-full rounded-md border border-gray-300 p-2"
+                    >
+                      <option value="in_stock" selected>In Stock</option>
+                      <option value="out_of_stock">Out of Stock</option>
+                      <option value="low_stock">Low Stock</option>
+                    </select>
+                  </div>
+                  
+                  <div class="space-y-2">
+                    <label for="quantity" class="block text-sm font-medium">Quantity</label>
+                    <input
+                      id="quantity"
+                      name="quantity"
+                      type="number"
+                      min="0"
+                      value="0"
+                      class="w-full rounded-md border border-gray-300 p-2"
+                      placeholder="Enter quantity"
+                    />
+                  </div>
+                  
+                  <div class="pt-5">
+                    <button 
+                      type="button" 
+                      id="add-sub-product"
+                      class="w-full inline-flex justify-center items-center rounded-md bg-brand-primary px-4 py-2 text-white hover:bg-brand-primary/90"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                        <path d="M12 5v14"></path>
+                        <path d="M5 12h14"></path>
+                      </svg>
+                      Add Sub Product
+                    </button>
                   </div>
                 </div>
               </div>
+              
+              <div id="sub-products-container" class="border border-dashed rounded-md p-10 text-center text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                  <path d="M3.29 7 12 12l8.71-5"></path>
+                  <path d="M12 22V12"></path>
+                </svg>
+                <p>No sub products added yet</p>
+                <p class="text-sm">Add variations like sizes, colors, or other attributes</p>
+              </div>
             </div>
-          </form>
+          </div>
+        </div>
         </div>
         
 
@@ -282,22 +336,154 @@ $breadCrumbs=[
   <script src="
   https://cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/jquery.validate.min.js
   "></script>
-  <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-
   <script>
+   const state = {
+      currentStep: 1,
+      product: {
+        name: '',
+        description: '',
+        status: 'draft',
+        vendorId: '',
+        slug: '',
+        image: '',
+      },
+      productImages: [],
+      productSpecifications: [],
+      subProducts: [],
+      productItems: []
+    };
+function validateLastRow() {
+        const rows = parentItem.querySelectorAll('.item-row');
+        if (rows.length === 0) return false; // Nothing to validate
+
+        const lastRow = rows[rows.length - 1];
+        const type = lastRow.querySelector('.field-type');
+        const name = lastRow.querySelector('.field-name');
+        const price = lastRow.querySelector('.field-price');
+
+        const typeError = lastRow.querySelector('.span-type');
+        const nameError = lastRow.querySelector('.span-name');
+        const priceError = lastRow.querySelector('.span-price');
+
+        let hasError = false;
+
+        typeError.innerText = '';
+        nameError.innerText = '';
+        priceError.innerText = '';
+
+        if (!type.value) {
+            typeError.innerText = 'Please select a type.';
+            hasError = true;
+        }
+        if (!name.value.trim()) {
+            nameError.innerText = 'Please enter a name.';
+            hasError = true;
+        }
+        if (!price.value.trim()) {
+            priceError.innerText = 'Please enter a price.';
+            hasError = true;
+        }
+        return hasError;
+    }
+
+   document.addEventListener('DOMContentLoaded', function () {
+    const parentItem = document.getElementById('parentItem');
+    const addItemBtn = document.getElementById('addItemBtn');
+    const productTypes = @json(\App\Enums\ProductType::toArray());
+
+    let itemIndex = 0; // Safe counter even if all rows are deleted
+
+    function createRowHTML(index) {
+        const options = productTypes.map(
+            (type) => `<option value="${type.value}">${type.label}</option>`
+        ).join('');
+
+        return `
+        <div class="flex gap-1 item-row flex-row">
+            <div class="flex-1 space-y-2">
+                <select name="items[${index}][type]" class="w-full mt-1 field-type rounded-md border border-gray-300 p-2">
+                    <option value="">Select Type</option>
+                    ${options}
+                </select>
+                <span class="text-red-500 span-type text-sm"></span>
+            </div>
+            <div class="flex-1 space-y-2">
+                <input name="items[${index}][name]" class="w-full field-name rounded-md border border-gray-300 p-2" placeholder="Option name" />
+                <span class="text-red-500 span-name text-sm"></span>
+            </div>
+            <div class="flex-1 space-y-2">
+                <input name="items[${index}][price]" min="1" type="number" class="w-full field-price rounded-md border border-gray-300 p-2" placeholder="Price" />
+                <span class="text-red-500 span-price text-sm"></span>
+            </div>
+            <div class="flex">
+                <button type="button" class="h-10 w-10 removeItem flex items-center justify-center rounded-md border border-gray-300">
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+            </div>
+        </div>`;
+    }
+
+    function addNewRow() {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = createRowHTML(itemIndex);
+        parentItem.appendChild(wrapper.firstElementChild);
+        itemIndex++;
+    }
+
+    // Initial row
+    addNewRow();
+
+    addItemBtn.addEventListener('click', function () {
+        if (validateLastRow()) return;
+        addNewRow();
+    });
+
+    parentItem.addEventListener('click', function (e) {
+        if (e.target.closest('.removeItem')) {
+            e.target.closest('.item-row').remove();
+            // Don't reindex; keep itemIndex increasing
+        }
+    });
+
+
+
+    // Clear errors on input
+    parentItem.addEventListener('input', function (e) {
+        const row = e.target.closest('.item-row');
+        if (!row) return;
+
+        if (e.target.classList.contains('field-type') && e.target.value) {
+            row.querySelector('.span-type').innerText = '';
+        }
+        if (e.target.classList.contains('field-name') && e.target.value.trim()) {
+            row.querySelector('.span-name').innerText = '';
+        }
+        if (e.target.classList.contains('field-price') && e.target.value.trim()) {
+            row.querySelector('.span-price').innerText = '';
+        }
+    });
+});
+
+    </script>
+    
+    
+    
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
 
 ClassicEditor
     .create(document.querySelector('#editor'))
     .catch(error => {
       console.error(error);
     });
+  });
 
-    var imageArray=[];
-    const addImageButton=document.getElementById('addImage');
-    const hiddenImageInput=document.getElementById('hiddenImageInput');
-    const defaultImageDiv=document.getElementById('defaultImageDiv');
-    const addSpec=document.getElementById('addSpec');
-    const removeSpec=document.querySelectorAll('.removeSpec');
+    // var imageArray=[];
+    // const addImageButton=document.getElementById('addImage');
+    // const hiddenImageInput=document.getElementById('hiddenImageInput');
+    // const defaultImageDiv=document.getElementById('defaultImageDiv');
+    // const addSpec=document.getElementById('addSpec');
+    // const removeSpec=document.querySelectorAll('.removeSpec');
 
     $('#step-1').validate({
       rules: {
@@ -307,10 +493,7 @@ ClassicEditor
         description: {
           required: true,
         },
-        vendor_id: {
-          required: true
-        },
-        
+     
       },
       messages: {
         name: {
@@ -328,25 +511,23 @@ ClassicEditor
 
   },
       submitHandler: function(form) {
+       if(validateLastRow())return ;
         const formData=new FormData(form);
       
         formData.forEach((value, key) => {
           console.log(key + ':', value);
         });
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-
+        let url= '{{ route('admin.products.store-step-1',['vendor_id'=> ':vendor']) }}'; // Laravel route
+        url = url.replace(':vendor', '{{ $vendorId }}');
         $.ajax({
-                url: '{{route('admin.products.store-step-1')}}', // Laravel route
+                url: url, // Laravel route
                 type: 'POST',
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function(response) {
-                    if (response.success) {
-                      
-                        
-                    } else {
-                    }
+                    goToStep(2);
                 },
                 error: function(xhr) {
                     let message = 'An error occurred while saving product information';
@@ -362,151 +543,76 @@ ClassicEditor
 
     })
 
-    addSpec.addEventListener('click', function(){
-      const parentSpec=document.getElementById('parentSpec');
-      const specName=parentSpec.lastElementChild.querySelector('.span-name');
-      const specValue=parentSpec.lastElementChild.querySelector('.span-value');
-      specName.innerHTML='';
-      specValue.innerHTML='';
-      const cloneSpec=document.getElementById('cloneSpec').cloneNode(true);
-      let specValidation=addSpecValidation();
-     
-      if(!specValidation){
-      cloneSpec.removeAttribute('id');
-      cloneSpec.classList.remove('hidden');
-      cloneSpec.querySelectorAll('input').forEach((input,index) => {
-        if(index==0)
-        input.name=`spec[${parentSpec.childNodes.length}][name]`
+  
 
-        if(index==1)
-        input.name=`spec[${parentSpec.childNodes.length}][value]`
-
-        input.value = '';
-      });
-      cloneSpec.querySelector('.span-name').innerHTML='';
-      cloneSpec.querySelector('.span-value').innerHTML='';
-      cloneSpec.querySelector('button').classList.remove('addSpec');
-      cloneSpec.querySelector('button').classList.add('removeSpec');
-      cloneSpec.querySelector('button').innerHTML='<i class="fa-solid fa-minus"></i>';
+  
+ 
+    // addImageButton.addEventListener('click',function(){
+    //  hiddenImageInput.click();
+    // })
 
 
-      console.log(parentSpec.childNodes.length)
-      parentSpec.append(cloneSpec)
-    }else{
-      addSpecValidation();
-    }
-    })
 
-    function addSpecValidation(){
-      const parentSpec=document.getElementById('parentSpec').lastElementChild;
-      const specName=parentSpec.querySelector('.field-name');
-      const specValue=parentSpec.querySelector('.field-value');
-      const specNameError=parentSpec.querySelector('.span-name');
-      const specValueError=parentSpec.querySelector('.span-value');
-      specNameError.innerHTML='';
-      specValueError.innerHTML='';
-      if(specName.value=='' || specValue.value==''){
-          if(specName.value==''){
-        specNameError.innerHTML='Please enter a name field';
-          }
-        if(specValue.value==''){
-        specValueError.innerHTML='Please enter a value field';
-      }
-      return true;
-    }
-    return false;
-      // if(specName.value=='' || specValue.value==''){
-      //   specNameError.innerHTML='Please enter a name field';
-      //   specValueError.innerHTML='Please enter a value field';
-      // }
+    // hiddenImageInput.addEventListener('change',function(event){
+    //   const files=event.target.files;
+    //   if(files.length>5 || imageArray.length+files.length>5){
+    //     swalError('You can add max 5 images.')
+    //   }else{
+    //   for(let i=0;i<files.length;i++){
+    //     const fileUrl = URL.createObjectURL(files[i]);
+    //     imageArray.push({
+    //       file:files[i],
+    //       fileUrl:fileUrl
+    //     });
+    //   }
+    //   defaultImageDiv.classList.add('hidden');
+    //   imageLoopDiv(imageArray)
+    // }
 
-      
-    }
+    // })
 
-    addImageButton.addEventListener('click',function(){
-     hiddenImageInput.click();
-    })
+    // $(document).on('click','.removeImage',function(){
+    //  const url=this.getAttribute('data-id')
+    //  const index=imageArray.findIndex(obj=>obj.fileUrl==url)
+    //  imageArray.splice(index,1);
+    //  imageLoopDiv(imageArray)
+    // })
 
-    $(document).on('click','.removeSpec',function(){
-      const parent=this.parentElement.parentElement;
-      parent.remove();
-    })
-
-    hiddenImageInput.addEventListener('change',function(event){
-      const files=event.target.files;
-      console.log(imageArray.length)
-      if(files.length>5 || imageArray.length+files.length>5){
-        swalError('You can add max 5 images.')
-      }else{
-      for(let i=0;i<files.length;i++){
-        const fileUrl = URL.createObjectURL(files[i]);
-        imageArray.push({
-          file:files[i],
-          fileUrl:fileUrl
-        });
-      }
-      defaultImageDiv.classList.add('hidden');
-      imageLoopDiv(imageArray)
-    }
-
-    })
-
-    $(document).on('click','.removeImage',function(){
-     const url=this.getAttribute('data-id')
-     const index=imageArray.findIndex(obj=>obj.fileUrl==url)
-     imageArray.splice(index,1);
-     imageLoopDiv(imageArray)
-    })
-
-    function imageLoopDiv(imageArrayLoop){
-      let imageContainer=document.getElementById('imagesContainer');
-      if(imageArrayLoop.length>0){
-      imageContainer.classList.remove('hidden');
-      imageContainer.innerHTML='';
-      let imageDiv=document.createElement('div');
-      imageDiv.classList.add('grid','grid-cols-3','gap-2')
-      imageArrayLoop.forEach(element => {
-          const div=document.createElement('div');
-          div.classList.add('relative','w-32','h-16')
-          const imageCon=document.createElement('img');
-          imageCon.classList.add('object-cover','w-32','h-16')
-          imageCon.src=element.fileUrl;
-          imageCon.alt='Product Image';
-          const remove=document.createElement('button');
-          remove.setAttribute('data-id',element.fileUrl);
-          remove.classList.add('absolute','removeImage','top-1','right-1','bg-red-500','text-black','rounded-full','w-6','h-6','flex','items-center','justify-center');
-          remove.innerHTML='<i class="fa-solid fa-xmark"></i>';
-          div.appendChild(remove)
-          div.appendChild(imageCon);
-          imageDiv.appendChild(div);
-      });
-      imageContainer.appendChild(imageDiv);
-    }else{
-      imageContainer.classList.add('hidden');
-      defaultImageDiv.classList.remove('hidden');
-    }
-    }
+    // function imageLoopDiv(imageArrayLoop){
+    //   let imageContainer=document.getElementById('imagesContainer');
+    //   if(imageArrayLoop.length>0){
+    //   imageContainer.classList.remove('hidden');
+    //   imageContainer.innerHTML='';
+    //   let imageDiv=document.createElement('div');
+    //   imageDiv.classList.add('grid','grid-cols-3','gap-2')
+    //   imageArrayLoop.forEach(element => {
+    //       const div=document.createElement('div');
+    //       div.classList.add('relative','w-32','h-16')
+    //       const imageCon=document.createElement('img');
+    //       imageCon.classList.add('object-cover','w-32','h-16')
+    //       imageCon.src=element.fileUrl;
+    //       imageCon.alt='Product Image';
+    //       const remove=document.createElement('button');
+    //       remove.setAttribute('data-id',element.fileUrl);
+    //       remove.classList.add('absolute','removeImage','top-1','right-1','bg-red-500','text-black','rounded-full','w-6','h-6','flex','items-center','justify-center');
+    //       remove.innerHTML='<i class="fa-solid fa-xmark"></i>';
+    //       div.appendChild(remove)
+    //       div.appendChild(imageCon);
+    //       imageDiv.appendChild(div);
+    //   });
+    //   imageContainer.appendChild(imageDiv);
+    // }else{
+    //   imageContainer.classList.add('hidden');
+    //   defaultImageDiv.classList.remove('hidden');
+    // }
+    // }
 
     $(document).ready(function(){
       
     })
 
     // State management
-    const state = {
-      currentStep: 1,
-      product: {
-        name: '',
-        description: '',
-        status: 'draft',
-        vendorId: '',
-        slug: '',
-        image: '',
-      },
-      productImages: [],
-      productSpecifications: [],
-      subProducts: [],
-      productItems: []
-    };
+ 
 
     // Navigation elements
     const prevButton = document.getElementById('prev-btn');
@@ -558,22 +664,12 @@ ClassicEditor
       }, 3000);
     }
 
-    // Navigation functions
     function goToStep(step) {
-    console.log('Navigating to step:', step);
-      // Hide all steps
       step1Content.classList.add('hidden');
-      step2Content.classList.add('hidden');
-      step3Content.classList.add('hidden');
-      step4Content.classList.add('hidden');
-      
-      // Show the selected step
+      console.log(step)
       if (step === 1) step1Content.classList.remove('hidden');
       if (step === 2) step2Content.classList.remove('hidden');
-      if (step === 3) step3Content.classList.remove('hidden');
-      if (step === 4) step4Content.classList.remove('hidden');
       
-      // Update step indicators
       for (let i = 1; i <= 3; i++) {
         const indicator = document.getElementById(`step-indicator-${i}`);
         if (i <= step) {
@@ -621,9 +717,12 @@ ClassicEditor
       if (state.currentStep < 4) {
         // Validate current step
         if (state.currentStep === 1) {
+          // Validate step 1 form
+         validateLastRow();
           $('#step-1').submit();
           // collectStep1Data();
         } else if (state.currentStep === 2) {
+          alert(1)
           // Nothing specific to collect here
         } else if (state.currentStep === 3) {
           // Nothing specific to collect here
@@ -638,12 +737,7 @@ ClassicEditor
       }
     }
 
-    // Data collection functions
-    function collectStep1Data() {
-      state.product.name = document.getElementById('name').value;
-      state.product.description = document.getElementById('description').value;
-      state.product.status = document.getElementById('status').value;
-    }
+ 
 
     // Initialize event listeners
     function initEventListeners() {
@@ -656,44 +750,7 @@ ClassicEditor
 
     
       
-      // Add sub product
-      document.getElementById('add-sub-product').addEventListener('click', () => {
-        const sizeType = document.getElementById('sizeType').value;
-        const size = document.getElementById('size').value;
-        const sku = document.getElementById('sku').value;
-        const status = document.getElementById('subProductStatus').value;
-        const quantity = parseInt(document.getElementById('quantity').value) || 0;
-        
-        if (!sizeType || !size || !sku) {
-          showToast('Please fill in all required fields', 'error');
-          return;
-        }
-        
-        if (quantity < 0) {
-          showToast('Quantity cannot be negative', 'error');
-          return;
-        }
-        
-        if (state.subProducts.some(p => p.sku === sku)) {
-          showToast('SKU must be unique', 'error');
-          return;
-        }
-        
-        addSubProduct({
-          sizeType,
-          size,
-          sku,
-          status,
-          quantity
-        });
-        
-        // Reset form
-        document.getElementById('sizeType').value = '';
-        document.getElementById('size').value = '';
-        document.getElementById('sku').value = '';
-        document.getElementById('subProductStatus').value = 'in_stock';
-        document.getElementById('quantity').value = '0';
-      });
+
       
       // Add product item
       document.getElementById('add-product-item').addEventListener('click', () => {
@@ -1142,14 +1199,7 @@ ClassicEditor
     // Form submission
     function submitForm() {
       // Here you would typically send data to your API
-      console.log('Submitting form data:', {
-        product: state.product,
-        productImages: state.productImages,
-        subProducts: state.subProducts,
-        productItems: state.productItems,
-        productSpecifications: state.productSpecifications
-      });
-      
+    
       showToast('Product created successfully!');
       
       // Reset the form and go back to step 1

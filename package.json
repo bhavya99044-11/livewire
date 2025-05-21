@@ -6,6 +6,7 @@
         "dev": "vite"
     },
     "devDependencies": {
+        "@ckeditor/ckeditor5-build-classic": "^41.4.2",
         "@tailwindcss/vite": "^4.1.5",
         "autoprefixer": "^10.4.21",
         "axios": "^1.8.2",
@@ -17,6 +18,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.7.2",
+        "ckeditor5": "^45.1.0",
         "sweetalert2": "^11.21.0"
     }
 }

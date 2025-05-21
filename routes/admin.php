@@ -55,4 +55,7 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
         Route::post('/update-action', [VendorController::class, 'updateAction'])->name('vendors.update-action');
     });
     Route::resource('domains', DomainController::class);
+    Route::resource('/vendor/{vendor_id}/products', \App\Http\Controllers\Admin\ProductController::class);
+    Route::get('/products/search/vendor',[\App\Http\Controllers\Admin\ProductController::class,'searchVendor'])->name('products.search-vendor');
+    Route::post('/vendor/{vendor_id}/products/store-step-1',[\App\Http\Controllers\Admin\ProductController::class,'productStepOne'])->name('products.store-step-1');
 });

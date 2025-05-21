@@ -154,7 +154,6 @@ $superAdmin=\App\Enums\AdminRoles::SUPER_ADMIN->value  ;
         const rightCollapse = document.getElementById('rightCollapse');
         const sidebar = document.getElementById('sidebar');
             const content=document.getElementById('content');
-            console.log(content)
             
             
             rightCollapse.addEventListener('click', function() {
@@ -172,7 +171,6 @@ $superAdmin=\App\Enums\AdminRoles::SUPER_ADMIN->value  ;
 
         document.querySelectorAll('.peer').forEach(item => {
             item.addEventListener('click', () => {
-             console.log(item.classList.contain)
               if(item.classList.contains('active')) {
                 item.classList.remove('active');
                 document.querySelectorAll('.peer').forEach(item => {
