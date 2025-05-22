@@ -8,6 +8,11 @@ export default {
 ],
 theme: {
   extend: {
+      fontFamily: {
+        lato: ['Lato', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
+
+      },
     colors: {
       adminThemeStart: '#26c6da',
       adminThemeEnd:'#00bcd4', 

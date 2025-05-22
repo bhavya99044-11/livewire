@@ -58,4 +58,6 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
     Route::resource('/vendor/{vendor_id}/products', \App\Http\Controllers\Admin\ProductController::class);
     Route::get('/products/search/vendor',[\App\Http\Controllers\Admin\ProductController::class,'searchVendor'])->name('products.search-vendor');
     Route::post('/vendor/{vendor_id}/products/store-step-1',[\App\Http\Controllers\Admin\ProductController::class,'productStepOne'])->name('products.store-step-1');
+    Route::post('/vendor/{vendor_id}/products/store-step-2',[\App\Http\Controllers\Admin\ProductController::class,'productStepTwo'])->name('products.store-step-2');
+
 });

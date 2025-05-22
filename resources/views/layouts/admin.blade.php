@@ -9,14 +9,17 @@
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <!-- Select2 JS -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 @stack('styles')
 @livewireStyles
 @include('admin.components.header')
 @include('admin.components.sidebar')
 <body>
-<section id="content" class="md:ml-64 md:pt-16 transition-all duration-300">
+<section id="content" class="font-inter md:ml-64 md:pt-16 transition-all duration-300">
 @yield('content')
 
 </section>
