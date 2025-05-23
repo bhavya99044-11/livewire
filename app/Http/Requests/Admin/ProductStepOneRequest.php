@@ -24,7 +24,7 @@ class ProductStepOneRequest extends FormRequest
      */
     public function rules(Request $request): array
     {
-       $vendorId = 1;
+       dd($request->all());
         return [
             'name' => [
                 'required',

@@ -50,4 +50,9 @@ class Vendor extends Model
     public function domains(){
         return $this->belongsToMany(Domain::class,'domain_vendors');
     }
+
+    public function getCreatedAtFormattedAttribute()
+    {
+        return $this->created_at->format('d M Y');
+    }
 }

@@ -9,6 +9,74 @@ $shopStatus = ShopStatus::values();
 $status = Status::cases();
 @endphp
 
+@push('styles')
+<style>
+/* Toggle A */
+input:checked ~ .dot {
+  transform: translateX(100%);
+  background-color: #48bb78;
+}
+
+/* Toggle B */
+input:checked ~ .dot {
+  transform: translateX(100%);
+  background-color: #48bb78;
+}
+ .flip-list {
+  perspective: 600;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.flip-card {
+    width: 300px;
+    height: 380px;
+  list-style: none;
+  position: relative;
+  cursor: pointer;
+  counter-increment: item;
+}
+
+ .flip-card img {
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  position: absolute;
+}
+.flip-card .front::after {
+}
+.flip-card .back {
+  transform: rotateY(180deg);
+}
+.flip-card:hover .front {
+  z-index: 0;
+  transform: rotateY(180deg);
+}
+.flip-card:hover .back {
+  transform: rotateY(0deg);
+}
+ .flip-card .front {
+  z-index: 3;
+  color: #333;
+  text-align: center;
+  line-height: 200px;
+  font-size: 80px;
+}
+
+.flip-card .front,
+ .flip-card .back {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  border-radius: 20px;
+  transition: all 0.5s;
+  backface-visibility: hidden;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.30);
+}
+</style>
+@endpush
+
+
 @section('content')
 
 @php
@@ -28,9 +96,17 @@ $breadCrumbs=[
 @include('admin.components.bread-crumb',['breadCrumbs'=>$breadCrumbs])
 <section class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
+        <div class="flex items-center w-full justify-between">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Vendor Management</h1>
-
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <div class="border ml-auto flex flex-row rounded-full border-blue-500">
+               <div id="activeGrid" class="active bg-blue-500 rounded-l-full border border-l-0 border-t-0 border-b-0 border-blue-500"> <i class="fa-solid p-1 pl-3 font-bold text-xl fa-grip-vertical"></i></div>
+                <div id="activeTable" class=" text-black   p-1 pr-3  text-xl font-bold  rounded-r-full"><i class="fa-solid fa-bars"></i></div>
+            </div>
+      <div>
+        
+      </div>
+        </div>
+        <div class="flex hidden vendorTable flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div class="md:flex grid grid-cols-2 items-center gap-x-2 gap-y-1 md:flex-row md:gap-4">
                 <div>
                     <label class="text-sm capitalize" for="perPage">Per page</label>
@@ -80,8 +156,9 @@ $breadCrumbs=[
             </div>
         </div>
 
+        <div  class="vendorTable hidden">
         <div class="bg-white rounded-lg shadow overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class=" min-w-full divide-y divide-gray-200">
                 <meta name="csrf-token" content="{{ csrf_token() }}">
 
                 <thead class="bg-gray-50">
@@ -120,8 +197,14 @@ $breadCrumbs=[
                 </tbody>
             </table>
         </div>
-
         @include('vendor.pagination.pagination')
+    </div>
+
+    <div class="vendorGrid">
+        <div id="gridContent" class="flip-list grid grid-cols-4 gap-4">
+       
+        </div>
+    </div>
     </div>
 </section>
 
@@ -129,20 +212,54 @@ $breadCrumbs=[
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
+            var loading=false;
+            var currenetTab='grid';
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
 
+            const activeGrid = document.getElementById('activeGrid');
+            const activeTable = document.getElementById('activeTable');
+          activeGrid.addEventListener('click', function() {
+            if(!this.classList.contains('active')){
+                currenetTab='grid';
+                $('.vendorGrid').removeClass('hidden');
+                const tables=document.querySelectorAll('.vendorTable');
+                tables.forEach((item)=>{
+                    item.classList.add('hidden');
+                })
+                activeGrid.classList.add('bg-blue-500', 'text-white','active');
+                activeTable.classList.remove('bg-blue-500', 'text-white','active');
+            }
+            });
+
+            activeTable.addEventListener('click', function() {
+                if(!this.classList.contains('active')){
+                    currenetTab='table';
+                    const tables=document.querySelectorAll('.vendorTable');
+                    tables.forEach((item)=>{
+                    item.classList.remove('hidden');
+                })
+                loadVendors(1,10);
+                    $('.vendorGrid').addClass('hidden');
+                    activeTable.classList.add('bg-blue-500', 'text-white','active');
+                    activeGrid.classList.remove('bg-blue-500', 'text-white','active');
+                }
+            });
+
+
             const approveStatusOptions = @json($approveStatus);
             const shopStatusOptions = @json($shopStatus);
             const statusOptions = @json($status);
             let currentPage = 1;
 
-            function loadVendors(page = 1) {
+            function loadVendors(page = 1,perPage=10) {
+                loading=true;
+                console.log('rrrrr')
                 document.getElementById('allSelect').checked=false;
-                let perPage = $('#perPage').val();
+               
                 let search = $('#search').val();
                 let status = $('#statusFilter').val();
 
@@ -151,7 +268,26 @@ $breadCrumbs=[
                     method: 'GET',
                     data: { perPage, search, status, page },
                     success: function(response) {
-                        let html = '';
+                        console.log(response)
+                     if(currenetTab=='grid'){
+                        gridView(response);
+                     }else{
+                        tableView(response)
+                     }
+                     if(response.data.vendors.data.length>0){
+                        console.log('eeeeeee')
+                        loading = false;
+                     }
+
+                    },
+                    error: function() {
+                        swalError('Could not load vendors');
+                    }
+                });
+            }
+
+            function tableView(response){
+                let html = '';
                         if (response.data.vendors.data.length === 0) {
                             html = `<tr><td colspan="9" class="text-center py-4">No vendors found.</td></tr>`;
                         } else {
@@ -240,16 +376,152 @@ $breadCrumbs=[
                                 </button>`;
                         }
                         $('#pagination').html(paginationHtml);
-                    },
-                    error: function() {
-                        swalError('Could not load vendors');
-                    }
-                });
             }
 
-            // Initial load
-            loadVendors();
+            function gridView(response){
+               let html='';
+               if(response.data.vendors.data.length > 0) {
+    response.data.vendors.data.forEach((data, index) => {
+        html += `
+        <div class="flip-card relative w-full max-w-md mx-auto h-96 perspective-1000 mb-6">
+            <!-- Flip Card Inner Container -->
+            <div class="card-inner relative w-full h-full transition-transform duration-500 transform-style-preserve-3d group">
+                <!-- Front Side -->
+                <div class="front absolute w-full h-full backface-hidden  bg-gradient-to-br from-indigo-600 to-indigo-800 p-6  shadow-lg flex flex-col border border-indigo-500/30">
+                    <!-- Vendor Name -->
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 class="text-2xl font-bold text-white truncate flex-1">${data.name}</h2>
+                        <div class="bg-white/20 rounded-full p-2 flex items-center justify-center">
+                            <i class="fas fa-store text-white text-sm"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Vendor Image Placeholder -->
+                    <div class="relative h-32 w-full mb-4 rounded-xl overflow-hidden bg-white/10 flex items-center justify-center">
+                        ${data.logo_url ? 
+                            `<img src="{{asset('storage/logos')}}/${data.logo_url}" alt="${data.shop_name}" class="w-full h-full object-cover">` : 
+                            `<i class="fas fa-store text-white/30 text-4xl"></i>`
+                        }
+                    </div>
+                    <!-- Info Grid -->
+                    <div class="grid grid-cols-2 gap-3 text-white mb-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-envelope text-indigo-200 mr-2 text-sm"></i>
+                            <span class="truncate text-sm text-indigo-100">${data.email}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-phone-alt text-indigo-200 mr-2 text-sm"></i>
+                            <span class="truncate text-sm text-indigo-100">${data.contact_number}</span>
+                        </div>
+                        <div class="flex items-center col-span-2">
+                            <i class="fas fa-sign text-indigo-200 mr-2 text-sm"></i>
+                            <span class="truncate text-sm text-indigo-100">${data.shop_name}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Badges -->
+                    <div class="mt-auto grid grid-cols-3 gap-2">
+                        <div class="status-field flex items-center justify-center text-xs rounded-full px-2 py-1 cursor-pointer transition-all
+                            ${data.status === '1' ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
+                            data-id="${data.id}" data-field="status" data-value="${data.status}">
+                            <i class="fas ${data.status === '1' ? 'fa-check-circle' : 'fa-times-circle'} mr-1"></i>
+                            ${response.data.enumStatus[data.status]?.label || data.status}
+                        </div>
+                        
+                        <div class="status-field flex items-center justify-center text-xs rounded-full px-2 py-1 cursor-pointer transition-all
+                            ${data.is_shop == '1' ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
+                            data-id="${data.id}" data-field="is_shop" data-value="${data.is_shop}">
+                            <i class="fas ${data.is_shop == '1' ? 'fa-store' : 'fa-store-slash'} mr-1"></i>
+                            ${response.data.enumShopStatus[data.is_shop]?.label || data.is_shop}
+                        </div>
+                        
+                        <button class="status-field flex items-center justify-center text-xs rounded-full px-2 py-1 cursor-pointer transition-all
+                            ${data.is_approved == '1' ? 'bg-green-100 text-green-800 border border-green-300 cursor-not-allowed' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
+                            data-id="${data.id}" data-field="is_approved" data-value="${data.is_approved}" ${data.is_approved == '1' ? 'disabled' : ''}>
+                            <i class="fas ${data.is_approved == '1' ? 'fa-thumbs-up' : 'fa-thumbs-down'} mr-1"></i>
+                            ${response.data.enumApproveStatus[data.is_approved]?.label || data.is_approved}
+                        </button>
+                    </div>
+                    
+                  
+                </div>
+                
+                <!-- Back Side -->
+                <div class="back absolute w-full h-full backface-hidden bg-gradient-to-br from-indigo-700 to-indigo-900 p-6 rounded-2xl shadow-lg flex flex-col border border-indigo-500/30">
+                    <!-- Back Header -->
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 class="text-2xl font-bold text-white truncate flex-1">${data.shop_name}</h2>
+                        <div class="bg-white/20 rounded-full p-2 flex items-center justify-center">
+                            <i class="fas fa-info-circle text-white text-sm"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Business Hours -->
+                    <div class="bg-white/10 rounded-xl p-3 mb-4">
+                        <div class="flex items-center justify-between text-white mb-2">
+                            <div class="flex items-center">
+                                <i class="far fa-clock text-indigo-200 mr-2"></i>
+                                <span class="font-medium text-indigo-100">Business Hours</span>
+                            </div>
+                            <span class="text-xs bg-white/20 px-2 py-1 rounded-full text-indigo-100">${data.open_days || 'Mon-Sun'}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div class="flex items-center text-indigo-100">
+                                <i class="fas fa-door-open text-indigo-200 mr-2"></i>
+                                <span>${data.open_time || '9:00 AM'}</span>
+                            </div>
+                            <div class="flex items-center text-indigo-100">
+                                <i class="fas fa-door-closed text-indigo-200 mr-2"></i>
+                                <span>${data.close_time || '9:00 PM'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Address -->
+                    <div class="mb-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-indigo-200"></i>
+                            <div>
+                                <h4 class="font-medium text-indigo-100 mb-1">Address</h4>
+                                <p class="text-sm text-indigo-100 opacity-90">${data.address || 'No address provided'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="mt-auto flex justify-between items-center">
+                        <a href="/admin/vendors/${data.id}/edit" class="flex items-center justify-center bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-full transition-all text-sm">
+                            <i class="fas fa-edit mr-2"></i> Edit Vendor
+                        </a>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+    });
+}else if(loading==false){
+                 html=`<div class="text-center text-gray-500 py-4">No vendors found.</div>`;
+                }
+                $('#gridContent').append(html);
+               }
 
+            // Initial load
+            loadVendors(1,10);
+                        window.addEventListener('scroll', handleScroll);
+                        function handleScroll() {
+                            if(currenetTab=='grid'){
+                const scrollY = window.scrollY;
+                const innerHeight = window.innerHeight;
+                const offsetHeight = document.documentElement.offsetHeight;
+
+                if (scrollY + innerHeight >= offsetHeight - 100 && !loading) {
+                    loading = true;
+                    currentPage++;
+                    loadVendors(currentPage,10);
+                }
+            }
+            }
             // Filters and pagination
             $('#perPage, #search, #statusFilter').on('change keyup', function() {
                 currentPage = 1;
@@ -259,7 +531,7 @@ $breadCrumbs=[
             $(document).on('click', '.page-link', function() {
                 if ($(this).prop('disabled')) return;
                 currentPage = $(this).data('page');
-                loadVendors(currentPage);
+                loadVendors(currentPage,10);
             });
 
             // Status field click handler

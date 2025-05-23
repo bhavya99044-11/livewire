@@ -172,6 +172,7 @@
 
 @push('scripts')
 <script>
+
     $(document).ready(function () {
        if(@json(auth()->guard('admin')->user()->hasPermission('permission-add')))
         $.ajaxSetup({

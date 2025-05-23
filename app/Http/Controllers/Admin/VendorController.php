@@ -15,6 +15,7 @@ use App\Http\Requests\Admin\UpdateActionRequest;
 use App\Http\Requests\Admin\UpdateStatusRequest;
 use Illuminate\Support\Facades\DB;
 
+
 class VendorController extends Controller
 {
     public function index()
@@ -63,16 +64,8 @@ class VendorController extends Controller
     public function showData(Request $request)
     {
         try {
-            $vendor = Vendor::query()->select([
-                'id',
-                'name',
-                'email',
-                'contact_number',
-                'shop_name',
-                'status',
-                'is_approved',
-                'is_shop'
-            ]);
+            $vendor = Vendor::query()
+            ;
 
             $vendor->when($request->search, function ($query) use ($request) {
                 $query->where(function ($query) use ($request) {
@@ -95,6 +88,7 @@ class VendorController extends Controller
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
+            dd($e->getMessage());
             return response()->json([
                 'message' => __('messages.vendor.retrieve.error'),
                 'error' => $e->getMessage(),

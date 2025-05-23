@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\VendorController;
 use App\Http\Middleware\Admin\AdminAuthMiddleware;
 use App\Http\Middleware\Admin\AuthLoginMiddleware;
 use App\Livewire\Admin\AdminList;
+use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -57,7 +58,17 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
     Route::resource('domains', DomainController::class);
     Route::resource('/vendor/{vendor_id}/products', \App\Http\Controllers\Admin\ProductController::class);
     Route::get('/products/search/vendor',[\App\Http\Controllers\Admin\ProductController::class,'searchVendor'])->name('products.search-vendor');
-    Route::post('/vendor/{vendor_id}/products/store-step-1',[\App\Http\Controllers\Admin\ProductController::class,'productStepOne'])->name('products.store-step-1');
-    Route::post('/vendor/{vendor_id}/products/store-step-2',[\App\Http\Controllers\Admin\ProductController::class,'productStepTwo'])->name('products.store-step-2');
+    Route::prefix('/vendor/{vendor_id}/products')->group(function () {
+        // Create
+        Route::post('store-step-1', [ProductController::class, 'productStepOne'])->name('products.store-step-1');
+        Route::post('store-step-2', [ProductController::class, 'productStepTwo'])->name('products.store-step-2');
+    
+        // Update
+        Route::put('{product}/update-step-1', [ProductController::class, 'productStepOne'])->name('products.update-step-1');
+        Route::put('{product}/update-step-2', [ProductController::class, 'productStepTwo'])->name('products.update-step-2');
+    
+        // Edit form
+        Route::get('{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    });
 
 });

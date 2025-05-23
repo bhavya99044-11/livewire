@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SubProduct extends Model
 {
     protected $table='sub_products';
+    protected $guarded = [];
 
     public function product(){
         return $this->belongsTo(Product::class,'product_id');
@@ -20,7 +21,7 @@ class SubProduct extends Model
         return $this->hasMany(ProductImage::class,'sub_product_id');
     }
 
-    public function specs(){
+    public function specifications(){
         return $this->hasMany(ProductSpecification::class,'sub_product_id');
     }
 }
