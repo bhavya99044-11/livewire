@@ -205,7 +205,7 @@ $breadCrumbs=[
                 checkbox.checked = this.checked;
             });
         });
-        
+
         document.querySelectorAll('.deleteDomain').forEach(function(element){
             element.addEventListener('click',function(){
             var id = $(this).data('id');
@@ -225,7 +225,7 @@ $breadCrumbs=[
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        type: 'DELETE',           
+                        type: 'DELETE',
                         success: function (response) {
                           window.location.reload();
                            swalSuccess(response.message)

@@ -10,64 +10,104 @@ use App\Mail\ResetPasswordMail;
 use App\Models\Admin\Admin;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
+    /**
+     * Handle admin login.
+     */
     public function login(LoginRequest $request)
     {
-        $credentials = $request->only('email', 'password');
-        $this->admin->attempt($credentials);
-        if ($this->admin->check()) {
-            return redirect()->route('admin.dashboard')->with('success', 'Login successful');
-        }
+        try {
+            $credentials = $request->only('email', 'password');
 
-        return redirect()->back()->with('error', 'Invalid credentials')->withInput();
+            if ($this->admin->attempt($credentials)) {
+                return redirect()->route('admin.dashboard')->with('success', __('messages.auth.login_success'));
+            }
+
+            return back()->with('error', __('messages.auth.invalid_credentials'))->withInput();
+        } catch (\Exception $e) {
+            return back()->with('error', __('messages.auth.login_failed'))->withInput();
+        }
     }
 
+    /**
+     * Handle admin logout.
+     */
     public function logout(Request $request)
     {
-        $this->admin->logout();
-
-        return redirect()->route('admin.login')->with('success', 'Logout successful');
+        try {
+            $this->admin->logout();
+            return redirect()->route('admin.login')->with('success', __('messages.auth.logout_success'));
+        } catch (\Exception $e) {
+            return redirect()->route('admin.login')->with('error', __('messages.auth.logout_failed'));
+        }
     }
+
 
     public function forgotPassword(ForgotPasswordRequest $request)
     {
-        $admin = Admin::where('email', $request->email)->first();
-        if (! $admin) {
-            return redirect()->back()->with('error', 'Email not found')->withInput();
-        }
-        $random = Str::random(40);
-        $admin->forgot_password_token = $random;
-        $admin->forgot_password_token_expiry = Carbon::now()->addMinutes(10);
-        $admin->save();
-        Mail::to($request->email)->send(new ResetPasswordMail($random));
+        try {
+            DB::beginTransaction();
 
-        return redirect()->back()->with('success', 'Reset password link sent to your email');
+            $admin = Admin::where('email', $request->email)->first();
+            if (!$admin) {
+                return back()->with('error', __('messages.auth.email_not_found'))->withInput();
+            }
+
+            $admin->update([
+                'forgot_password_token' => Str::random(40),
+                'forgot_password_token_expiry' => Carbon::now()->addMinutes(10),
+            ]);
+
+            Mail::to($request->email)->send(new ResetPasswordMail($admin->forgot_password_token));
+
+            DB::commit();
+            return back()->with('success', __('messages.auth.reset_password_link_sent'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', __('messages.auth.forgot_password_failed'))->withInput();
+        }
     }
 
+    /**
+     * Display reset password view.
+     */
     public function resetPasswordView($token)
     {
         return view('admin.auth.reset-password', compact('token'));
     }
 
+    /**
+     * Handle password reset.
+     */
     public function resetPassword(ResetPassword $request)
     {
+        try {
+            DB::beginTransaction();
 
-        $admin = Admin::where('forgot_password_token', $request->token)->first();
-        if ($admin && Carbon::parse($admin->forgot_password_token_expiry)->diffInMinutes(Carbon::now()) < 10) {
-            $admin->password = Hash::make($request->password);
-            $admin->forgot_password_token = null;
-            $admin->forgot_password_token_expiry = null;
-            $admin->save();
+            $admin = Admin::where('forgot_password_token', $request->token)->first();
 
-            return redirect()->route('admin.login')->with('success', 'Password reset successful');
+            if (!$admin || Carbon::parse($admin->forgot_password_token_expiry)->diffInMinutes(Carbon::now()) >= 10) {
+                DB::rollBack();
+                return back()->with('error', __('messages.auth.invalid_token'))->withInput();
+            }
+
+            $admin->update([
+                'password' => Hash::make($request->password),
+                'forgot_password_token' => null,
+                'forgot_password_token_expiry' => null,
+            ]);
+
+            DB::commit();
+            return redirect()->route('admin.login')->with('success', __('auth.password_reset_success'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', __('messages.auth.password_reset_failed'))->withInput();
         }
-
-        return redirect()->back()->with('error', 'Invalid token')->withInput();
-
     }
 }

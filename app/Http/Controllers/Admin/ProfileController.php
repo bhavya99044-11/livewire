@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ChangePasswordRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
@@ -11,7 +12,6 @@ class ProfileController extends Controller
     public function index()
     {
         $user = $this->admin->user();
-
         return view('admin.pages.profile.index', compact('user'));
     }
 
@@ -23,13 +23,14 @@ class ProfileController extends Controller
     public function changePassword(ChangePasswordRequest $request)
     {
         try {
+            DB::beginTransaction(); // Start transaction
             $user = $this->admin->user();
-            $user->password = Hash::make($request->password);
-            $user->save();
-
-            return redirect()->back()->with('success', 'Password changed successfully');
+            $user->update(['password' => Hash::make($request->password)]);
+            DB::commit();
+            return back()->with('success', __('messages.profile.password_change_success'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Something went wrong');
+            DB::rollBack();
+            return back()->with('error', __('messages.profile.password_change_error'))->withInput();
         }
     }
 }
