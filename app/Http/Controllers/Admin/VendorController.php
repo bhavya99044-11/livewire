@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use App\Http\Resources\Admin\VendorCollection;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Vendor;
 use App\Models\Admin\Domain;
@@ -31,7 +31,7 @@ class VendorController extends Controller
     public function store(VendorFormRequest $request)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $logoPath = 'default_image.png';
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
@@ -64,8 +64,8 @@ class VendorController extends Controller
 
     public function showData(Request $request)
     {
-        try {
-            DB::beginTransaction(); // Start transaction
+        try {   
+            DB::beginTransaction(); 
             $vendor = Vendor::query();
 
             if ($request->search) {
@@ -74,6 +74,7 @@ class VendorController extends Controller
             }
 
             $vendors = $vendor->paginate($request->perPage, ['*'], 'page', $request->page)->toArray();
+            dd(new VendorCollection($vendors));
             $data = [
                 'vendors' => $vendors,
                 'enumApproveStatus' => ApproveStatus::toJsObject(),
@@ -109,7 +110,7 @@ class VendorController extends Controller
     public function edit($id)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $vendor = Vendor::with('domains')->findOrFail($id);
             $domains = Domain::all();
             DB::commit();
@@ -127,7 +128,7 @@ class VendorController extends Controller
     public function update(VendorFormRequest $request, $id)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $vendor = Vendor::findOrFail($id);
             $data = $request->except(['image', 'domain_id']);
             $data['is_approved'] = $vendor->is_approved == 1 ? 1 : ($data['is_approved'] ?? 0);
@@ -173,7 +174,7 @@ class VendorController extends Controller
     public function destroy($id)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $vendor = Vendor::findOrFail($id);
             $vendor->delete();
 
@@ -196,7 +197,7 @@ class VendorController extends Controller
     public function updateStatus(UpdateStatusRequest $request)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $vendor = Vendor::findOrFail($request->vendor_id);
             $field = $request->field;
 
@@ -230,7 +231,7 @@ class VendorController extends Controller
     public function updateAction(UpdateActionRequest $request)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $affectedRows = Vendor::whereIn('id', $request->value)->update([
                 $request->field => $request->status,
             ]);
@@ -252,7 +253,7 @@ class VendorController extends Controller
     }
 
     public function createProduct($vendorId){
-       session()->forget('product_step_form');
+        session()->forget('product_step_form');
         return redirect()->route('admin.products.create', ['vendor_id' => $vendorId]);
     }
 

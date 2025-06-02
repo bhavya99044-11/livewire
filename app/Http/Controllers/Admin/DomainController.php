@@ -15,18 +15,24 @@ class DomainController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage = $request->input('perPage', 10);
-        $search = $request->input('search');
+        try {
+            DB::beginTransaction();
+            $perPage = $request->input('perPage', 10);
+            $search = $request->input('search');
 
-        $query = Domain::query();
+            $query = Domain::query();
 
-        if ($search) {
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('url', 'like', "%{$search}%");
+            if ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('url', 'like', "%{$search}%");
+            }
+            $domains = $query->paginate($perPage);
+            DB::commit();
+            return view('admin.pages.domain.index', compact('domains', 'perPage', 'search'));
+        } catch (\Exception $e) {
+            db::rollBack();
+            return back()->with('error', __('messages.domain.fetch_failed'))->withInput();
         }
-
-        $domains = $query->paginate($perPage);
-        return view('admin.pages.domain.index', compact('domains', 'perPage', 'search'));
     }
 
     /**
@@ -35,7 +41,7 @@ class DomainController extends Controller
     public function store(DomainRequest $request)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             Domain::create($request->all());
             DB::commit();
             return redirect()->route('admin.domains.index')->with('success', __('messages.domain.created'));
@@ -51,7 +57,7 @@ class DomainController extends Controller
     public function update(DomainRequest $request, Domain $domain)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $domain->update($request->all());
             DB::commit();
             return redirect()->route('admin.domains.index')->with('success', __('messages.domain.updated'));
@@ -67,7 +73,7 @@ class DomainController extends Controller
     public function destroy(Domain $domain)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $domain->delete();
             DB::commit();
             return response()->json([

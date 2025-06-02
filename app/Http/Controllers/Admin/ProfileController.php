@@ -23,7 +23,7 @@ class ProfileController extends Controller
     public function changePassword(ChangePasswordRequest $request)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $user = $this->admin->user();
             $user->update(['password' => Hash::make($request->password)]);
             DB::commit();

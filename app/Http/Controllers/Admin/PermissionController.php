@@ -23,7 +23,9 @@ class PermissionController extends Controller
 
     public function index(Request $request)
     {
+        try{
         if ($request->ajax()) {
+
             $permissions = Permission::select(['id', 'module', 'name', 'slug']);
 
             return DataTables::of($permissions)
@@ -45,12 +47,22 @@ class PermissionController extends Controller
         }
 
         return view('admin.pages.permission.index');
+        } catch (\Exception $e) {
+            if($request->ajax()) {
+                return response()->json([
+                    'message' => __('messages.permission.fetch_error'),
+                    'error' => $e->getMessage(),
+                    'data' => [],
+                ], $e->getCode());
+            }
+            return back()->with('error', __('messages.permission.fetch_error'))->withInput();
+        }
     }
 
     public function store(PermissionRequest $request)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction(); 
             $permission = Permission::create([
                 'module' => $request->module,
                 'name' => $request->name,
@@ -97,7 +109,7 @@ class PermissionController extends Controller
     public function update(PermissionRequest $request, $id)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $permission = Permission::findOrFail($id);
             $permission->update([
                 'module' => $request->module,
@@ -124,11 +136,10 @@ class PermissionController extends Controller
     public function destroy($id)
     {
         try {
-            DB::beginTransaction(); // Start transaction
+            DB::beginTransaction();
             $permission = Permission::findOrFail($id);
 
             if ($permission->admins()->exists()) {
-                DB::rollBack();
                 return response()->json([
                     'message' => __('messages.permission.delete_error'),
                     'error' => __('messages.permission.delete_already_assigned'),
