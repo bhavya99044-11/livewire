@@ -99,14 +99,14 @@ $breadCrumbs=[
         <div class="flex items-center w-full justify-between">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Vendor Management</h1>
             <div class="border ml-auto flex flex-row rounded-full border-blue-500">
-               <div id="activeGrid" class="active bg-blue-500 rounded-l-full border border-l-0 border-t-0 border-b-0 border-blue-500"> <i class="fa-solid p-1 pl-3 font-bold text-xl fa-grip-vertical"></i></div>
-                <div id="activeTable" class=" text-black   p-1 pr-3  text-xl font-bold  rounded-r-full"><i class="fa-solid fa-bars"></i></div>
+               <div id="activeGrid" class=" rounded-l-full border border-l-0 border-t-0 border-b-0 border-blue-500"> <i class="fa-solid p-1 pl-3 font-bold text-xl fa-grip-vertical"></i></div>
+                <div id="activeTable" class=" active bg-blue-500  p-1 pr-3  text-xl font-bold text-white  rounded-r-full"><i class="fa-solid fa-bars"></i></div>
             </div>
       <div>
         
       </div>
         </div>
-        <div class="flex hidden vendorTable flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <div class="flex  vendorTable flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div class="md:flex grid grid-cols-2 items-center gap-x-2 gap-y-1 md:flex-row md:gap-4">
                 <div>
                     <label class="text-sm capitalize" for="perPage">Per page</label>
@@ -156,7 +156,7 @@ $breadCrumbs=[
             </div>
         </div>
 
-        <div  class="vendorTable hidden">
+        <div  class="vendorTable ">
         <div class="bg-white rounded-lg shadow overflow-hidden">
             <table class=" min-w-full divide-y divide-gray-200">
                 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -187,7 +187,7 @@ $breadCrumbs=[
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Approve
                         </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Actions
                         </th>
                     </tr>
@@ -200,7 +200,7 @@ $breadCrumbs=[
         @include('vendor.pagination.pagination')
     </div>
 
-    <div class="vendorGrid">
+    <div class="vendorGrid hidden">
         <div id="gridContent" class="flip-list grid grid-cols-4 gap-4">
        
         </div>
@@ -213,7 +213,7 @@ $breadCrumbs=[
     <script>
         $(document).ready(function() {
             var loading=false;
-            var currenetTab='grid';
+            var currenetTab='table';
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -222,18 +222,20 @@ $breadCrumbs=[
 
             const activeGrid = document.getElementById('activeGrid');
             const activeTable = document.getElementById('activeTable');
-          activeGrid.addEventListener('click', function() {
-            if(!this.classList.contains('active')){
-                currenetTab='grid';
-                $('.vendorGrid').removeClass('hidden');
-                const tables=document.querySelectorAll('.vendorTable');
-                tables.forEach((item)=>{
-                    item.classList.add('hidden');
-                })
-                activeGrid.classList.add('bg-blue-500', 'text-white','active');
-                activeTable.classList.remove('bg-blue-500', 'text-white','active');
-            }
-            });
+            activeGrid.addEventListener('click', function() {
+                if(!this.classList.contains('active')){
+                    currenetTab='grid';
+                    $('.vendorGrid').removeClass('hidden');
+                    const tables=document.querySelectorAll('.vendorTable');
+                    tables.forEach((item)=>{
+                        item.classList.add('hidden');
+                    })
+                    loading=false;
+                    loadVendors(1,10);
+                    activeGrid.classList.add('bg-blue-500', 'text-white','active');
+                    activeTable.classList.remove('bg-blue-500', 'text-white','active');
+                }
+                });
 
             activeTable.addEventListener('click', function() {
                 if(!this.classList.contains('active')){
@@ -256,8 +258,6 @@ $breadCrumbs=[
             let currentPage = 1;
 
             function loadVendors(page = 1,perPage=10) {
-                loading=true;
-                console.log('rrrrr')
                 document.getElementById('allSelect').checked=false;
                
                 let search = $('#search').val();
@@ -268,7 +268,6 @@ $breadCrumbs=[
                     method: 'GET',
                     data: { perPage, search, status, page },
                     success: function(response) {
-                        console.log(response)
                      if(currenetTab=='grid'){
                         gridView(response);
                      }else{
@@ -276,7 +275,6 @@ $breadCrumbs=[
                      }
                      if(response.data.vendors.data.length>0){
                         console.log('eeeeeee')
-                        loading = false;
                      }
 
                     },
@@ -322,9 +320,19 @@ $breadCrumbs=[
                                             ${response.data.enumApproveStatus[vendor.is_approved]?.label || vendor.is_approved}
                                         </button>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <a title="Edit" href="/admin/vendors/${vendor.id}/edit" class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded"><i class="fas fa-edit"></i></a>
-                                        <button title=Delete" data-id="${vendor.id}" class="delete-btn hover:text-red-800 text-red-500 py-1 rounded"><i class="fas fa-trash"></i></button>
+                                    <td class="px-6 py-4 gap-2 flex flex-row whitespace-nowrap text-sm text-gray-900">
+                                        <div class="flex items-center flex-col">
+                                            <a title="Edit" href="/admin/vendors/${vendor.id}/edit" class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded"><i class="fas fa-edit"></i></a>
+                                            <span>Edit</span>
+                                        </div>
+                                        <div class="flex items-center flex-col">
+                                          <button title="Delete" data-id="${vendor.id}" class="delete-btn hover:text-red-800 text-red-500 py-1 rounded"><i class="fas fa-trash"></i></button>
+                                            <span>Delete</span>
+                                        </div>
+                                        <div class="flex items-center flex-col">
+                                          <a href="" title="Create" data-id="${vendor.id}" class="createProduct hover:text-blue-800 text-blue-500 py-1 rounded"><i class="fa-solid fa-plus"></i></i></a>
+                                            <span>Product</span>
+                                        </div>
                                     </td>
                                 </tr>`;
                             });
@@ -492,7 +500,8 @@ $breadCrumbs=[
                     <div class="mt-auto flex justify-between items-center">
                         <a href="/admin/vendors/${data.id}/edit" class="flex items-center justify-center bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-full transition-all text-sm">
                             <i class="fas fa-edit mr-2"></i> Edit Vendor
-                        </a>
+                            </a>
+                            edit
                        
                     </div>
                 </div>
@@ -511,11 +520,12 @@ $breadCrumbs=[
                         window.addEventListener('scroll', handleScroll);
                         function handleScroll() {
                             if(currenetTab=='grid'){
-                const scrollY = window.scrollY;
-                const innerHeight = window.innerHeight;
-                const offsetHeight = document.documentElement.offsetHeight;
-
-                if (scrollY + innerHeight >= offsetHeight - 100 && !loading) {
+                                const scrollY = window.scrollY;
+                                const innerHeight = window.innerHeight;
+                                const offsetHeight = document.documentElement.offsetHeight;
+                                
+                                console.log(loading)
+                                if (scrollY + innerHeight >= offsetHeight - 100 && !loading) {
                     loading = true;
                     currentPage++;
                     loadVendors(currentPage,10);
@@ -602,7 +612,6 @@ $breadCrumbs=[
             });
 
             $('#updateAction').on('click', function(item) {
-                console.log(1)
             });
 
             $('#allSelect').on('change',function(item){
@@ -673,6 +682,15 @@ $breadCrumbs=[
 
             $('#allSelect').on('change', function() {
                 $('.vendorCheckbox').prop('checked', $(this).prop('checked'));
+            });
+
+            $(document).on('click', '.createProduct', function(e) {
+                e.preventDefault();
+                let vendorId = $(this).data('id');
+                let url = "{{ route('admin.vendors.create-product', ['vendor_Id' => '__ID__']) }}";
+                url=url.replace('__ID__',vendorId);
+                window.location.href=url;
+               
             });
         });
     </script>

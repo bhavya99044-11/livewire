@@ -50,25 +50,25 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
     });
     Route::middleware(['role:super_admin'])->resource('permissions', PermissionController::class);
     Route::middleware(['route-access:vendor'])->resource('vendors', VendorController::class);
-    Route::middleware(['route-access:vendor'])->prefix('vendors')->group(function(){
-        Route::get('list/data',[ VendorController::class,'showData'])->name('vendors.data');
+    ROute::get('vendors/{vendor_Id}/createProduct',[vendorController::class, 'createProduct'])->name('vendors.create-product');
+    Route::middleware(['route-access:vendor'])->prefix('vendors')->group(function () {
+        Route::get('list/data', [VendorController::class, 'showData'])->name('vendors.data');
         Route::post('/update-status', [VendorController::class, 'updateStatus'])->name('vendors.update-status');
         Route::post('/update-action', [VendorController::class, 'updateAction'])->name('vendors.update-action');
     });
     Route::resource('domains', DomainController::class);
     Route::resource('/vendor/{vendor_id}/products', \App\Http\Controllers\Admin\ProductController::class);
-    Route::get('/products/search/vendor',[\App\Http\Controllers\Admin\ProductController::class,'searchVendor'])->name('products.search-vendor');
+    Route::get('/products/search/vendor', [\App\Http\Controllers\Admin\ProductController::class, 'searchVendor'])->name('products.search-vendor');
     Route::prefix('/vendor/{vendor_id}/products')->group(function () {
         // Create
         Route::post('store-step-1', [ProductController::class, 'productStepOne'])->name('products.store-step-1');
         Route::post('store-step-2', [ProductController::class, 'productStepTwo'])->name('products.store-step-2');
-    
+
         // Update
         Route::put('{product}/update-step-1', [ProductController::class, 'productStepOne'])->name('products.update-step-1');
         Route::put('{product}/update-step-2', [ProductController::class, 'productStepTwo'])->name('products.update-step-2');
-    
+
         // Edit form
         Route::get('{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
     });
-
 });

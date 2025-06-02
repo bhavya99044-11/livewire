@@ -5,58 +5,38 @@ namespace App\Livewire\Admin;
 use App\Enums\AdminRoles;
 use App\Enums\Status;
 use App\Http\Requests\Admin\AdminFormRequest;
-use App\Http\Requests\Admin\PermissionFormCheckbox;
 use App\Models\Admin\Admin as AdminModel;
 use App\Models\Admin\Permission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class AdminForm extends Component
 {
     public $isModal = false;
-
     public $isUpdate = false;
-
     public $nextPage;
-
     public $userPermissions = [];
-
     public $permissionData;
-
     public $permission = [];
-
     public $name;
-
     public $email;
-
     public $password;   
-
     public $status;
-
     public $adminId;
-
     public $enumRoles;
-
     public $enumStatus;
+    public $user;
 
     protected $listeners = ['openRolesModal'];
 
-    public $user;
-
     public function mount()
     {
-        Log::info($this->adminId);
-        // if($this->adminId){
-        //     $this->adminUser=
-        // }
         $this->user = Auth::guard('admin')->user();
-        $this->permissionData = Permission::where('module', '!=', 'admin')->where('module', '!=', 'permission')->get();
+        $this->permissionData = Permission::whereNotIn('module', ['admin', 'permission'])->get();
         $this->enumStatus = Status::cases();
         $this->enumRoles = AdminRoles::cases();
     }
@@ -93,6 +73,7 @@ class AdminForm extends Component
         try {
             $this->resetInputFields();
             $admin = AdminModel::findOrFail($id);
+
             $this->adminId = $admin->id;
             $this->name = $admin->name;
             $this->email = $admin->email;
@@ -101,7 +82,7 @@ class AdminForm extends Component
             $this->isModal = true;
             $this->isUpdate = true;
         } catch (\Exception $e) {
-            $this->dispatch('error', message: 'User not found.');
+            $this->dispatch('error', message: __('messages.admin.not_found'));
         }
     }
 
@@ -115,49 +96,52 @@ class AdminForm extends Component
     {
         try {
             DB::beginTransaction();
+
             $admin = AdminModel::create([
-                'name' => $this->name,
-                'email' => $this->email,
+                'name'     => $this->name,
+                'email'    => $this->email,
                 'password' => Hash::make($this->password),
-                'role' => AdminRoles::ADMIN->value,
-                'status' => $this->status,
+                'role'     => AdminRoles::ADMIN->value,
+                'status'   => $this->status,
             ]);
+
             $admin->permissions()->attach($this->permission);
-            $this->dispatch('success', message: 'Admin created successfully.');
+
+            $this->dispatch('success', message: __('messages.admin.created'));
             $this->resetInputFields();
             $this->isModal = false;
+
             DB::commit();
             $this->dispatch('adminList');
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->dispatch('error', message: 'Something went wrong. Please try again.');
+            $this->dispatch('error', message: __('messages.general.error_try_again'));
         }
     }
 
     public function update()
     {
-        //For permission checkbox validation 
-        // $request = new PermissionFormCheckbox;
-        // $this->validate($request->rules());
         try {
             DB::beginTransaction();
-            App::setLocale('es');
+
             $admin = AdminModel::findOrFail($this->adminId);
             $admin->update([
-                'name' => $this->name,
-                'email' => $this->email,
+                'name'     => $this->name,
+                'email'    => $this->email,
                 'password' => $this->password ? Hash::make($this->password) : $admin->password,
-                'status' => $this->status,
+                'status'   => $this->status,
             ]);
+
             $admin->permissions()->sync($this->permission);
+
             DB::commit();
-            $this->dispatch('success', message: text('messages.welcome', 'Welcome to Laravel News'));
+            $this->dispatch('success', message: __('messages.admin.updated'));
             $this->resetInputFields();
             $this->isModal = false;
             $this->dispatch('adminList');
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->dispatch('error', message: 'Error while updating: '.$e->getMessage());
+            $this->dispatch('error', message: __('messages.admin.update_error') . ': ' . $e->getMessage());
         }
     }
 

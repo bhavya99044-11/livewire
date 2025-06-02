@@ -250,4 +250,10 @@ class VendorController extends Controller
             ], $e->getCode());
         }
     }
+
+    public function createProduct($vendorId){
+       session()->forget('product_step_form');
+        return redirect()->route('admin.products.create', ['vendor_id' => $vendorId]);
+    }
+
 }

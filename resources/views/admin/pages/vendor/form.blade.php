@@ -11,38 +11,7 @@ $approveStatuses = ApproveStatus::cases();
 @endphp
 
 @push('styles')
-<style>
-    .select2-container{
-        min-width: 200px;
-    }
-    .form-input {
-            padding: 0.5rem;
-            border-width: 1px;
-            border-top: 0;
-            border-left: 0;
-            border-right: 0;
-            border-style: solid;
-            border-color: #d1d5db;
-            outline: none;
-            transition: box-shadow 0.2s ease;
-        }
-
-        .form-input:focus {
-            border-top: 0;
-            border-left: 0;
-            border-right: 0;
-            outline: none;
-            border-color: #3b82f6;
-        }
-
-        .parent {
-            position: relative;
-        }
-
-        .flex.flex-row.items-center {
-            margin-bottom: 1rem;
-        }
-</style>
+<link href="{{ asset('css/admin/vendor.css') }}" rel="stylesheet">
 @endpush
 
 @section('content')

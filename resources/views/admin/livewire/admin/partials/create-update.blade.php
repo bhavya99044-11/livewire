@@ -1,17 +1,17 @@
 <div>
     @if ($isModal)
         <div class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-            <div  class="bg-white rounded-lg mb-6 shadow-lg max-w-[500px] p-6 relative">
+            <div class="bg-white rounded-lg mb-6 shadow-lg max-w-[500px] p-6 relative">
                 <!-- Close Button -->
                 <div class="flex mb-2 items-center flex-row justify-between">
                     <!-- Modal Header -->
                     <h2 class="text-xl font-semibold ">{{ $adminId ? 'Edit Admin' : 'Create Admin' }}</h2>
                     <button wire:click="close()" class="text-gray-500 hover:text-gray-700">
-                        <i class="fa-solid fa-lg fa-xmark"></i>             
+                        <i class="fa-solid fa-lg fa-xmark"></i>
                     </button>
                 </div>
                 <!-- Modal Form -->
-                <form  class="!mb-0" id="adminForm"  wire:ignore.self>
+                <form class="!mb-0" id="adminForm" wire:ignore.self>
                     @if ($nextPage == null)
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Name -->
@@ -61,22 +61,24 @@
                             </div>
                         </div>
                         <div class="mt-6 flex justify-end">
-                            <button type="submit"  class="bg-blue-500 text-white px-2 py-1 rounded">
+                            <button type="submit" class="bg-blue-500 text-white px-2 py-1 rounded">
                                 Next
                             </button>
-                        </div>     
+                        </div>
                     @else
                         <div class="">
                             <div class="grid grid-cols-2 min-w-[300px] min-h-[100px] md:grid-cols-3 md:gap-4 gap-2">
-                                @if($permissionData->isEmpty())
+                                @if ($permissionData->isEmpty())
                                     <span class="col-span-2">No permissions available</span>
                                 @else
                                     @foreach ($permissionData as $permissionItem)
                                         <label class="flex items-center space-x-2 overflow-hidden">
                                             <input type="checkbox" wire:model="permission" name="permission[]"
-                                                value="{{ $permissionItem->id }}" class="shrink-0" @if(in_array($permissionItem->id,$permission)) checked @endif  >        
-                                            <span title="{{ $permissionItem->module }} {{ $permissionItem->name }}" class="w-full truncate text-sm text-gray-800">
-                                                {{ $permissionItem->module }} {{ $permissionItem->name }}                     
+                                                value="{{ $permissionItem->id }}" class="shrink-0"
+                                                @if (in_array($permissionItem->id, $permission)) checked @endif>
+                                            <span title="{{ $permissionItem->module }} {{ $permissionItem->name }}"
+                                                class="w-full truncate text-sm text-gray-800">
+                                                {{ $permissionItem->module }} {{ $permissionItem->name }}
                                             </span>
                                         </label>
                                     @endforeach
@@ -104,69 +106,9 @@
     <!-- jQuery and jQuery Validation -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="
-    https://cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/jquery.validate.min.js
-    "></script>
-        <script>
-    document.addEventListener("livewire:initialized", () => {
-        const form = $("#adminForm");
-
-                    // $(document).on('click',"#nextForm",function(){
-                    //    $('#adminForm').submit();
-                    // })
-                  
-
-                    const validator=form.validate({
-                    rules: {
-                        name: {
-                            required: true
-                        },
-                        email: {
-                            required: true,
-                            email: true
-                        },
-                        password: {
-                            required: function(element) {
-                                return {{ $adminId ? 'false' : 'true' }};
-                            },
-                            minlength: 6
-                        },
-                        status: {
-                            required: true
-                        },
-                        'permission[]': {
-                            required: true
-                        }
-                    },
-                    messages: {
-                        name: "Please enter a name",
-                        email: {
-                            required: "Please enter an email address",
-                            email: "Please enter a valid email address"
-                        },
-                        password: {
-                            required: "Please enter a password",
-                            minlength: "Password must be at least 6 characters long"
-                        },
-                        status: "Please select a status",
-                        'permission[]': "Please select at least one permission"
-                    },
-                    submitHandler: function(e) {
-                        e.preventDefault();
-                        alert(1);
-                        console.log('jQuery Validation Passed'); 
-                        //@this.call('submitForm');
-                    }
-                });
-
-                $(document).on('submit',"#adminForm", function(e) { 
-
-                      console.log('Form Submission Intercepted');
-                      e.preventDefault()
-                    if (!$(this).valid()) {
-                        console.log('Validation Failed'); 
-                        return false;
-                    }
-                });
-        });
+        https://cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/jquery.validate.min.js
+        "></script>
+    <script src="{{ asset('js/admin/livewire/create-update') }}"></script>
+      
     </script>
 </div>

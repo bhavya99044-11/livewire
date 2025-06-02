@@ -1,36 +1,9 @@
 @extends('layouts.admin')
 
 @push('styles')
-    <style>
-        .ck.ck-powered-by {
-            display: none;
-        }
-
-        @layer components {
-            .animate-fade-in {
-                animation: fadeIn 0.3s ease-out forwards;
-            }
-
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(10px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        }
-
-        .jquery-error {
-            font-size: 14px;
-            color: red;
-        }
-    </style>
+   <link href="{{asset('css/admin/product.css')}}" rel="stylesheet">
 @endpush
-
+{{-- {{dd($product)}} --}}
 @section('content')
     @php
         use App\Enums\Status;
@@ -276,6 +249,9 @@
                                                 </div>
                                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                                     <div class="space-y-4">
+                                                        <input type="hidden"
+                                                            name="sub_products[{{ $index }}][id]"
+                                                            value="{{ $subProduct->id }}" />
                                                         <div class="space-y-2">
                                                             <label for="sizeType-subProduct-{{ $index }}"
                                                                 class="block text-sm font-medium">Size Type</label>
@@ -373,33 +349,8 @@
                                                                 <p>No images added yet</p>
                                                             </div>
                                                             <div id="imagesContainer-subProduct-{{ $index }}"
-                                                                class="h-[136px] {{ $subProduct->images && count($subProduct->images) > 0 ? '' : 'hidden' }}">
-                                                                @if ($subProduct->images && count($subProduct->images) > 0)
-                                                                    <div class="flex flex-row flex-wrap gap-1">
-                                                                        @foreach ($subProduct->images as $image)
-                                                                            <div class="relative w-32 h-16">
-                                                                                <img class="object-cover w-32 h-16"
-                                                                                    src="{{ asset('products/' . $image->name) }}"
-                                                                                    alt="Product Image" />
-                                                                                <button type="button"
-                                                                                    class="absolute removeImage top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                                                                                    data-id="{{ asset('products/' . $image->id) }}"
-                                                                                    data-sub-product-id="subProduct-{{ $index }}">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                        width="12" height="12"
-                                                                                        viewBox="0 0 24 24" fill="none"
-                                                                                        stroke="currentColor"
-                                                                                        stroke-width="2"
-                                                                                        stroke-linecap="round"
-                                                                                        stroke-linejoin="round">
-                                                                                        <path d="M18 6 6 18"></path>
-                                                                                        <path d="m6 6 12 12"></path>
-                                                                                    </svg>
-                                                                                </button>
-                                                                            </div>
-                                                                        @endforeach
-                                                                    </div>
-                                                                @endif
+                                                                    class="h-[136px] {{ $subProduct->images && count($subProduct->images) > 0 ? '' : 'hidden' }}">
+                                                                <div class="flex flex-row flex-wrap gap-1"></div>
                                                             </div>
                                                         </div>
                                                         <div class="space-y-2">
@@ -660,23 +611,22 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </body>
-
     </html>
 @endsection
-
 @push('scripts')
     <script>
-        // Initialize imageArrays with existing images for editing
+     // Initialize imageArrays with existing images for editing
         var imageArrays = {
-            @if (isset($product) && isset($product->sub_products))
-                @foreach ($product->sub_products as $index => $subProduct)
+            @if (isset($product) && isset($product->subProducts))
+                @foreach ($product->subProducts as $index => $subProduct)
                     'subProduct-{{ $index }}': [
                         @if ($subProduct->images && count($subProduct->images) > 0)
                             @foreach ($subProduct->images as $image)
                                 {
-                                    fileUrl: '{{ asset('products/' . $image) }}',
+                                    fileUrl: '{{ asset('products/' . $image->name) }}',
                                     isExisting: true,
-                                    fileName: '{{ $image }}'
+                                    fileName: '{{ $image->name }}',
+                                    id: '{{ $image->id }}' // Include ID for deletion tracking
                                 },
                             @endforeach
                         @endif
@@ -686,8 +636,7 @@
             main: []
         };
         var subProductCounter =
-            {{ isset($product) && isset($product->sub_products) ? count($product->sub_products) - 1 : 0 }};
-
+            {{ isset($product) && isset($product->subProducts) ? count($product->subProducts) - 1 : 0 }};
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
@@ -1047,7 +996,7 @@
                             src: element.fileUrl,
                             alt: 'Product Image'
                         });
-                        let $remove = $('<button>').attr('data-id', element.fileUrl).addClass(
+                        let $remove = $('<div>').attr('data-id', element.fileUrl).addClass(
                             'absolute removeImage top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center'
                         ).html(`
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1472,8 +1421,7 @@
             function goToStep(step) {
                 step1Content.classList.add('hidden');
                 step2Content.classList.add('hidden');
-                step3Content.classList.add('hidden');
-
+                console.log(step)
                 for (let i = 1; i <= 3; i++) {
                     const indicator = document.getElementById(`step-indicator-${i}`);
                     if (i <= step) {
@@ -1484,7 +1432,7 @@
                         indicator.classList.add('bg-gray-200', 'text-gray-600');
                     }
 
-                    if (i < 3) {
+                    if (i < 2) {
                         const line = document.getElementById(`step-line-${i}`);
                         if (i < step) {
                             line.classList.remove('bg-gray-200');
@@ -1509,13 +1457,11 @@
                     nextButton.classList.remove('hidden');
                 }
                 if (step === 3) {
-                    nextButtonText.innerText = 'Submit Product';
-                    submitButton.classList.remove('hidden');
-                    nextButton.classList.add('hidden');
-                    step3Content.classList.remove('hidden');
+                    step=2;
+                    step2Content.classList.remove('hidden');
                 }
                 prevButton.disabled = step === 1;
-
+                
                 state.currentStep = step;
             }
 

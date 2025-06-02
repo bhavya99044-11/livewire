@@ -33,7 +33,6 @@
           }
       }).then(() => {
           window.location.reload();
-          // window.location.replace("{{ route('admin.login') }}");
       });
   }
 </script>
