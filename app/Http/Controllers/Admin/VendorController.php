@@ -13,6 +13,7 @@ use App\Enums\ApproveStatus;
 use App\Enums\ShopStatus;
 use App\Http\Requests\Admin\UpdateActionRequest;
 use App\Http\Requests\Admin\UpdateStatusRequest;
+use App\Http\Resources\Admin\VendorResource;
 use Illuminate\Support\Facades\DB;
 
 class VendorController extends Controller
@@ -32,7 +33,7 @@ class VendorController extends Controller
     {
         try {
             DB::beginTransaction();
-            $logoPath = 'default_image.png';
+            $logoPath =null;
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $logoPath = time() . '.' . $file->getClientOriginalExtension();
@@ -73,20 +74,14 @@ class VendorController extends Controller
                     ->orWhere('shop_name', 'LIKE', '%' . $request->search . '%');
             }
 
-            $vendors = $vendor->paginate($request->perPage, ['*'], 'page', $request->page)->toArray();
-            dd(new VendorCollection($vendors));
-            $data = [
-                'vendors' => $vendors,
-                'enumApproveStatus' => ApproveStatus::toJsObject(),
-                'enumStatus' => Status::toJsObject(),
-                'enumShopStatus' => ShopStatus::toJsObject(),
-            ];
-
+            $vendors = $vendor->paginate($request->perPage, ['*'], 'page', $request->page);
+            $collection =VendorResource::collection($vendors)->response()->getData(true);
             DB::commit();
             return response()->json([
-                'message' => __('messages.vendor.retrieve_success'),
+                'message' => __('messages.vendor.retrieve_success'),    
                 'error' => null,
-                'data' => $data,
+                'data' => $collection['data'],
+                'meta'=>$collection['meta']
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -98,15 +93,6 @@ class VendorController extends Controller
         }
     }
 
-    public function show()
-    {
-        return response()->json([
-            'message' => __('messages.vendor.show_error'),
-            'error' => __('messages.vendor.show_debug'),
-            'data' => [],
-        ], 400);
-    }
-
     public function edit($id)
     {
         try {
@@ -114,7 +100,7 @@ class VendorController extends Controller
             $vendor = Vendor::with('domains')->findOrFail($id);
             $domains = Domain::all();
             DB::commit();
-            return view('admin.pages.vendor.form', compact('vendor', 'domains'));
+            return view('admin.pages.vendor.form', ['vendor'=>(new VendorResource($vendor))->toArray(request()), 'domains'=>$domains]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -144,7 +130,6 @@ class VendorController extends Controller
             }
 
             if ($data['is_approved'] == 0 && $vendor->is_approved == 0) {
-                DB::rollBack();
                 return response()->json([
                     'message' => __('messages.vendor.update_error'),
                     'error' => __('messages.vendor.update_invalid_approve_status'),
@@ -202,7 +187,6 @@ class VendorController extends Controller
             $field = $request->field;
 
             if ($field == 'is_approved' && $vendor->is_approved == 1) {
-                DB::rollBack();
                 return response()->json([
                     'message' => __('messages.vendor.status_error'),
                     'error' => __('messages.vendor.status_cannot_update_approved'),

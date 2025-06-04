@@ -16,12 +16,5 @@ class ProductItem extends Model
     public function subProduct(){
         return $this->belongsTo(SubProduct::class,'sub_product_id');
     }
-
-   
-
-
-
-
-
-
+    
 }

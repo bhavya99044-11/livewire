@@ -24,7 +24,7 @@ class Vendor extends Model
         'country',
         'pincode',
         'status',
-        'is_store',
+        'is_shop',
         'latitude',
         'longitude',
         'open_time',

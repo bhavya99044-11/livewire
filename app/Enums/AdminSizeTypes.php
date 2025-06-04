@@ -8,11 +8,11 @@ enum AdminSizeTypes:INT
     case WEIGHT=1;
     case VOLUME=2;
 
-    public function values():array{
+    public static function values():array{
         return array_column(Self::cases(),'value');
     }
 
-    public  function label():string{
+    public   function label():string{
         return match ($this){
             self::SIZE=>'Size',
             self::WEIGHT=>'Weight',

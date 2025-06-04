@@ -64,18 +64,11 @@
                             <div class="flex items-center w-full">
                                 <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-gray-600"
                                     id="step-indicator-2">2</div>
-                                <div class="flex-1 h-1 mx-2 bg-gray-200" id="step-line-2"></div>
+                                {{-- <div class="flex-1 h-1 mx-2 bg-gray-200" id="step-line-2"></div> --}}
                             </div>
                             <div class="text-start">Sub Products</div>
                         </li>
-                        <li class="flex flex-col w-full">
-                            <div class="flex items-center w-full">
-                                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-gray-600"
-                                    id="step-indicator-3">3</div>
-                                <div class="flex-1 mx-2 bg-gray-200" id="step-line-3"></div>
-                            </div>
-                            <div class="text-start">Add On Items</div>
-                        </li>
+                      
                     </ol>
                 </div>
 
@@ -93,13 +86,13 @@
                                             <input id="name" name="name"
                                                 class="w-full rounded-md border border-gray-300 p-2"
                                                 placeholder="Enter product name"
-                                                value="{{ old('name', isset($product) ? $product->name : '') }}" />
+                                                value="{{ old('name', isset($product) ? $product['name'] : '') }}" />
                                         </div>
 
                                         <div class="space-y-2">
                                             <label for="description" class="block text-sm font-medium">Description</label>
                                             <textarea id="editor" name="description" class="w-full rounded-md border border-gray-300 p-2"
-                                                placeholder="Enter product description" rows="5">{!! old('description', isset($product) ? $product->description : '') !!}</textarea>
+                                                placeholder="Enter product description" rows="5">{!! old('description', isset($product) ? $product["description"] : '') !!}</textarea>
                                         </div>
 
                                         <div class="space-y-2">
@@ -108,8 +101,8 @@
                                                 class="w-full bg-white rounded-md border border-gray-300 p-2">
                                                 @foreach ($status as $stat)
                                                     <option value="{{ $stat->value }}"
-                                                        {{ old('status', isset($product) && $product->status == $stat->value ? 'selected' : '') }}>
-                                                        {{ Status::from($stat->value)->label() }}
+                                                        {{ old('status', isset($product) && $product['status']['value'] == $stat->value ? 'selected' : '') }}>
+                                                        {{Status::from($stat->value)->label()}}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -124,18 +117,18 @@
                                         <h3 class="text-lg font-semibold mb-4">Add-ons & Extras</h3>
                                         <div class="flex flex-col space-x-2 mb-4">
                                             <div id="parentItem" class="flex flex-col space-y-2">
-                                                @if (isset($product) && isset($product->items) && count($product->items) > 0)
-                                                    @foreach ($product->items as $index => $item)
+                                                @if (isset($product['items']) && count($product['items']) > 0)
+                                                    @foreach ($product['items'] as $index => $item)
                                                         <div class="flex gap-1 item-row flex-row">
                                                             <input type="hidden" name="items[{{ $index }}][id]"
-                                                                value="{{ $item->id }}"></input>
+                                                                value="{{ $item['id'] }}"></input>
                                                             <div class="flex-1 space-y-2">
                                                                 <select name="items[{{ $index }}][type]"
                                                                     class="w-full mt-1 field-type rounded-md border border-gray-300 p-2">
                                                                     <option value="">Select Type</option>
                                                                     @foreach ($productTypes as $type)
                                                                         <option value="{{ $type['value'] }}"
-                                                                            {{ old("items.$index.type", $item->type) == $type['value'] ? 'selected' : '' }}>
+                                                                            {{ old("items.$index.type", $item['type']) == $type['value'] ? 'selected' : '' }}>
                                                                             {{ $type['label'] }}
                                                                         </option>
                                                                     @endforeach
@@ -151,7 +144,7 @@
                                                                 <input name="items[{{ $index }}][name]"
                                                                     class="w-full field-name rounded-md border border-gray-300 p-2"
                                                                     placeholder="Option name"
-                                                                    value="{{ old("items.$index.name", $item->name) }}" />
+                                                                    value="{{ old("items.$index.name", $item["name"]) }}" />
                                                                 <span class="text-red-500 span-name text-sm">
                                                                     @error("items.$index.name")
                                                                         {{ $message }}
@@ -164,7 +157,7 @@
                                                                     type="number" min="1"
                                                                     class="w-full field-price rounded-md border border-gray-300 p-2"
                                                                     placeholder="Price"
-                                                                    value="{{ old("items.$index.price", $item->price) }}" />
+                                                                    value="{{ old("items.$index.price", $item["price"]) }}" />
                                                                 <span class="text-red-500 span-price text-sm">
                                                                     @error("items.$index.price")
                                                                         {{ $message }}
@@ -235,8 +228,8 @@
                         <div class="rounded-lg border border-gray-200 bg-white shadow-lg">
                             <div class="p-6">
                                 <div id="sub-products-forms-container">
-                                    @if (isset($product) && isset($product->subProducts) && count($product->subProducts) > 0)
-                                        @foreach ($product->subProducts as $index => $subProduct)
+                                    @if (isset($product) && isset($product['sub_products']) && count($product['sub_products']) > 0)
+                                        @foreach ($product['sub_products'] as $index => $subProduct)
                                             <div class="sub-product-component mt-6 border-t pt-6"
                                                 data-sub-product-id="subProduct-{{ $index }}">
                                                 <div class="flex items-center justify-between mb-4">
@@ -251,7 +244,7 @@
                                                     <div class="space-y-4">
                                                         <input type="hidden"
                                                             name="sub_products[{{ $index }}][id]"
-                                                            value="{{ $subProduct->id }}" />
+                                                            value="{{ $subProduct['id'] }}" />
                                                         <div class="space-y-2">
                                                             <label for="sizeType-subProduct-{{ $index }}"
                                                                 class="block text-sm font-medium">Size Type</label>
@@ -260,7 +253,7 @@
                                                                 class="w-full bg-white sizeType rounded-md border border-gray-300 p-2">
                                                                 @foreach ($adminSizeTypes as $type)
                                                                     <option value="{{ $type['value'] }}"
-                                                                        {{ old("sub_products.$index.size_type", $subProduct->size_type) == $type['value'] ? 'selected' : '' }}>
+                                                                        {{ old("sub_products.$index.size_type", $subProduct["size_type"]) == $type['value'] ? 'selected' : '' }}>
                                                                         {{ $type['label'] }}
                                                                     </option>
                                                                 @endforeach
@@ -273,7 +266,7 @@
                                                                 name="sub_products[{{ $index }}][size]"
                                                                 class="w-full rounded-md border border-gray-300 p-2"
                                                                 placeholder="Small, Medium, 500g"
-                                                                value="{{ old("sub_products.$index.size", $subProduct->size) }}" />
+                                                                value="{{ old("sub_products.$index.size", $subProduct["size"]) }}" />
                                                         </div>
                                                         <div class="space-y-2">
                                                             <label for="price-subProduct-{{ $index }}"
@@ -283,7 +276,7 @@
                                                                 type="number" step="0.01" min="0"
                                                                 class="w-full rounded-md border border-gray-300 p-2"
                                                                 placeholder="Enter price"
-                                                                value="{{ old("sub_products.$index.price", $subProduct->price) }}" />
+                                                                value="{{ old("sub_products.$index.price", $subProduct["price"]) }}" />
                                                         </div>
                                                         <div class="space-y-2">
                                                             <label for="basePrice-subProduct-{{ $index }}"
@@ -293,7 +286,7 @@
                                                                 type="number" step="0.01" min="0"
                                                                 class="w-full rounded-md border border-gray-300 p-2"
                                                                 placeholder="Enter base price"
-                                                                value="{{ old("sub_products.$index.base_price", $subProduct->base_price) }}" />
+                                                                value="{{ old("sub_products.$index.base_price", $subProduct["base_price"]) }}" />
                                                         </div>
                                                         <div class="space-y-2">
                                                             <label for="quantity-subProduct-{{ $index }}"
@@ -303,7 +296,7 @@
                                                                 type="number" min="0"
                                                                 class="w-full rounded-md border border-gray-300 p-2"
                                                                 placeholder="Enter quantity"
-                                                                value="{{ old("sub_products.$index.quantity", $subProduct->quantity) }}" />
+                                                                value="{{ old("sub_products.$index.quantity", $subProduct["quantity"]) }}" />
                                                         </div>
                                                         <div class="space-y-2">
                                                             <label for="subProductStatus-subProduct-{{ $index }}"
@@ -313,7 +306,7 @@
                                                                 class="w-full rounded-md bg-white border border-gray-300 p-2">
                                                                 @foreach ($productStatus as $status)
                                                                     <option value="{{ $status['value'] }}"
-                                                                        {{ old("sub_products.$index.status", $subProduct->status) == $status['value'] ? 'selected' : '' }}>
+                                                                        {{ old("sub_products.$index.status", $subProduct["status"]) == $status['value'] ? 'selected' : '' }}>
                                                                         {{ $status['label'] }}
                                                                     </option>
                                                                 @endforeach
@@ -334,7 +327,7 @@
                                                                     Images</span>
                                                             </button>
                                                             <div id="defaultImageDiv-subProduct-{{ $index }}"
-                                                                class="border border-dashed rounded-md h-[136px] p-4 text-center text-gray-500 {{ $subProduct->images && count($subProduct->images) > 0 ? 'hidden' : '' }}">
+                                                                class="border border-dashed rounded-md h-[136px] p-4 text-center text-gray-500 {{ $subProduct['images'] && count($subProduct['images']) > 0 ? 'hidden' : '' }}">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="40"
                                                                     height="40" viewBox="0 0 24 24" fill="none"
                                                                     stroke="currentColor" stroke-width="2"
@@ -349,7 +342,7 @@
                                                                 <p>No images added yet</p>
                                                             </div>
                                                             <div id="imagesContainer-subProduct-{{ $index }}"
-                                                                    class="h-[136px] {{ $subProduct->images && count($subProduct->images) > 0 ? '' : 'hidden' }}">
+                                                                    class="h-[136px] {{ $subProduct["images"] && count($subProduct["images"]) > 0 ? '' : 'hidden' }}">
                                                                 <div class="flex flex-row flex-wrap gap-1"></div>
                                                             </div>
                                                         </div>
@@ -357,8 +350,8 @@
                                                             <label class="block text-sm font-medium">Specifications</label>
                                                             <div id="specifications-container-subProduct-{{ $index }}"
                                                                 class="space-y-2">
-                                                                @if ($subProduct->specifications && count($subProduct->specifications) > 0)
-                                                                    @foreach ($subProduct->specifications as $specIndex => $spec)
+                                                                @if ($subProduct["specifications"] && count($subProduct["specifications"]) > 0)
+                                                                    @foreach ($subProduct["specifications"] as $specIndex => $spec)
                                                                         <div class="flex gap-2 items-start spec-row">
                                                                             <div class="flex-1">
                                                                                 <input
@@ -559,10 +552,7 @@
                         </div>
                     </form>
 
-                    <!-- Step 3: Add On Items (Placeholder) -->
-                    <div id="step-3" class="hidden animate-fade-in">
-                        <!-- Add your Step 3 content here -->
-                    </div>
+                 
                 </div>
 
                 <!-- Navigation Buttons -->
@@ -617,16 +607,17 @@
     <script>
      // Initialize imageArrays with existing images for editing
         var imageArrays = {
-            @if (isset($product) && isset($product->subProducts))
-                @foreach ($product->subProducts as $index => $subProduct)
+            @if (isset($product) && isset($product['sub_products']))
+                @foreach ($product['sub_products'] as $index => $subProduct)
                     'subProduct-{{ $index }}': [
-                        @if ($subProduct->images && count($subProduct->images) > 0)
-                            @foreach ($subProduct->images as $image)
+                        @if ($subProduct['images'] && count($subProduct['images']) > 0)
+                            @foreach ($subProduct['images'] as $image)
                                 {
-                                    fileUrl: '{{ asset('products/' . $image->name) }}',
+                                    fileUrl: '{{ asset('products/' . $image['name']) }}',
                                     isExisting: true,
-                                    fileName: '{{ $image->name }}',
-                                    id: '{{ $image->id }}' // Include ID for deletion tracking
+                                    fileName: '{{ $image['name'] }}',
+                                    id: '{{ $image['id'] }}', // Include ID for deletion tracking
+                                    uniqueId: '{{ $image['id'] . '-' . time() }}' // Unique identifier
                                 },
                             @endforeach
                         @endif
@@ -963,78 +954,84 @@
             });
 
             $(document).on('change', '[id^=hiddenImageInput-]', function(event) {
-                const subProductId = $(this).attr('id').replace('hiddenImageInput-', '');
-                if (!imageArrays[subProductId]) {
-                    imageArrays[subProductId] = [];
-                }
-                const files = event.target.files;
-                if (files.length > 5 || imageArrays[subProductId].length + files.length > 5) {
-                    showToast('You can add a maximum of 5 images.', 'error');
-                } else {
-                    for (let i = 0; i < files.length; i++) {
-                        const fileUrl = URL.createObjectURL(files[i]);
-                        imageArrays[subProductId].push({
-                            file: files[i],
-                            fileUrl: fileUrl,
-                            isExisting: false
-                        });
-                    }
-                    $(`#defaultImageDiv-${subProductId}`).addClass('hidden');
-                    imageLoopDiv(imageArrays[subProductId], subProductId);
-                    $(`#imagesContainer-${subProductId}`).siblings('.text-red-500').remove();
-                }
-            });
-
-            function imageLoopDiv(imageArrayLoop, subProductId) {
-                let $imagesContainer = $(`#imagesContainer-${subProductId}`);
-                if (imageArrayLoop.length > 0) {
-                    $imagesContainer.removeClass('hidden').html('');
-                    let $imageDiv = $('<div>').addClass('flex flex-row flex-wrap gap-1');
-                    imageArrayLoop.forEach(element => {
-                        let $div = $('<div>').addClass('relative w-32 h-16');
-                        let $imageCon = $('<img>').addClass('object-cover w-32 h-16').attr({
-                            src: element.fileUrl,
-                            alt: 'Product Image'
-                        });
-                        let $remove = $('<div>').attr('data-id', element.fileUrl).addClass(
-                            'absolute removeImage top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center'
-                        ).html(`
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 6 6 18"></path>
-                            <path d="m6 6 12 12"></path>
-                        </svg>
-                    `).data('sub-product-id', subProductId);
-                        $div.append($remove, $imageCon);
-                        $imageDiv.append($div);
+        const subProductId = $(this).attr('id').replace('hiddenImageInput-', '');
+        if (!imageArrays[subProductId]) {
+            imageArrays[subProductId] = [];
+        }
+        const files = event.target.files;
+        if (files.length > 5 || imageArrays[subProductId].length + files.length > 5) {
+            showToast('You can add a maximum of 5 images.', 'error');
+        } else {
+            for (let i = 0; i < files.length; i++) {
+                const fileUrl = URL.createObjectURL(files[i]);
+                const uniqueId = `${subProductId}-${Date.now()}-${i}`;
+                // Check for duplicate file names
+                if (!imageArrays[subProductId].some(img => img.file?.name === files[i].name)) {
+                    imageArrays[subProductId].push({
+                        file: files[i],
+                        fileUrl: fileUrl,
+                        isExisting: false,
+                        uniqueId: uniqueId
                     });
-                    $imagesContainer.append($imageDiv);
-                } else {
-                    $imagesContainer.addClass('hidden');
-                    $(`#defaultImageDiv-${subProductId}`).removeClass('hidden');
                 }
             }
+            $(`#defaultImageDiv-${subProductId}`).addClass('hidden');
+            imageLoopDiv(imageArrays[subProductId], subProductId);
+            $(`#imagesContainer-${subProductId}`).siblings('.text-red-500').remove();
+        }
+    });
 
-            $(document).on('click', '.removeImage', function() {
-                console.log(imageArrays)
-                const url = $(this).attr('data-id');
-                const subProductId = $(this).data('sub-product-id');
-                const index = imageArrays[subProductId].findIndex(obj => obj.fileUrl === url);
-                imageArrays[subProductId].splice(index, 1);
-                imageLoopDiv(imageArrays[subProductId], subProductId);
+            function imageLoopDiv(imageArrayLoop, subProductId) {
+        let $imagesContainer = $(`#imagesContainer-${subProductId}`);
+        if (imageArrayLoop.length > 0) {
+            $imagesContainer.removeClass('hidden').html('');
+            let $imageDiv = $('<div>').addClass('flex flex-row flex-wrap gap-1');
+            imageArrayLoop.forEach(element => {
+                let $div = $('<div>').addClass('relative w-32 h-16');
+                let $imageCon = $('<img>').addClass('object-cover w-32 h-16').attr({
+                    src: element.fileUrl,
+                    alt: 'Product Image'
+                });
+                let $remove = $('<div>').attr('data-id', element.uniqueId).addClass(
+                    'absolute removeImage top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center'
+                ).html(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 6 18"></path>
+                        <path d="m6 6 12 12"></path>
+                    </svg>
+                `).data('sub-product-id', subProductId);
+                $div.append($remove, $imageCon);
+                $imageDiv.append($div);
             });
+            $imagesContainer.append($imageDiv);
+        } else {
+            $imagesContainer.addClass('hidden');
+            $(`#defaultImageDiv-${subProductId}`).removeClass('hidden');
+        }
+    }
+
+    $(document).on('click', '.removeImage', function() {
+        const uniqueId = $(this).attr('data-id');
+        const subProductId = $(this).data('sub-product-id');
+        const index = imageArrays[subProductId].findIndex(obj => obj.uniqueId === uniqueId);
+        if (index !== -1) {
+            imageArrays[subProductId].splice(index, 1);
+            imageLoopDiv(imageArrays[subProductId], subProductId);
+        }
+    });
 
             // State management
             const state = {
                 currentStep: 1,
                 product: {
-                    name: '{{ old('name', isset($product) ? $product->name : '') }}',
-                    description: '{{ old('description', isset($product) ? $product->description : '') }}',
-                    status: '{{ old('status', isset($product) ? $product->status : 'draft') }}',
+                    name: '{{ old('name', isset($product) ? $product['name'] : '') }}',
+                    description: '{{ old('description', isset($product) ? $product["description"] : '') }}',
+                    status: '{{ old('status', isset($product) ? $product["status"]["value"] : 'draft') }}',
                     vendorId: '{{ $productId }}',
-                    slug: '{{ old('slug', isset($product) ? $product->slug : '') }}',
+                    slug: '{{ old('slug', isset($product) ? $product["slug"] : '') }}',
                     image: '',
                 },
-                slug: '{{ old('slug', isset($product) ? $product->slug : '') }}',
+                slug: '{{ old('slug', isset($product) ? $product["slug"] : '') }}',
                 productImages: [],
                 productSpecifications: [],
                 subProducts: [],
@@ -1198,7 +1195,7 @@
                     url = url.replace(':vendor', '{{ $productId }}');
                     console.log(url)
                     @if (isset($product))
-                        url = url.replace(':product', '{{ $product->id }}');
+                        url = url.replace(':product', '{{ $product["id"] }}');
                         formData.append('_method', 'PUT');
                     @endif
                     $.ajax({
@@ -1304,7 +1301,7 @@
                         '{{ isset($product) ? route('admin.products.update-step-2', ['vendor_id' => ':vendor', 'product' => ':product']) : route('admin.products.store-step-2', ['vendor_id' => ':vendor']) }}';
                     url = url.replace(':vendor', '{{ $productId }}');
                     @if (isset($product))
-                        url = url.replace(':product', '{{ $product->id }}');
+                        url = url.replace(':product', '{{ $product["id"] }}');
                         formData.append('_method', 'PUT');
                     @endif
                     $.ajax({
@@ -1350,7 +1347,6 @@
             // Step content elements
             const step1Content = document.getElementById('step-1');
             const step2Content = document.getElementById('step-2');
-            const step3Content = document.getElementById('step-3');
 
             // Helper function to show toast notifications
             function showToast(message, type = 'success') {
@@ -1422,7 +1418,7 @@
                 step1Content.classList.add('hidden');
                 step2Content.classList.add('hidden');
                 console.log(step)
-                for (let i = 1; i <= 3; i++) {
+                for (let i = 1; i < 3; i++) {
                     const indicator = document.getElementById(`step-indicator-${i}`);
                     if (i <= step) {
                         indicator.classList.remove('bg-gray-200', 'text-gray-600');
@@ -1432,7 +1428,7 @@
                         indicator.classList.add('bg-gray-200', 'text-gray-600');
                     }
 
-                    if (i < 2) {
+                    if (i < 1) {
                         const line = document.getElementById(`step-line-${i}`);
                         if (i < step) {
                             line.classList.remove('bg-gray-200');

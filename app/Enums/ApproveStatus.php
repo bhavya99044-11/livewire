@@ -28,4 +28,11 @@ enum ApproveStatus: Int
             ]
         ])->toArray();
     }
+
+    public function color(){
+        return match ($this) {
+            self::APPROVED => 'text-green-500',
+            self::PENDING => 'text-yellow-500',
+        };
+    }
 }

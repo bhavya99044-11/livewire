@@ -93,7 +93,6 @@ class AuthController extends Controller
             $admin = Admin::where('forgot_password_token', $request->token)->first();
 
             if (!$admin || Carbon::parse($admin->forgot_password_token_expiry)->diffInMinutes(Carbon::now()) >= 10) {
-                DB::rollBack();
                 return back()->with('error', __('messages.auth.invalid_token'))->withInput();
             }
 

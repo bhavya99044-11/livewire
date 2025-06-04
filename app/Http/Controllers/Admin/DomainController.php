@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DomainRequest;
+use App\Http\Resources\Admin\DomainResource;
 use App\Models\Admin\Domain;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,6 @@ class DomainController extends Controller
     public function index(Request $request)
     {
         try {
-            DB::beginTransaction();
             $perPage = $request->input('perPage', 10);
             $search = $request->input('search');
 
@@ -27,10 +27,9 @@ class DomainController extends Controller
                     ->orWhere('url', 'like', "%{$search}%");
             }
             $domains = $query->paginate($perPage);
-            DB::commit();
-            return view('admin.pages.domain.index', compact('domains', 'perPage', 'search'));
+            return view('admin.pages.domain.index',['domains'=>DomainResource::collection($domains)->response()->getData(true),
+             'search'=>$search]);
         } catch (\Exception $e) {
-            db::rollBack();
             return back()->with('error', __('messages.domain.fetch_failed'))->withInput();
         }
     }

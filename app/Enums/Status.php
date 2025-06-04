@@ -44,4 +44,13 @@ enum Status: Int
             'label' => $case->label(),
         ], self::cases());
     }
+
+    public function bgColor(): string
+    {
+        return match ($this) {
+            self::ACTIVE => '#E0F7E0',
+            self::INACTIVE => '#FFEBEB'
+        };
+    }
+
 }

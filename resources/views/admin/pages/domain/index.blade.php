@@ -14,7 +14,6 @@
         ];
 
     @endphp
-
     @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
 
     <head>
@@ -23,7 +22,6 @@
     </head>
     <section class="bg-gray-100 min-h-screen">
         @csrf
-
         <div class="container mx-auto px-4 py-8">
             <h1 class="text-2xl font-bold text-gray-800 mb-6">Domain Management</h1>
 
@@ -48,9 +46,9 @@
                         <select id="perPage" name="perPage"
                             class="bg-white px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                             onchange="this.form.submit()">
-                            <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
-                            <option value="20" {{ $perPage == 20 ? 'selected' : '' }}>20</option>
-                            <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
+                            <option value="10" {{ $domains['meta']['per_page'] == 10 ? 'selected' : '' }}>10</option>
+                            <option value="20" {{ $domains['meta']['per_page']  == 20 ? 'selected' : '' }}>20</option>
+                            <option value="50" {{ $domains['meta']['per_page']== 50 ? 'selected' : '' }}>50</option>
                         </select>
                     </div>
 
@@ -96,20 +94,20 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse ($domains as $domain)
+                        @forelse ($domains['data'] as $domain)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="checkbox" class="domainCheckbox" data-id="{{ $domain->id }}">
+                                    <input type="checkbox" class="domainCheckbox" data-id="{{ $domain['id'] }}">
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $domain->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $domain->url }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $domain['name'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $domain['url'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <button
-                                        onclick="openEditModal({{ $domain->id }}, '{{ addslashes($domain->name) }}', '{{ $domain->url }}')"
+                                        onclick="openEditModal({{ $domain['id'] }}, '{{ addslashes($domain['name']) }}', '{{ $domain['url'] }}')"
                                         class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button data-id="{{ $domain->id }}" type="submit"
+                                    <button data-id="{{ $domain['id'] }}" type="submit"
                                         class="deleteDomain text-red-500 hover:text-red-800 px-2 py-1 rounded">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -122,11 +120,6 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="mt-4">
-                {{ $domains->appends(['perPage' => $perPage, 'search' => $search])->links('vendor.pagination.tailwind') }}
             </div>
 
             <!-- Create Modal -->

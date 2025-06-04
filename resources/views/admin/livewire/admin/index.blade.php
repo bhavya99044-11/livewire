@@ -107,59 +107,69 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @if ($admins->isNotEmpty())
-                            @foreach ($admins as $admin)
-                                <tr class="@if ($admin->id == Auth::guard('admin')->user()->id) bg-gray-200 @endif">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            @if ($admin->id != \Auth::guard('admin')->user()->id)
-                                                <input class="cursor-pointer selectAdmin" value={{ $admin->id }}
-                                                    type="checkbox"></input>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div
-                                                class="@if ($admin->id == \Auth::guard('admin')->user()->id) !text-blue-500 @endif text-sm font-medium text-gray-900">
-                                                {{ $admin->name }}</div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-500">{{ $admin->email }}</div>
-                                    </td>
-
-                                    <td class="px-6 py-4 text-center whitespace-nowrap">
-                                        <button wire:click="rolesEdit({{ $admin->id }})"
-                                            class="px-2 border border-[{{ AdminRoles::from($admin->role)->color() }}]  inline-flex text-xs capitalize leading-5  rounded-full bg-blue-100 "
-                                            style="border-color: {{ AdminRoles::from($admin->role)->color() }}; color: {{ AdminRoles::from($admin->role)->color() }}; background-color:{{ AdminRoles::from($admin->role)->bgColor() }};">
-                                            {{ AdminRoles::from($admin->role)->label() }}
-                                        </button>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 border inline-flex capitalize text-xs leading-5  rounded-full  @if ($admin->status == '1') text-green-800 border-green-800 bg-green-100 @else border-red-600 text-red-600 bg-red-100 @endif">
-                                            {{ Status::from($admin->status)->label() }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                        @if (Auth::guard('admin')->user()->hasPermission('admin-edit'))
-                                            <button title="Edit"
-                                                wire:click="$dispatch('editAdmin',{id:{{ $admin->id }}})"
-                                                class="@if ($admin->id == \Auth::guard('admin')->user()->id) disabled:opacity-50  !cursor-not-allowed @endif cursor-pointer text-blue-600 hover:text-blue-900 mr-3"
-                                                @if ($admin->id == \Auth::guard('admin')->user()->id) disabled @endif><i
-                                                    class="fas fa-edit"></i></button>
-                                        @endif
-
-                                        @if (Auth::guard('admin')->user()->hasPermission('admin-delete'))
-                                            <button title="Delete" data-id="{{ $admin->id }}"
-                                                class="@if ($admin->id == \Auth::guard('admin')->user()->id) !cursor-not-allowed @endif delete cursor-pointer disabled:opacity-50 text-red-600 hover:text-red-900"
-                                                @if ($admin->id == \Auth::guard('admin')->user()->id) disabled @endif><i
-                                                    class="fa-solid fa-trash"></i></button>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
+                        @if (!empty($admins))
+                        @foreach ($admins as $admin)
+                        <tr class="@if ($admin['id'] == Auth::guard('admin')->user()->id) bg-gray-200 @endif">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    @if ($admin['id'] != Auth::guard('admin')->user()->id)
+                                        <input class="cursor-pointer selectAdmin" value="{{ $admin['id'] }}" type="checkbox">
+                                    @endif
+                                </div>
+                            </td>
+                        
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div
+                                        class="@if ($admin['id'] == Auth::guard('admin')->user()->id) !text-blue-500 @endif text-sm font-medium text-gray-900">
+                                        {{ $admin['name'] }}
+                                    </div>
+                                </div>
+                            </td>
+                        
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">{{ $admin['email'] }}</div>
+                            </td>
+                        
+                            <td class="px-6 py-4 text-center whitespace-nowrap">
+                                <button
+                                    wire:click="rolesEdit({{ $admin['id'] }})"
+                                    class="px-2 border inline-flex text-xs capitalize leading-5 rounded-full"
+                                    style="border-color: {{ $admin['role']['color'] }}; color: {{ $admin['role']['color'] }}; background-color:{{ $admin['role']['bgColor'] }};">
+                                    {{ $admin['role']['label'] }}
+                                </button>
+                            </td>
+                        
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span
+                                    class="px-2 border inline-flex capitalize text-xs leading-5 rounded-full"
+                                    style="color: {{ $admin['status']['color'] }}; border-color: {{ $admin['status']['color'] }}; background-color: {{ $admin['status']['bgColor']}}">
+                                    {{ $admin['status']['label'] }}
+                                </span>
+                            </td>
+                        
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                @if (Auth::guard('admin')->user()->hasPermission('admin-edit'))
+                                    <button title="Edit"
+                                        wire:click="$dispatch('editAdmin', { id: {{ $admin['id'] }} })"
+                                        class="@if ($admin['id'] == Auth::guard('admin')->user()->id) disabled:opacity-50 !cursor-not-allowed @endif cursor-pointer text-blue-600 hover:text-blue-900 mr-3"
+                                        @if ($admin['id'] == Auth::guard('admin')->user()->id) disabled @endif>
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                @endif
+                        
+                                @if (Auth::guard('admin')->user()->hasPermission('admin-delete'))
+                                    <button title="Delete"
+                                        data-id="{{ $admin['id'] }}"
+                                        class="@if ($admin['id'] == Auth::guard('admin')->user()->id) !cursor-not-allowed @endif delete cursor-pointer disabled:opacity-50 text-red-600 hover:text-red-900"
+                                        @if ($admin['id'] == Auth::guard('admin')->user()->id) disabled @endif>
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                        
                         @else
                             <tr class="">
                                 <td class="text-center py-5" colspan="6"> No data available right now </td>
@@ -169,7 +179,7 @@
                 </table>
             </div>
         </div>
-        {{ $admins->links('') }}
+        {{ $admins->links( ) }}
     </div>
     @livewire('Admin.AdminForm')
 </section>

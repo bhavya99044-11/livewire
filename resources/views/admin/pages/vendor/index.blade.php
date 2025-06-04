@@ -273,10 +273,6 @@ $breadCrumbs=[
                      }else{
                         tableView(response)
                      }
-                     if(response.data.vendors.data.length>0){
-                        console.log('eeeeeee')
-                     }
-
                     },
                     error: function() {
                         swalError('Could not load vendors');
@@ -285,11 +281,12 @@ $breadCrumbs=[
             }
 
             function tableView(response){
+                console.log(response)
                 let html = '';
-                        if (response.data.vendors.data.length === 0) {
+                        if (response.data.length === 0) {
                             html = `<tr><td colspan="9" class="text-center py-4">No vendors found.</td></tr>`;
                         } else {
-                            response.data.vendors.data.forEach(vendor => {
+                            response.data.forEach(vendor => {
                                 html += `
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -301,23 +298,23 @@ $breadCrumbs=[
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vendor.shop_name}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
                                         <span class="status-field inline-flex text-xs capitalize leading-5  rounded-full px-3 py-1 cursor-pointer
-                                            ${vendor.status === '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}"
-                                            data-id="${vendor.id}" data-field="status" data-name="status" data-value="${vendor.status}">
-                                            ${response.data.enumStatus[vendor.status]?.label || vendor.status}
+                                            ${vendor.status.value === '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}"
+                                            data-id="${vendor.id}" data-field="status" data-name="status" data-value="${vendor.status.value}">
+                                    ${vendor.status.label}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
                                         <span class="status-field inline-flex text-xs capitalize leading-5 rounded-full px-3 py-1 cursor-pointer
-                                            ${vendor.is_shop == '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}"
-                                            data-id="${vendor.id}" data-field="is_shop" data-name="shop" data-value="${vendor.is_shop}">
-                                            ${response.data.enumShopStatus[vendor.is_shop]?.label || vendor.is_shop}
+                                            ${vendor.is_shop.value == '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}"
+                                            data-id="${vendor.id}" data-field="is_shop" data-name="shop" data-value="${vendor.is_shop.value}">
+                                            ${vendor.is_shop.label}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
                                         <button  class="status-field inline-flex text-xs capitalize leading-5  rounded-full px-3 py-1 cursor-pointer
-                                            ${vendor.is_approved == '1' ? 'text-green-700 bg-green-100 border border-green-700 cursor-not-allowed ' : 'text-red-700 bg-red-100 border border-red-700'}"
-                                            data-id="${vendor.id}" data-field="is_approved" data-name="approve" data-value="${vendor.is_approved}" ${vendor.is_approved == '1'?'Disabled':''}>
-                                            ${response.data.enumApproveStatus[vendor.is_approved]?.label || vendor.is_approved}
+                                            ${vendor.is_approved.value == '1' ? 'text-green-700 bg-green-100 border border-green-700 cursor-not-allowed ' : 'text-red-700 bg-red-100 border border-red-700'}"
+                                            data-id="${vendor.id}" data-field="is_approved" data-name="approve" data-value="${vendor.is_approved.value}" ${vendor.is_approved.value == '1'?'Disabled':''}>
+                                            ${vendor.is_approved.label}
                                         </button>
                                     </td>
                                     <td class="px-6 py-4 gap-2 flex flex-row whitespace-nowrap text-sm text-gray-900">
@@ -341,12 +338,12 @@ $breadCrumbs=[
                         $('#vendorTable').html(html);
 
                         // Update pagination
-                        $('#showingFrom').text(response.data.vendors.from || 0);
-                        $('#showingTo').text(response.data.vendors.to || 0);
-                        $('#totalRecords').text(response.data.vendors.total || 0);
+                        $('#showingFrom').text(response.meta.current_page==1?1:response.meta.current_page *10);
+                        $('#showingTo').text(parseInt(response.meta.current_page)+parseInt(response.meta.per_page)-1 || 0);
+                        $('#totalRecords').text(response.meta.total || 0);
 
                         let paginationHtml = '';
-                        if (response.data.vendors.last_page > 1) {
+                        if (response.meta.last_page > 1) {
                             paginationHtml += `
                                 <button class="page-link px-3 py-1 border rounded ${currentPage === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-white hover:bg-gray-100'}" 
                                     ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
@@ -354,7 +351,7 @@ $breadCrumbs=[
                                 </button>`;
 
                             let startPage = Math.max(1, currentPage - 4);
-                            let endPage = Math.min(response.data.vendors.last_page, startPage + 9);
+                            let endPage = Math.min(response.meta.last_page, startPage + 9);
                             startPage = Math.max(1, endPage - 9);
 
                             if (startPage > 1) {
@@ -371,15 +368,15 @@ $breadCrumbs=[
                                     </button>`;
                             }
 
-                            if (endPage < response.data.vendors.last_page) {
+                            if (endPage < response.data.last_page) {
                                 paginationHtml += `
-                                    ${endPage < response.data.vendors.last_page - 1 ? '<span class="px-3 py-1">...</span>' : ''}
+                                    ${endPage < response.data.last_page - 1 ? '<span class="px-3 py-1">...</span>' : ''}
                                     <button class="page-link px-3 py-1 border rounded bg-white hover:bg-gray-100" data-page="${response.data.vendors.last_page}">${response.data.vendors.last_page}</button>`;
                             }
 
                             paginationHtml += `
-                                <button class="page-link px-3 py-1 border rounded ${currentPage === response.data.vendors.last_page ? 'bg-gray-200 cursor-not-allowed' : 'bg-white hover:bg-gray-100'}" 
-                                    ${currentPage === response.data.vendors.last_page ? 'disabled' : ''} data-page="${currentPage + 1}">
+                                <button class="page-link px-3 py-1 border rounded ${currentPage === response.meta.last_page ? 'bg-gray-200 cursor-not-allowed' : 'bg-white hover:bg-gray-100'}" 
+                                    ${currentPage === response.meta.last_page ? 'disabled' : ''} data-page="${currentPage + 1}">
                                     Next
                                 </button>`;
                         }
@@ -388,8 +385,8 @@ $breadCrumbs=[
 
             function gridView(response){
                let html='';
-               if(response.data.vendors.data.length > 0) {
-    response.data.vendors.data.forEach((data, index) => {
+               if(response.data.length > 0) {
+    response.data.forEach((data, index) => {
         html += `
         <div class="flip-card relative w-full max-w-md mx-auto h-96 perspective-1000 mb-6">
             <!-- Flip Card Inner Container -->
@@ -430,24 +427,24 @@ $breadCrumbs=[
                     <!-- Status Badges -->
                     <div class="mt-auto grid grid-cols-3 gap-2">
                         <div class="status-field flex items-center justify-center text-xs rounded-full px-2 py-1 cursor-pointer transition-all
-                            ${data.status === '1' ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
-                            data-id="${data.id}" data-field="status" data-value="${data.status}">
+                            ${data.status.value === '1' ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
+                            data-id="${data.id}" data-field="status" data-value="${data.status.value}">
                             <i class="fas ${data.status === '1' ? 'fa-check-circle' : 'fa-times-circle'} mr-1"></i>
-                            ${response.data.enumStatus[data.status]?.label || data.status}
+                            ${data.status.label}
                         </div>
                         
                         <div class="status-field flex items-center justify-center text-xs rounded-full px-2 py-1 cursor-pointer transition-all
-                            ${data.is_shop == '1' ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
-                            data-id="${data.id}" data-field="is_shop" data-value="${data.is_shop}">
-                            <i class="fas ${data.is_shop == '1' ? 'fa-store' : 'fa-store-slash'} mr-1"></i>
-                            ${response.data.enumShopStatus[data.is_shop]?.label || data.is_shop}
+                            ${data.is_shop.value == '1' ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
+                            data-id="${data.id}" data-field="is_shop" data-value="${data.is_shop.value}">
+                            <i class="fas ${data.is_shop.value == '1' ? 'fa-store' : 'fa-store-slash'} mr-1"></i>
+                            ${data.is_shop.label}
                         </div>
                         
                         <button class="status-field flex items-center justify-center text-xs rounded-full px-2 py-1 cursor-pointer transition-all
-                            ${data.is_approved == '1' ? 'bg-green-100 text-green-800 border border-green-300 cursor-not-allowed' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
-                            data-id="${data.id}" data-field="is_approved" data-value="${data.is_approved}" ${data.is_approved == '1' ? 'disabled' : ''}>
-                            <i class="fas ${data.is_approved == '1' ? 'fa-thumbs-up' : 'fa-thumbs-down'} mr-1"></i>
-                            ${response.data.enumApproveStatus[data.is_approved]?.label || data.is_approved}
+                            ${data.is_approved.value == '1' ? 'bg-green-100 text-green-800 border border-green-300 cursor-not-allowed' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
+                            data-id="${data.id}" data-field="is_approved" data-value="${data.is_approved.value}" ${data.is_approved.value == '1' ? 'disabled' : ''}>
+                            <i class="fas ${data.is_approved.value == '1' ? 'fa-thumbs-up' : 'fa-thumbs-down'} mr-1"></i>
+                            ${data.is_approved.label}
                         </button>
                     </div>
                     

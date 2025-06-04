@@ -15,6 +15,7 @@ use App\Models\Admin\ProductItem;
 use App\Models\Admin\SubProduct;
 use App\Models\Admin\ProductSpecification;
 use App\Models\Admin\ProductImage;
+use App\Http\Resources\Admin\ProductResource;
 
 class ProductController extends Controller
 {
@@ -25,15 +26,18 @@ class ProductController extends Controller
 
     public function create()
     {
-        $productId = Session::get('product_step_form');
-        $product = Product::with([
-            'items',
-            'subProducts',
-            'subProducts.images',
-            'subProducts.specifications',
-        ])->find($productId);
-
-        return view('admin.pages.products.create', compact('product'));
+        try{
+            $productId = Session::get('product_step_form');
+            $productFind = Product::find($productId);
+            $product=null;
+            if($productFind){
+            $product=(new ProductResource($productFind))->toArray(request());
+            }
+            return view('admin.pages.products.create', compact('product'));
+        }
+        catch (\Exception $e) {
+            return back()->with('error', __('messages.product.fetch_error'))->withInput();
+        }
     }
 
     public function searchVendor(Request $request)
@@ -46,8 +50,8 @@ class ProductController extends Controller
                 ->get();
 
             return response()->json([
-                'message' => '',
-                'error'   => '',
+                'message' => null,
+                'error'   => null,
                 'data'    => $vendors,
             ], 200);
         } catch (\Exception $e) {
@@ -109,13 +113,12 @@ class ProductController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => __('messages.product.step_one_saved'),
-                'error'=>'',
+                'error'=>null,
                 'data'    => ['slug' => $product->slug],
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'success' => false,
                 'message' => __('messages.product.error_step_one'),
                 'error'   => $e->getMessage(),
                 'data'=>[]
@@ -123,7 +126,7 @@ class ProductController extends Controller
         }
     }
 
-    public function productStepTwo(ProductStepTwoRequest $request)
+    public function productStepTwo(Request $request)
     {
         try {
             DB::beginTransaction();
@@ -185,26 +188,27 @@ class ProductController extends Controller
                         }
                     }
 
-                    if (isset($subProductData['existing_images'])) {
-                        foreach ($subProductData['existing_images'] as $image) {
-                            $images[] = $image;
-                        }
-                    }
+                $existingImages = $subProductData['existing_images'] ?? [];
+                $newImages = $subProductData['images'] ?? [];
+                $processedImages = [];
 
-                    if (isset($subProductData['images']) && !empty($subProductData['images'])) {
-                        foreach ($subProductData['images'] as $image) {
-                            if ($image->isValid()) {
-                                $filename = time() . '-' . Str::slug($subProduct->size_type) . '.' . $image->getClientOriginalExtension();
+                // Keep track of existing images
+                if (!empty($newImages)) {
+                    foreach ($newImages as $image) {
+                        if ($image->isValid()) {
+                            $filename = time() . '-' . Str::slug($subProduct->size_type) . '-' . uniqid() . '.' . $image->getClientOriginalExtension();
+                            // Check if image already exists to prevent duplicates
+                            if (!in_array($filename, $processedImages) && !ProductImage::where('sub_product_id', $subProduct->id)->where('name', $filename)->exists()) {
                                 $image->move(public_path('products'), $filename);
-                                $images[] = $filename;
-
                                 ProductImage::create([
                                     'sub_product_id' => $subProduct->id,
                                     'name'           => $filename,
                                 ]);
+                                $processedImages[] = $filename;
                             }
                         }
                     }
+                }
 
                     $subProducts[] = $subProduct;
                 }
@@ -214,11 +218,12 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'error'=>"",
+                'error'=>null,
                 'message' => __('messages.product.step_two_saved'),
                 'data'    => ['subProducts' => $subProducts],
             ], 200);
         } catch (\Exception $e) {
+            dd($e);
             DB::rollBack();
             return response()->json([
                 'success' => false,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\AdminRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PermissionRequest;
+use App\Http\Resources\Admin\PermissionResource;
 use App\Models\Admin\Admin;
 use App\Models\Admin\Permission;
 use Illuminate\Http\Request;
@@ -95,7 +96,7 @@ class PermissionController extends Controller
             return response()->json([
                 'message' => __('messages.permission.show_success'),
                 'error' => null,
-                'data' => $permission,
+                'data' =>(new PermissionResource($permission))->toArray(request()),
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

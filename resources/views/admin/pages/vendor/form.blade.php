@@ -32,7 +32,6 @@ $breadCrumbs=[
 ]
 
 @endphp
-
 @include('admin.components.bread-crumb',['breadCrumbs'=>$breadCrumbs])
     <section class="bg-gray-100">
         <div class="container mx-auto px-4 py-8">
@@ -41,7 +40,7 @@ $breadCrumbs=[
                 <p class="text-gray-600">Please fill out the form below with vendor information.</p>
                 {{-- Grid Section --}}
                 <form id='vendorForm' class="m-10 space-y-3" enctype="multipart/form-data" 
-                      action="{{ isset($vendor) ? route('admin.vendors.update', $vendor->id) : route('admin.vendors.store') }}" 
+                      action="{{ isset($vendor) ? route('admin.vendors.update', $vendor['id']) : route('admin.vendors.store') }}" 
                       method="POST">
                     @csrf
                     @if(isset($vendor))
@@ -55,7 +54,7 @@ $breadCrumbs=[
                                 <label for="name" class="text-gray-700">Name :</label>
                                 <div class="parent flex flex-col">
                                     <input type="text" name="name" class="bg-inherit form-input" 
-                                           value="{{ old('name', isset($vendor) ? $vendor->name : '') }}">
+                                           value="{{ old('name', isset($vendor) ? $vendor['name'] : '') }}">
                                 </div>
                             </div>
                         </div>
@@ -65,7 +64,7 @@ $breadCrumbs=[
                                 <label for="email" class="block text-gray-700">Email :</label>
                                 <div class="parent flex flex-col">
                                     <input type="email" name="email" class="bg-inherit form-input" 
-                                           value="{{ old('email', isset($vendor) ? $vendor->email : '') }}">
+                                           value="{{ old('email', isset($vendor) ? $vendor['email'] : '') }}">
                                 </div>
                             </div>
                         </div>
@@ -75,7 +74,7 @@ $breadCrumbs=[
                                 <label for="contact_number" class="block text-gray-700">Number :</label>
                                 <div class="parent flex flex-col">
                                     <input type="text" name="contact_number" class="bg-inherit form-input" 
-                                           value="{{ old('contact_number', isset($vendor) ? $vendor->contact_number : '') }}">
+                                           value="{{ old('contact_number', isset($vendor) ? $vendor["contact_number"] : '') }}">
                                 </div>
                             </div>
                         </div>
@@ -100,7 +99,7 @@ $breadCrumbs=[
                                 <label for="shop_name" class="block text-gray-700">Shop Name :</label>
                                 <div class="parent flex flex-col">
                                     <input type="text" name="shop_name" class="form-input" 
-                                           value="{{ old('shop_name', isset($vendor) ? $vendor->shop_name : '') }}">
+                                           value="{{ old('shop_name', isset($vendor) ? $vendor["shop_name"] : '') }}">
                                 </div>
                             </div>
                         </div>
@@ -113,7 +112,7 @@ $breadCrumbs=[
                             </label>
                             <div class="shrink-0 w-12 h-12 rounded-full border border-gray-300 overflow-hidden">
                                 <img id="logoPreview" class="w-full h-full object-cover" 
-                                     src="{{ isset($vendor) && $vendor->logo_url ? asset('storage/logos/'.$vendor->logo_url) : asset('storage/logos/default_image.png') }}" 
+                                     src="{{ isset($vendor) && $vendor["logo_url"] ? asset('storage/logos/'.$vendor["logo_url"]) : asset('storage/logos/default_image.png') }}" 
                                      alt="Logo Preview">
                             </div>
                         </div>
@@ -121,7 +120,7 @@ $breadCrumbs=[
                         <div class="mb-2 gap-2 items-center flex flex-row">
                             <label for="address" class="block text-gray-700">Address :</label>
                             <div class="parent flex flex-col">
-                                <textarea name="address" class="form-input">{{ old('address', isset($vendor) ? $vendor->address : '') }}</textarea>
+                                <textarea name="address" class="form-input">{{ old('address', isset($vendor) ? $vendor["address"] : '') }}</textarea>
                             </div>
                         </div>
                         {{-- City --}}
@@ -129,7 +128,7 @@ $breadCrumbs=[
                             <label for="city" class="block text-gray-700">City :</label>
                             <div class="parent flex flex-col">
                                 <input type="text" name="city" class="form-input" 
-                                       value="{{ old('city', isset($vendor) ? $vendor->city : '') }}">
+                                       value="{{ old('city', isset($vendor) ? $vendor["city"] : '') }}">
                             </div>
                         </div>
                         {{-- State --}}
@@ -137,7 +136,7 @@ $breadCrumbs=[
                             <label for="state" class="block text-gray-700">State :</label>
                             <div class="parent flex flex-col">
                                 <input type="text" name="state" class="form-input" 
-                                       value="{{ old('state', isset($vendor) ? $vendor->state : '') }}">
+                                       value="{{ old('state', isset($vendor) ? $vendor["state"] : '') }}">
                             </div>
                         </div>
                         {{-- Country --}}
@@ -145,7 +144,7 @@ $breadCrumbs=[
                             <label for="country" class="block text-gray-700">Country :</label>
                             <div class="parent flex flex-col">
                                 <input type="text" name="country" class="form-input" 
-                                       value="{{ old('country', isset($vendor) ? $vendor->country : '') }}">
+                                       value="{{ old('country', isset($vendor) ? $vendor["country"] : '') }}">
                             </div>
                         </div>
                         {{-- Pincode --}}
@@ -153,7 +152,7 @@ $breadCrumbs=[
                             <label for="pincode" class="block text-gray-700">Pincode :</label>
                             <div class="parent flex flex-col">
                                 <input type="text" name="pincode" class="form-input" 
-                                       value="{{ old('pincode', isset($vendor) ? $vendor->pincode : '') }}">
+                                       value="{{ old('pincode', isset($vendor) ? $vendor["pincode"] : '') }}">
                             </div>
                         </div>
                         {{-- Status --}}
@@ -163,7 +162,7 @@ $breadCrumbs=[
                         <select name="is_shop" class="bg-white form-input">
                             @foreach ($shopStatuses as $status)
                                 <option value="{{ $status->value }}"
-                                    {{ old('is_shop', $vendor->is_shop ?? '') == $status->value ? 'selected' : '' }}>
+                                    {{isset($vendor)?$vendor["is_shop"]['value']== $status->value?'selected':'' : '' }}>
                                     {{ $status->label() }}
                                 </option>
                             @endforeach
@@ -173,11 +172,10 @@ $breadCrumbs=[
                     <div class="mb-2 gap-2 flex flex-row items-center">
                         <label for="is_approve" class="block text-gray-700">Approve :</label>
                         <div class="parent flex flex-col">
-                        <select name="is_approved" id="isApproveSelecet" class="bg-white form-input" @if( isset($vendor) &&  $vendor->is_approved==1) disabled @endif>
+                        <select name="is_approved" id="isApproveSelecet" class="bg-white form-input" @if( isset($vendor) &&  $vendor['is_approved']['value']==1) disabled @endif>
                             @foreach ($approveStatuses as $status)
                                 <option value="{{ $status->value }}"
-
-                                    {{ old('is_approve', $vendor->is_approved ?? '') == $status->value ? 'selected' : '' }}>
+                                    {{isset($vendor)?$vendor["is_approved"]['value']== $status->value?'selected':'' : '' }}>
                                     {{ $status->label() }}
                                 </option>
                             @endforeach
@@ -190,7 +188,7 @@ $breadCrumbs=[
                         <select name="status" class="bg-white form-input">
                             @foreach ($generalStatuses as $status)
                                 <option value="{{ $status->value }}"
-                                    {{ old('status', $vendor->status ?? '') == $status->value ? 'selected' : '' }}>
+                                    {{isset($vendor)?$vendor["status"]['value']== $status->value?'selected':'' : '' }}>
                                     {{ $status->label() }}
                                 </option>
                             @endforeach
@@ -201,7 +199,7 @@ $breadCrumbs=[
                             <label for="latitude" class="block text-gray-700">Latitude :</label>
                             <div class="parent flex flex-col">
                                 <input type="text" name="latitude" class="form-input" 
-                                       value="{{ old('latitude', isset($vendor) ? $vendor->latitude : '') }}">
+                                       value="{{ old('latitude', isset($vendor) ? $vendor['latitude'] : '') }}">
                             </div>
                         </div>
                         {{-- Longitude --}}
@@ -209,7 +207,7 @@ $breadCrumbs=[
                             <label for="longitude" class="block text-gray-700">Longitude :</label>
                             <div class="parent flex flex-col">
                                 <input type="text" name="longitude" class="form-input" 
-                                       value="{{ old('longitude', isset($vendor) ? $vendor->longitude : '') }}">
+                                       value="{{ old('longitude', isset($vendor) ? $vendor["longitude"] : '') }}">
                             </div>
                         </div>
                         {{-- Open Time --}}
@@ -217,7 +215,7 @@ $breadCrumbs=[
                             <label for="open_time" class="block text-gray-700">Open Time :</label>
                             <div class="parent flex flex-col">
                                 <input type="time" name="open_time" class="form-input" 
-                                       value="{{ old('open_time', isset($vendor) ? \Carbon\Carbon::parse($vendor->open_time)->format('H:i') : '') }}">
+                                       value="{{ old('open_time', isset($vendor) ? \Carbon\Carbon::parse($vendor["open_time"])->format('H:i') : '') }}">
                             </div>
                         </div>
                         {{-- Close Time --}}
@@ -225,7 +223,7 @@ $breadCrumbs=[
                             <label for="close_time" class="block text-gray-700">Close Time :</label>
                             <div class="parent flex flex-col">
                                 <input type="time" name="close_time" class="form-input" 
-                                       value="{{ old('close_time', isset($vendor) ? \Carbon\Carbon::parse($vendor->close_time)->format('H:i')  : '') }}">
+                                       value="{{ old('close_time', isset($vendor) ? \Carbon\Carbon::parse($vendor["close_time"])->format('H:i')  : '') }}">
                             </div>
                         </div>
                         {{-- Processing Charges --}}
@@ -233,7 +231,7 @@ $breadCrumbs=[
                             <label for="packaging_processing_charges" class="block text-gray-700">Processing Charges :</label>
                             <div class="parent flex flex-col">
                                 <input type="text" name="packaging_processing_charges" class="form-input" 
-                                       value="{{ old('packaging_processing_charges', isset($vendor) ? $vendor->packaging_processing_charges : '') }}">
+                                       value="{{ old('packaging_processing_charges', isset($vendor) ? $vendor["packaging_processing_charges"] : '') }}">
                             </div>
                         </div>
                         {{-- Domain --}}
@@ -243,7 +241,7 @@ $breadCrumbs=[
                             <select name="domain_id[]" id="domainSelect" multiple="multiple"  class="bg-white form-input">
                                 
                                 @foreach ($domains as $domain)
-                                    <option  value={{$domain->id}} @if(isset($vendor) && $vendor['domains']->contains('id',$domain->id)) selected @endif>{{$domain->name}}</option>
+                                    <option  value={{$domain->id}} @if(isset($vendor) && $vendor['domains']->contains('id',$domain["id"])) selected @endif>{{$domain->name}}</option>
                                 @endforeach
                             </select>
                         </div></div>

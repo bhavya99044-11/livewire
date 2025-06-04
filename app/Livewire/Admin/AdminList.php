@@ -9,6 +9,9 @@ use App\Models\Admin\Admin as AdminModel;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Http\Resources\Admin\AdminResource;
+use Illuminate\Support\Collection;
+
 
 class AdminList extends Component
 {
@@ -41,8 +44,9 @@ class AdminList extends Component
             ->orderBy('created_at', 'DESC')
             ->paginate($this->perPage)
             ->withQueryString();
-
-        return view('admin.livewire.admin.index', [
+            $transformedAdmins = AdminResource::collection($admins)->toArray(request());
+            $admins->setCollection(collect($transformedAdmins));
+            return view('admin.livewire.admin.index', [
             'admins' => $admins,
         ])->layout('layouts.admin-livewire');
     }

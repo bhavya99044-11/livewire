@@ -29,6 +29,5 @@ class Admin extends Authenticatable
 
     public function hasAccess($permission){
         return $this->permissions()->where('module',$permission)->exists();
-        // dd($permission);
     }
 }

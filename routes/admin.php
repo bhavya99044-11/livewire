@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Middleware\Admin\AdminAuthMiddleware;
-use App\Http\Middleware\Admin\AuthLoginMiddleware;
+use App\Http\Middleware\Admin\LoginCheckMiddleware;
 use App\Livewire\Admin\AdminList;
 use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +17,7 @@ Route::get('/test', function () {
     return text('test_key', 'Hello world');
 });
 
-Route::middleware(AuthLoginMiddleware::class)->group(function () {
+Route::middleware(LoginCheckMiddleware::class)->group(function () {
 
     Route::get('/login', function () {
         return view('admin.auth.login');
