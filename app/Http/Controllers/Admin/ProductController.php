@@ -16,12 +16,36 @@ use App\Models\Admin\SubProduct;
 use App\Models\Admin\ProductSpecification;
 use App\Models\Admin\ProductImage;
 use App\Http\Resources\Admin\ProductResource;
+use Illuminate\Support\Collection;
 
 class ProductController extends Controller
 {
+
+
     public function index()
     {
         return view('admin.product.index');
+    }
+
+    public function productList($vendorId,Request $request){
+        try {
+            $currentPage=$request->input('page',1);
+            $perPage=$request->input('perPage',10);
+            $vendor = Vendor::findOrFail($vendorId);
+            $products=$vendor->products()
+            ->when($request->search !=null,function($query)use($request){
+                $query->where('name','Like','%'.$request->search.'%');
+            })
+            ->when($request->status !=null,function($query)use($request){
+                $query->where('status',$request->status);
+            })
+            ->paginate($perPage, ['*'], 'page', $currentPage);
+            $transformedProducts = ProductResource::collection($products)->toArray(request());
+            $products->setCollection(collect($transformedProducts));
+            return view('admin.pages.products.index', compact('products'));
+        } catch (\Exception $e) {
+            return back()->with('error', __('messages.product.fetch_error'))->withInput();
+        }
     }
 
     public function create()
@@ -37,6 +61,35 @@ class ProductController extends Controller
         }
         catch (\Exception $e) {
             return back()->with('error', __('messages.product.fetch_error'))->withInput();
+        }
+    }
+
+    public function edit($vendorId,$productId){
+        try {
+            $productFind = Product::findOrFail($productId);
+            $product = (new ProductResource($productFind))->toArray(request());
+            return view('admin.pages.products.create', compact('product'));
+        } catch (\Exception $e) {
+            return back()->with('error', __('messages.product.fetch_error'))->withInput();
+        }
+    }
+
+    public function updateActions(Request $request){
+        try{
+            $product=Product::whereIn('id',$request->ids)->update(
+             [ $request->field=>$request->value]
+            );
+            return response()->json([
+                'message' => __('messages.product.action_updated'),
+                'error'   => null,
+                'data'    => $product,
+            ],200);
+        }catch( \Exception $e) {
+            return response()->json([
+                'message' => __('messages.product.error_update_action'),
+                'error'   => $e->getMessage(),
+                'data'=>[]
+            ], $e->getCode() ?: 500);
         }
     }
 
@@ -68,10 +121,9 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
 
-            $productId = Session::get('product_step_form');
+            $productId = Session::get('product_step_form') ||$request->route('product');
             $slug = $request->slug;
-
-            if ($productId && !$slug) {
+            if ($productId) {
                 $existingProduct = Product::find($productId);
                 $slug = $existingProduct ? $existingProduct->slug : null;
             }
@@ -126,12 +178,33 @@ class ProductController extends Controller
         }
     }
 
+    public function delete($id){
+        try {
+            $product = Product::findOrFail($id);
+            $product->delete();
+            return redirect()->route('vendors.product-list', ['vendorId' => $product->vendor_id])
+                ->with('success', __('messages.product.deleted_successfully'));
+        } catch (\Exception $e) {
+            return back()->with('error', __('messages.product.delete_error'))->withInput();
+        }
+    }
+
+    public function show($vendorId,$product){
+        try{
+            $productFind = Product::findOrFail($product);
+            $product = (new ProductResource($productFind))->toArray(request());
+            return view('admin.pages.products.edit', compact('product'));
+        } catch (\Exception $e) {
+            return back()->with('error', __('messages.product.fetch_error'))->withInput();
+        }
+    }
+
     public function productStepTwo(Request $request)
     {
         try {
             DB::beginTransaction();
 
-            $productId = Session::get('product_step_form');
+            $productId = Session::get('product_step_form')||$request->route('product');
             $product = Product::findOrFail($productId);
 
             $requestSubProductIds = array_filter(

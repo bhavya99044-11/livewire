@@ -54,6 +54,7 @@ class VendorController extends Controller
                 'data' => $vendor,
             ], 201);
         } catch (\Exception $e) {
+            dd($e->getMessage());
             DB::rollBack();
             return response()->json([
                 'message' => __('messages.vendor.create_error'),
@@ -63,6 +64,7 @@ class VendorController extends Controller
         }
     }
 
+
     public function showData(Request $request)
     {
         try {   
@@ -70,9 +72,15 @@ class VendorController extends Controller
             $vendor = Vendor::query();
 
             if ($request->search) {
-                $vendor->where('name', 'LIKE', '%' . $request->search . '%')
-                    ->orWhere('shop_name', 'LIKE', '%' . $request->search . '%');
+                $vendor->where(function ($q) use ($request) {
+                    $q->where('name', 'LIKE', '%' . $request->search . '%')
+                      ->orWhere('shop_name', 'LIKE', '%' . $request->search . '%');
+                });
             }
+            if(!($request->status===null)){
+                $vendor->where('status', $request->status);
+            }
+            
 
             $vendors = $vendor->paginate($request->perPage, ['*'], 'page', $request->page);
             $collection =VendorResource::collection($vendors)->response()->getData(true);

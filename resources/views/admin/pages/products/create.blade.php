@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @push('styles')
-   <link href="{{asset('css/admin/product.css')}}" rel="stylesheet">
+    <link href="{{ asset('css/admin/product.css') }}" rel="stylesheet">
 @endpush
 {{-- {{dd($product)}} --}}
 @section('content')
@@ -26,6 +26,10 @@
                 'url' => route('admin.vendors.index'),
             ],
             [
+                'name'=>'Product List',
+                'url'=>route('admin.vendors.product-list',['vendor_Id'=>request()->route('vendor_id')]),
+                ],
+            [
                 'name' => isset($product) ? 'Edit Product' : 'Add Product',
                 'url' => null,
             ],
@@ -42,33 +46,25 @@
     <body class="bg-gray-100 min-h-screen">
         <main class="max-w-7xl mx-auto px-8 mt-12 sm:px-6 lg:px-8">
             <div class="space-y-6">
-                <div>
-                    <h2 class="text-2xl font-bold tracking-tight">{{ isset($product) ? 'Edit Product' : 'Add New Product' }}
-                    </h2>
-                    <p class="text-gray-500">
-                        {{ isset($product) ? 'Update the product details in this multi-step form.' : 'Create a new product by filling in the details in this multi-step form.' }}
-                    </p>
-                </div>
                 <!-- Step Indicator -->
-                <div class="w-full max-w-3xl mx-auto mb-8">
-                    <ol class="flex items-center w-full">
-                        <li class="flex flex-col w-full">
-                            <div class="flex items-center w-full">
+                <div class="w-full  max-w-3xl mx-auto mb-8">
+                    <ol class="flex justify-center items-center w-full">
+                        <li class="flex text-center flex-col w-[200px]">
+                            <div class="flex items-center">
                                 <div class="flex items-center justify-center w-10 h-10 rounded-full bg-brand-primary text-white"
                                     id="step-indicator-1">1</div>
                                 <div class="flex-1 h-1 mx-2 bg-gray-200" id="step-line-1"></div>
                             </div>
                             <div class="text-start">Product Info</div>
                         </li>
-                        <li class="flex flex-col w-full">
+                        <li class="flex flex-col w-fit">
                             <div class="flex items-center w-full">
                                 <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-gray-600"
                                     id="step-indicator-2">2</div>
-                                {{-- <div class="flex-1 h-1 mx-2 bg-gray-200" id="step-line-2"></div> --}}
                             </div>
                             <div class="text-start">Sub Products</div>
                         </li>
-                      
+
                     </ol>
                 </div>
 
@@ -92,7 +88,7 @@
                                         <div class="space-y-2">
                                             <label for="description" class="block text-sm font-medium">Description</label>
                                             <textarea id="editor" name="description" class="w-full rounded-md border border-gray-300 p-2"
-                                                placeholder="Enter product description" rows="5">{!! old('description', isset($product) ? $product["description"] : '') !!}</textarea>
+                                                placeholder="Enter product description" rows="5">{!! old('description', isset($product) ? $product['description'] : '') !!}</textarea>
                                         </div>
 
                                         <div class="space-y-2">
@@ -102,7 +98,7 @@
                                                 @foreach ($status as $stat)
                                                     <option value="{{ $stat->value }}"
                                                         {{ old('status', isset($product) && $product['status']['value'] == $stat->value ? 'selected' : '') }}>
-                                                        {{Status::from($stat->value)->label()}}
+                                                        {{ Status::from($stat->value)->label() }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -144,7 +140,7 @@
                                                                 <input name="items[{{ $index }}][name]"
                                                                     class="w-full field-name rounded-md border border-gray-300 p-2"
                                                                     placeholder="Option name"
-                                                                    value="{{ old("items.$index.name", $item["name"]) }}" />
+                                                                    value="{{ old("items.$index.name", $item['name']) }}" />
                                                                 <span class="text-red-500 span-name text-sm">
                                                                     @error("items.$index.name")
                                                                         {{ $message }}
@@ -157,7 +153,7 @@
                                                                     type="number" min="1"
                                                                     class="w-full field-price rounded-md border border-gray-300 p-2"
                                                                     placeholder="Price"
-                                                                    value="{{ old("items.$index.price", $item["price"]) }}" />
+                                                                    value="{{ old("items.$index.price", $item['price']) }}" />
                                                                 <span class="text-red-500 span-price text-sm">
                                                                     @error("items.$index.price")
                                                                         {{ $message }}
@@ -253,7 +249,7 @@
                                                                 class="w-full bg-white sizeType rounded-md border border-gray-300 p-2">
                                                                 @foreach ($adminSizeTypes as $type)
                                                                     <option value="{{ $type['value'] }}"
-                                                                        {{ old("sub_products.$index.size_type", $subProduct["size_type"]) == $type['value'] ? 'selected' : '' }}>
+                                                                        {{ old("sub_products.$index.size_type", $subProduct['size_type']) == $type['value'] ? 'selected' : '' }}>
                                                                         {{ $type['label'] }}
                                                                     </option>
                                                                 @endforeach
@@ -266,7 +262,7 @@
                                                                 name="sub_products[{{ $index }}][size]"
                                                                 class="w-full rounded-md border border-gray-300 p-2"
                                                                 placeholder="Small, Medium, 500g"
-                                                                value="{{ old("sub_products.$index.size", $subProduct["size"]) }}" />
+                                                                value="{{ old("sub_products.$index.size", $subProduct['size']) }}" />
                                                         </div>
                                                         <div class="space-y-2">
                                                             <label for="price-subProduct-{{ $index }}"
@@ -276,7 +272,7 @@
                                                                 type="number" step="0.01" min="0"
                                                                 class="w-full rounded-md border border-gray-300 p-2"
                                                                 placeholder="Enter price"
-                                                                value="{{ old("sub_products.$index.price", $subProduct["price"]) }}" />
+                                                                value="{{ old("sub_products.$index.price", $subProduct['price']) }}" />
                                                         </div>
                                                         <div class="space-y-2">
                                                             <label for="basePrice-subProduct-{{ $index }}"
@@ -286,7 +282,7 @@
                                                                 type="number" step="0.01" min="0"
                                                                 class="w-full rounded-md border border-gray-300 p-2"
                                                                 placeholder="Enter base price"
-                                                                value="{{ old("sub_products.$index.base_price", $subProduct["base_price"]) }}" />
+                                                                value="{{ old("sub_products.$index.base_price", $subProduct['base_price']) }}" />
                                                         </div>
                                                         <div class="space-y-2">
                                                             <label for="quantity-subProduct-{{ $index }}"
@@ -296,7 +292,7 @@
                                                                 type="number" min="0"
                                                                 class="w-full rounded-md border border-gray-300 p-2"
                                                                 placeholder="Enter quantity"
-                                                                value="{{ old("sub_products.$index.quantity", $subProduct["quantity"]) }}" />
+                                                                value="{{ old("sub_products.$index.quantity", $subProduct['quantity']) }}" />
                                                         </div>
                                                         <div class="space-y-2">
                                                             <label for="subProductStatus-subProduct-{{ $index }}"
@@ -306,7 +302,7 @@
                                                                 class="w-full rounded-md bg-white border border-gray-300 p-2">
                                                                 @foreach ($productStatus as $status)
                                                                     <option value="{{ $status['value'] }}"
-                                                                        {{ old("sub_products.$index.status", $subProduct["status"]) == $status['value'] ? 'selected' : '' }}>
+                                                                        {{ old("sub_products.$index.status", $subProduct['status']) == $status['value'] ? 'selected' : '' }}>
                                                                         {{ $status['label'] }}
                                                                     </option>
                                                                 @endforeach
@@ -342,7 +338,7 @@
                                                                 <p>No images added yet</p>
                                                             </div>
                                                             <div id="imagesContainer-subProduct-{{ $index }}"
-                                                                    class="h-[136px] {{ $subProduct["images"] && count($subProduct["images"]) > 0 ? '' : 'hidden' }}">
+                                                                class="h-[136px] {{ $subProduct['images'] && count($subProduct['images']) > 0 ? '' : 'hidden' }}">
                                                                 <div class="flex flex-row flex-wrap gap-1"></div>
                                                             </div>
                                                         </div>
@@ -350,8 +346,8 @@
                                                             <label class="block text-sm font-medium">Specifications</label>
                                                             <div id="specifications-container-subProduct-{{ $index }}"
                                                                 class="space-y-2">
-                                                                @if ($subProduct["specifications"] && count($subProduct["specifications"]) > 0)
-                                                                    @foreach ($subProduct["specifications"] as $specIndex => $spec)
+                                                                @if ($subProduct['specifications'] && count($subProduct['specifications']) > 0)
+                                                                    @foreach ($subProduct['specifications'] as $specIndex => $spec)
                                                                         <div class="flex gap-2 items-start spec-row">
                                                                             <div class="flex-1">
                                                                                 <input
@@ -552,7 +548,7 @@
                         </div>
                     </form>
 
-                 
+
                 </div>
 
                 <!-- Navigation Buttons -->
@@ -601,11 +597,12 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </body>
+
     </html>
 @endsection
 @push('scripts')
     <script>
-     // Initialize imageArrays with existing images for editing
+        // Initialize imageArrays with existing images for editing
         var imageArrays = {
             @if (isset($product) && isset($product['sub_products']))
                 @foreach ($product['sub_products'] as $index => $subProduct)
@@ -626,6 +623,7 @@
             @endif
             main: []
         };
+        let deletedImages = {}; // Track images to delete for each sub-product
         var subProductCounter =
             {{ isset($product) && isset($product->subProducts) ? count($product->subProducts) - 1 : 0 }};
         $(document).ready(function() {
@@ -789,7 +787,7 @@
                 if (!imageArrays[subProductId] || imageArrays[subProductId].length === 0) {
                     $(`#imagesContainer-${subProductId}`).after(
                         `<div id="imageError-${subProductId}" class="text-red-500 text-sm mt-1">At least one image is required</div>`
-                        );
+                    );
                     isValid = false;
                 }
 
@@ -814,6 +812,7 @@
                 const subProductId = $component.data('sub-product-id');
                 $component.remove();
                 delete imageArrays[subProductId];
+                console.log(imageArrays)
                 updateFormButtons();
             });
 
@@ -954,84 +953,92 @@
             });
 
             $(document).on('change', '[id^=hiddenImageInput-]', function(event) {
-        const subProductId = $(this).attr('id').replace('hiddenImageInput-', '');
-        if (!imageArrays[subProductId]) {
-            imageArrays[subProductId] = [];
-        }
-        const files = event.target.files;
-        if (files.length > 5 || imageArrays[subProductId].length + files.length > 5) {
-            showToast('You can add a maximum of 5 images.', 'error');
-        } else {
-            for (let i = 0; i < files.length; i++) {
-                const fileUrl = URL.createObjectURL(files[i]);
-                const uniqueId = `${subProductId}-${Date.now()}-${i}`;
-                // Check for duplicate file names
-                if (!imageArrays[subProductId].some(img => img.file?.name === files[i].name)) {
-                    imageArrays[subProductId].push({
-                        file: files[i],
-                        fileUrl: fileUrl,
-                        isExisting: false,
-                        uniqueId: uniqueId
-                    });
+                const subProductId = $(this).attr('id').replace('hiddenImageInput-', '');
+                if (!imageArrays[subProductId]) {
+                    imageArrays[subProductId] = [];
                 }
-            }
-            $(`#defaultImageDiv-${subProductId}`).addClass('hidden');
-            imageLoopDiv(imageArrays[subProductId], subProductId);
-            $(`#imagesContainer-${subProductId}`).siblings('.text-red-500').remove();
-        }
-    });
+                const files = event.target.files;
+                if (files.length > 5 || imageArrays[subProductId].length + files.length > 5) {
+                    showToast('You can add a maximum of 5 images.', 'error');
+                } else {
+                    for (let i = 0; i < files.length; i++) {
+                        const fileUrl = URL.createObjectURL(files[i]);
+                        const uniqueId = `${subProductId}-${Date.now()}-${i}`;
+                        // Check for duplicate file names
+                        if (!imageArrays[subProductId].some(img => img.file?.name === files[i].name)) {
+                            imageArrays[subProductId].push({
+                                file: files[i],
+                                fileUrl: fileUrl,
+                                isExisting: false,
+                                uniqueId: uniqueId
+                            });
+                        }
+                    }
+                    $(`#defaultImageDiv-${subProductId}`).addClass('hidden');
+                    imageLoopDiv(imageArrays[subProductId], subProductId);
+                    $(`#imagesContainer-${subProductId}`).siblings('.text-red-500').remove();
+                }
+            });
 
             function imageLoopDiv(imageArrayLoop, subProductId) {
-        let $imagesContainer = $(`#imagesContainer-${subProductId}`);
-        if (imageArrayLoop.length > 0) {
-            $imagesContainer.removeClass('hidden').html('');
-            let $imageDiv = $('<div>').addClass('flex flex-row flex-wrap gap-1');
-            imageArrayLoop.forEach(element => {
-                let $div = $('<div>').addClass('relative w-32 h-16');
-                let $imageCon = $('<img>').addClass('object-cover w-32 h-16').attr({
-                    src: element.fileUrl,
-                    alt: 'Product Image'
-                });
-                let $remove = $('<div>').attr('data-id', element.uniqueId).addClass(
-                    'absolute removeImage top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center'
-                ).html(`
+                let $imagesContainer = $(`#imagesContainer-${subProductId}`);
+                if (imageArrayLoop.length > 0) {
+                    $imagesContainer.removeClass('hidden').html('');
+                    let $imageDiv = $('<div>').addClass('flex flex-row flex-wrap gap-1');
+                    imageArrayLoop.forEach(element => {
+                        let $div = $('<div>').addClass('relative w-32 h-16');
+                        let $imageCon = $('<img>').addClass('object-cover w-32 h-16').attr({
+                            src: element.fileUrl,
+                            alt: 'Product Image'
+                        });
+                        let $remove = $('<div>').attr('data-id', element.uniqueId).addClass(
+                            'absolute removeImage top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center'
+                        ).html(`
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 6 6 18"></path>
                         <path d="m6 6 12 12"></path>
                     </svg>
                 `).data('sub-product-id', subProductId);
-                $div.append($remove, $imageCon);
-                $imageDiv.append($div);
-            });
-            $imagesContainer.append($imageDiv);
-        } else {
-            $imagesContainer.addClass('hidden');
-            $(`#defaultImageDiv-${subProductId}`).removeClass('hidden');
-        }
-    }
+                        $div.append($remove, $imageCon);
+                        $imageDiv.append($div);
+                    });
+                    $imagesContainer.append($imageDiv);
+                } else {
+                    $imagesContainer.addClass('hidden');
+                    $(`#defaultImageDiv-${subProductId}`).removeClass('hidden');
+                }
+            }
 
-    $(document).on('click', '.removeImage', function() {
-        const uniqueId = $(this).attr('data-id');
-        const subProductId = $(this).data('sub-product-id');
-        const index = imageArrays[subProductId].findIndex(obj => obj.uniqueId === uniqueId);
-        if (index !== -1) {
-            imageArrays[subProductId].splice(index, 1);
-            imageLoopDiv(imageArrays[subProductId], subProductId);
-        }
-    });
+            $(document).on('click', '.removeImage', function() {
+                const uniqueId = $(this).attr('data-id');
+                const subProductId = $(this).data('sub-product-id');
+                const index = imageArrays[subProductId].findIndex(obj => obj.uniqueId === uniqueId);
+                if (index !== -1) {
+                    const removedImage = imageArrays[subProductId][index];
+                    if (removedImage.isExisting) {
+                        // Track deleted image by ID
+                        if (!deletedImages[subProductId]) {
+                            deletedImages[subProductId] = [];
+                        }
+                        deletedImages[subProductId].push(removedImage.id);
+                    }
+                    imageArrays[subProductId].splice(index, 1);
+                    imageLoopDiv(imageArrays[subProductId], subProductId);
+                }
+            });
 
             // State management
             const state = {
                 currentStep: 1,
                 product: {
                     name: '{{ old('name', isset($product) ? $product['name'] : '') }}',
-                    description: '{{ old('description', isset($product) ? $product["description"] : '') }}',
-                    status: '{{ old('status', isset($product) ? $product["status"]["value"] : 'draft') }}',
+                    description: '{{ old('description', isset($product) ? $product['description'] : '') }}',
+                    status: '{{ old('status', isset($product) ? $product['status']['value'] : 'draft') }}',
                     vendorId: '{{ $productId }}',
-                    slug: '{{ old('slug', isset($product) ? $product["slug"] : '') }}',
+                    slug: '{{ old('slug', isset($product) ? $product['slug'] : '') }}',
                     image: '',
                 },
-                slug: '{{ old('slug', isset($product) ? $product["slug"] : '') }}',
+                slug: '{{ old('slug', isset($product) ? $product['slug'] : '') }}',
                 productImages: [],
                 productSpecifications: [],
                 subProducts: [],
@@ -1195,7 +1202,7 @@
                     url = url.replace(':vendor', '{{ $productId }}');
                     console.log(url)
                     @if (isset($product))
-                        url = url.replace(':product', '{{ $product["id"] }}');
+                        url = url.replace(':product', '{{ $product['id'] }}');
                         formData.append('_method', 'PUT');
                     @endif
                     $.ajax({
@@ -1278,55 +1285,57 @@
                     }
                 },
                 submitHandler: function(form) {
-                    const formData = new FormData(form);
-                    $('#sub-products-forms-container').find('.sub-product-component').each(function(
-                        index) {
-                        const subProductId = $(this).data('sub-product-id');
-                        if (imageArrays[subProductId]) {
-                            imageArrays[subProductId].forEach((img, imgIndex) => {
-                                if (img.isExisting) {
-                                    formData.append(
-                                        `sub_products[${index}][existing_images][${imgIndex}]`,
-                                        img.fileName);
-                                } else {
-                                    formData.append(
-                                        `sub_products[${index}][images][${imgIndex}]`,
-                                        img.file);
-                                }
-                            });
-                        }
-                    });
-                    formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
-                    let url =
-                        '{{ isset($product) ? route('admin.products.update-step-2', ['vendor_id' => ':vendor', 'product' => ':product']) : route('admin.products.store-step-2', ['vendor_id' => ':vendor']) }}';
-                    url = url.replace(':vendor', '{{ $productId }}');
-                    @if (isset($product))
-                        url = url.replace(':product', '{{ $product["id"] }}');
-                        formData.append('_method', 'PUT');
-                    @endif
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: function(response) {
-                            state.subProducts = response.data.subProducts;
-                            showToast('Sub-products saved successfully!', 'success');
-                            goToStep(3);
-                        },
-                        error: function(xhr) {
-                            let message = 'An error occurred while saving sub-products';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                message = xhr.responseJSON.message;
-                            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                                message = Object.values(xhr.responseJSON.errors).flat()
-                                    .join(', ');
+                const formData = new FormData(form);
+                $('#sub-products-forms-container').find('.sub-product-component').each(function(index) {
+                    const subProductId = $(this).data('sub-product-id');
+                    if (imageArrays[subProductId]) {
+                        imageArrays[subProductId].forEach((img, imgIndex) => {
+                            if (img.isExisting) {
+                                // Only include existing images that are still in imageArrays
+                                formData.append(`sub_products[${index}][existing_images][${imgIndex}]`, img.fileName);
+                            } else {
+                                // Include new images
+                                formData.append(`sub_products[${index}][images][${imgIndex}]`, img.file);
                             }
-                            showToast(message, 'error');
-                        }
-                    });
+                        });
+                    }
+                    // Append deleted image IDs for this sub-product
+                    if (deletedImages[subProductId] && deletedImages[subProductId].length > 0) {
+                        deletedImages[subProductId].forEach((imageId, delIndex) => {
+                            formData.append(`sub_products[${index}][deleted_images][${delIndex}]`, imageId);
+                        });
+                    }
+                });
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+        let url =
+            '{{ isset($product) ? route('admin.products.update-step-2', ['vendor_id' => ':vendor', 'product' => ':product']) : route('admin.products.store-step-2', ['vendor_id' => ':vendor']) }}';
+        url = url.replace(':vendor', '{{ $productId }}');
+        @if (isset($product))
+            url = url.replace(':product', '{{ $product["id"] }}');
+            formData.append('_method', 'PUT');
+        @endif
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                state.subProducts = response.data.subProducts;
+                showToast('Sub-products saved successfully!', 'success');
+                goToStep(3);
+            },
+            error: function(xhr) {
+                let message = 'An error occurred while saving sub-products';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    message = Object.values(xhr.responseJSON.errors).flat().join(', ');
                 }
+                showToast(message, 'error');
+            }
+        });
+    }
             });
 
             // Initialize validation for existing sub-product components
@@ -1405,7 +1414,7 @@
                     if (!imageArrays[subProductId] || imageArrays[subProductId].length === 0) {
                         $(`#imagesContainer-${subProductId}`).after(
                             `<div id="imageError-${subProductId}" class="text-red-500 text-sm mt-1">At least one image is required</div>`
-                            );
+                        );
                         allValid = false;
                     } else {
                         $(`#imageError-${subProductId}`).remove();
@@ -1428,7 +1437,7 @@
                         indicator.classList.add('bg-gray-200', 'text-gray-600');
                     }
 
-                    if (i < 1) {
+                    if (i < 2) {
                         const line = document.getElementById(`step-line-${i}`);
                         if (i < step) {
                             line.classList.remove('bg-gray-200');
@@ -1453,11 +1462,11 @@
                     nextButton.classList.remove('hidden');
                 }
                 if (step === 3) {
-                    step=2;
+                    step = 2;
                     step2Content.classList.remove('hidden');
                 }
                 prevButton.disabled = step === 1;
-                
+
                 state.currentStep = step;
             }
 
@@ -1512,28 +1521,28 @@
                             </thead>
                             <tbody>
                                 ${state.subProducts.map((subProduct, index) => `
-                                        <tr class="border-t hover:bg-gray-50">
-                                            <td class="p-3">${subProduct.size_type || 'N/A'}</td>
-                                            <td class="p-3">${subProduct.size || 'N/A'}</td>
-                                            <td class="p-3 font-mono text-sm">${subProduct.sku || 'N/A'}</td>
-                                            <td class="p-3">
-                                                <span class="inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                                                    subProduct.status === 'in_stock'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : subProduct.status === 'low_stock'
-                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                    : 'bg-red-100 text-red-800'
-                                                }">
-                                                    ${subProduct.status === 'in_stock'
-                                                    ? 'In Stock'
-                                                    : subProduct.status === 'low_stock'
-                                                    ? 'Low Stock'
-                                                    : 'Out of Stock'}
-                                                </span>
-                                            </td>
-                                            <td class="p-3">${subProduct.quantity || 0}</td>
-                                        </tr>
-                                    `).join('')}
+                                            <tr class="border-t hover:bg-gray-50">
+                                                <td class="p-3">${subProduct.size_type || 'N/A'}</td>
+                                                <td class="p-3">${subProduct.size || 'N/A'}</td>
+                                                <td class="p-3 font-mono text-sm">${subProduct.sku || 'N/A'}</td>
+                                                <td class="p-3">
+                                                    <span class="inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                                                        subProduct.status === 'in_stock'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : subProduct.status === 'low_stock'
+                                                        ? 'bg-yellow-100 text-yellow-800'
+                                                        : 'bg-red-100 text-red-800'
+                                                    }">
+                                                        ${subProduct.status === 'in_stock'
+                                                        ? 'In Stock'
+                                                        : subProduct.status === 'low_stock'
+                                                        ? 'Low Stock'
+                                                        : 'Out of Stock'}
+                                                    </span>
+                                                </td>
+                                                <td class="p-3">${subProduct.quantity || 0}</td>
+                                            </tr>
+                                        `).join('')}
                             </tbody>
                         </table>
                     </div>

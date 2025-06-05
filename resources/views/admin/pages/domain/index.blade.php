@@ -23,8 +23,6 @@
     <section class="bg-gray-100 min-h-screen">
         @csrf
         <div class="container mx-auto px-4 py-8">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">Domain Management</h1>
-
             <!-- Flash Messages -->
             @if (session('success'))
                 <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">

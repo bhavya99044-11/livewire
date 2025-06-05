@@ -22,7 +22,6 @@
     @endphp
     @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Admin Management</h1>
 
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
 

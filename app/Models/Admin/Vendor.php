@@ -55,4 +55,8 @@ class Vendor extends Model
     {
         return $this->created_at->format('d M Y');
     }
+
+    public function products(){
+         return $this->hasMany(Product::class, 'vendor_id');
+    }
 }

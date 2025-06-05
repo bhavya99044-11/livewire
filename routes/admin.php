@@ -51,6 +51,8 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
     Route::middleware(['role:super_admin'])->resource('permissions', PermissionController::class);
     Route::middleware(['route-access:vendor'])->resource('vendors', VendorController::class);
     ROute::get('vendors/{vendor_Id}/createProduct',[vendorController::class, 'createProduct'])->name('vendors.create-product');
+    ROute::get('vendors/{vendor_Id}/product-list',[ProductController::class, 'productList'])->name('vendors.product-list');
+
     Route::middleware(['route-access:vendor'])->prefix('vendors')->group(function () {
         Route::get('list/data', [VendorController::class, 'showData'])->name('vendors.data');
         Route::post('/update-status', [VendorController::class, 'updateStatus'])->name('vendors.update-status');
@@ -67,8 +69,12 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
         // Update
         Route::put('{product}/update-step-1', [ProductController::class, 'productStepOne'])->name('products.update-step-1');
         Route::put('{product}/update-step-2', [ProductController::class, 'productStepTwo'])->name('products.update-step-2');
+        Route::post('update-actions', [ProductController::class, 'updateActions'])->name('products.update-actions');
 
         // Edit form
-        Route::get('{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+        Route::get('{product_id}/edit', [ProductController::class, 'edit'])->name('products.edit');
+        Route::get('{product_id}/show', [ProductController::class, 'show'])->name('products.show');
+        Route::post('{product_id}/delete', [ProductController::class, 'delete'])->name('products.destroy');
+
     });
 });

@@ -39,7 +39,7 @@ class VendorResource extends JsonResource
             'is_shop'                    => 
             [
                 'value' => $this->is_shop,
-                'label' => ShopStatus::from($this->is_store)->label(),
+                'label' => ShopStatus::from($this->is_shop)->label(),
             ],
             'latitude'                    => $this->latitude,
             'longitude'                   => $this->longitude,

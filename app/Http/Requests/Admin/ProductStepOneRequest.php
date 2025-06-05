@@ -6,6 +6,8 @@ use App\Enums\Status;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 
 class ProductStepOneRequest extends FormRequest
 {
@@ -24,6 +26,7 @@ class ProductStepOneRequest extends FormRequest
      */
     public function rules(Request $request): array
     {
+        
         return [
             'name' => [
                 'required',

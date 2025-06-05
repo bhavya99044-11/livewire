@@ -88,8 +88,6 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">{{ __('messages.permissions.title') }}</h1>
-
         <div class="flex flex-col md:flex-row justify-end items-center mb-6 gap-4">
             <div class="flex md:block md:w-auto w-full justify-end">
                 <!-- Button moved to DataTable initComplete -->
