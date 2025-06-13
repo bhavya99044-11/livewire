@@ -19,7 +19,9 @@ class Product extends Model
         return $this->hasMany(SubProduct::class,'product_id');
     }
 
-    
+    public function approve(){
+        return $this->belongsTo(Admin::class,'approved_by');
+    }
 
     public function vendor(){
         return $this->belongsTo(Vendor::class,'vendor_id');

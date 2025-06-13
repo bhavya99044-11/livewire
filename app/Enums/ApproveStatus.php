@@ -6,6 +6,7 @@ enum ApproveStatus: Int
 {
     case PENDING=0;
     case APPROVED=1;
+    case REJECT=2;
 
     public static function values(): array
     {
@@ -16,7 +17,8 @@ enum ApproveStatus: Int
     {
         return match ($this) {
             self::APPROVED => 'Approved',
-            self::PENDING => 'Pending'
+            self::PENDING => 'Pending',
+            self::REJECT=> 'Reject'
         };
     }
       public static function toJsObject(): array
@@ -33,6 +35,14 @@ enum ApproveStatus: Int
         return match ($this) {
             self::APPROVED => 'text-green-500',
             self::PENDING => 'text-yellow-500',
+            self::REJECT => 'text-red-500',
+        };
+    }
+    public function bgColor(){
+        return match ($this) {
+            self::APPROVED => 'bg-green-100',
+            self::PENDING => 'bg-yellow-100',
+            self::REJECT => 'bg-red-100',
         };
     }
 }

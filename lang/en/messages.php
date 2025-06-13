@@ -92,6 +92,10 @@ return [
             'step_two_saved' => 'Sub-products information saved successfully.',
             'error_step_two' => 'Something went wrong while saving product step two.',
             'error_search_vendor' => 'Something went wrong while searching vendors.',
+            'action_updated'=>'Product Updated',
+            'error_update_action'=>'Product Not Updated',
+        'deleted' => 'Product deleted successfully.',
+        'delete_failed' => 'Failed to delete product.',
         ],
          'profile' => [
             'password_change_success' => 'Password changed successfully.',

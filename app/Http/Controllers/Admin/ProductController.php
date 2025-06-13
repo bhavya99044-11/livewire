@@ -76,8 +76,12 @@ class ProductController extends Controller
 
     public function updateActions(Request $request){
         try{
-            $product=Product::whereIn('id',$request->ids)->update(
-             [ $request->field=>$request->value]
+            $updateArray=[$request->field=>$request->value];
+            if($request->reason != null){
+                $updateArray['rejection_reason']=$request->reason;
+            }
+            $product=Product::whereIn('id',$request->ids)->whereNot('is_approve',1)->update(
+               $updateArray
             );
             return response()->json([
                 'message' => __('messages.product.action_updated'),
@@ -90,6 +94,22 @@ class ProductController extends Controller
                 'error'   => $e->getMessage(),
                 'data'=>[]
             ], $e->getCode() ?: 500);
+        }
+    }
+
+    public function updateSingleACtion(Request $request){
+        try{
+            return response()->json([
+                'message'=> __('messages.product.action_updated'),
+                'error'=>null,
+                'data'=>[]
+            ]);
+        }catch(\EXception $e){
+            return response()->json([
+                'message' => __('messages.product.error_update_action'),
+                'error'   => $e->getMessage(),
+                'data'=>[]
+            ],$e->getCode()?:500);
         }
     }
 
@@ -121,7 +141,8 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
 
-            $productId = Session::get('product_step_form') ||$request->route('product');
+            $productId = $request->route('product')?$request->route('product'):Session::get('product_step_form');
+
             $slug = $request->slug;
             if ($productId) {
                 $existingProduct = Product::find($productId);
@@ -129,7 +150,11 @@ class ProductController extends Controller
             }
 
             if (!$slug) {
-                $slug = Str::slug($request->name . ' ' . now()->format('Y-m-d-H-i-s'), '-');
+                $slug = Str::slug($request->name);
+                $count = Product::where('slug', $slug)->count();
+                if($count>0){
+                    $slug=$this->recursiveSlug($request->name);
+                }
             }
 
             $product = Product::updateOrCreate(
@@ -182,18 +207,42 @@ class ProductController extends Controller
         try {
             $product = Product::findOrFail($id);
             $product->delete();
-            return redirect()->route('vendors.product-list', ['vendorId' => $product->vendor_id])
-                ->with('success', __('messages.product.deleted_successfully'));
+           return response()->json([
+                'message' => __('messages.product.deleted'),
+                'error'   => null,
+                'data'    => [],
+            ], 200);
         } catch (\Exception $e) {
-            return back()->with('error', __('messages.product.delete_error'))->withInput();
+            return response()->json([
+                'message' => __('messages.product.delete_failed'),
+                'error'   => $e->getMessage(),
+                'data'=>[]
+            ], $e->getCode() ?: 500);
+        }
+    }
+
+    public function recursiveSlug($name){
+        try{
+            $slug=Str::slug($name)-'-'.Str::random(6);
+            $count = Product::where('slug', $slug)->count();
+            if($count>0){
+                return $this->recursiveSlug($name);
+            }
+            return $slug;
+        }catch(\Exception $e){
+            return false;
         }
     }
 
     public function show($vendorId,$product){
         try{
+            $isProduct=false;
+            if(request('is-product')){
+                $isProduct=true;
+            }
             $productFind = Product::findOrFail($product);
             $product = (new ProductResource($productFind))->toArray(request());
-            return view('admin.pages.products.edit', compact('product'));
+            return view('admin.pages.products.edit', compact(['product','isProduct']));
         } catch (\Exception $e) {
             return back()->with('error', __('messages.product.fetch_error'))->withInput();
         }
@@ -204,9 +253,8 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
 
-            $productId = Session::get('product_step_form')||$request->route('product');
+            $productId = $request->route('product')?$request->route('product'):Session::get('product_step_form');
             $product = Product::findOrFail($productId);
-
             $requestSubProductIds = array_filter(
                 array_column($request->sub_products, 'id'),
                 fn($id) => !empty($id)
@@ -296,7 +344,6 @@ class ProductController extends Controller
                 'data'    => ['subProducts' => $subProducts],
             ], 200);
         } catch (\Exception $e) {
-            dd($e);
             DB::rollBack();
             return response()->json([
                 'success' => false,
@@ -304,6 +351,25 @@ class ProductController extends Controller
                 'data'=>[],
                 'error'   => $e->getMessage(),
             ], $e->getCode() ?: 500);
+        }
+    }
+
+    public function list(Request $request){
+        try{
+            $products= Product::with('vendor')
+                ->when(request()->search, function($query) {
+                    $query->where('name', 'LIKE', '%' . request()->search . '%');
+                })
+                ->when(request()->status, function($query) {
+                    $query->where('status', request()->status);
+                })
+                ->whereNotIn('is_approve',[1,2])  //here 1 is from enum approved status value
+                ->paginate(10);
+                $resourceProducts= ProductResource::collection($products)->toArray(request());
+                $products->setCollection(collect($resourceProducts));
+                return view('admin.pages.products.list',['products'=>$products]);
+        }catch(\Exception $e){
+            return back()->with('error', __('messages.product.fetch_error'))->withInput();
         }
     }
 }

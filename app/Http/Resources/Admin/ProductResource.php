@@ -30,11 +30,12 @@ class ProductResource extends JsonResource
             'is_approve'    => [
                 'value'    => $this->is_approve,
                 'label'  => ApproveStatus::from($this->is_approve)->label(),
-                'color'=> Status::from($this->is_approve)->color(),
-                'bgColor'=> Status::from($this->is_approve)->bgColor(),
+                'color'=> ApproveStatus::from($this->is_approve)->color(),
+                'bgColor'=> ApproveStatus::from($this->is_approve)->bgColor(),
             ],
-            'approved_by'   => $this->approved_by,
-            'vendor_id'     => $this->vendor_id,
+            'rejection_reason' => $this->rejection_reason,
+            'approved_by'   => $this->approve->only(['id', 'name']),
+            'vendor'     => $this->vendor->only(['id','name']),
             // Relationships
             'sub_products'  => SubProductResource::collection($this->subProducts)->toArray(request()),
             'items'         => ProductItemResource::collection($this->items)->toArray(request()),

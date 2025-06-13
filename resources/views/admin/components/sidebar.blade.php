@@ -93,8 +93,17 @@
                     </li>
                     <div class="flex w-full h-[1px] bg-indigo-700"></div>
                 @endif
+                <li title="admin" class="peer    ">
+                    <a href="{{ route('admin.products.list') }}"
+                        class="flex @if (request()->is('*admin/product*')) bg-indigo-600/50 text-white @endif hover:bg-indigo-600/50 rounded-md items-center text-center overflow-hidden  peer-[.active]:sideBarBorder gap-x-4 text-gray-300  hover:sideBarBorder hover:text-white p-2 rounded-md">
+                        <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid fa-bag-shopping"></i></div>
+                        <span
+                            class="text-sm font-medium opacity-100 md:opacity-0 group-[.active]:opacity-100 transition-opacity duration-300">New Products</span>
+                    </a>
+                </li>
+                <div class="flex w-full h-[1px] bg-indigo-700"></div>
                 @if ($user->role == $superAdmin)
-                    <li title="admin" class="peer    ">
+                    <li title="admin" class="peer">
                         <a href="{{ route('admin.domains.index') }}"
                             class="flex @if (request()->is('*domains*')) bg-indigo-600/50 text-white @endif hover:bg-indigo-600/50 rounded-md items-center text-center overflow-hidden  peer-[.active]:sideBarBorder gap-x-4 text-gray-300  hover:sideBarBorder hover:text-white p-2 rounded-md">
                             <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid fa-link"></i></div>
@@ -104,15 +113,15 @@
                     </li>
                     <div class="flex w-full h-[1px] bg-indigo-700"></div>
                 @endif
-                <li class="peer group/menu   rounded-md ">
+                <li class="peer group/menu  @if (request()->is('*cms*')) active @endif  rounded-md ">
                     <a
-                        class="justify-between @if (request()->is('*jhasd*')) bg-indigo-600/50 text-white @endif flex hover:bg-indigo-600/50 rounded-md items-center peer-[.active]:sideBarBorder hover:sideBarBorder gap-4   p-2 pl-2">
-                        <div href="#"
+                        class="justify-between @if (request()->is('*cms*')) bg-indigo-600/50 text-white @endif flex hover:bg-indigo-600/50 rounded-md items-center peer-[.active]:sideBarBorder hover:sideBarBorder gap-4   p-2 pl-2">
+                        <div 
                             class="flex items-center gap-x-4 peer-[.active]:sideBarBorder hover:text-white text-gray-300 ">
-                            <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid fa-table-columns"></i></i>
+                            <div class="h-5 w-5 flex items-center ml-2"> <i class="fas fa-file-alt mr-2"></i>
                             </div>
                             <span
-                                class="text-sm font-medium opacity-100 md:opacity-0 group-[.active]:opacity-100 transition-opacity duration-300">Dashboard</span>
+                                class="text-sm font-medium opacity-100 md:opacity-0 group-[.active]:opacity-100 transition-opacity duration-300">Cms</span>
                         </div>
                         <div>
                             <img class="group-[.active]/menu:rotate-180 text-white w-4 h-4"
@@ -120,20 +129,60 @@
                         </div>
                     </a>
                     <ul
-                        class="group-[.active]/menu:mt-2  md:ml-4 rounded-md max-h-0 group-[.active]/menu:max-h-[400px] overflow-hidden transition-all duration-200">
+                        class="group-[.active]/menu:mt-2  md:ml-4 rounded-md max-h-0 group-[.active]/menu:max-h-[400px] overflow-hidden transition-all space-y-2 duration-200">
 
                         <li class=" rounded-md">
                             <a
-                                class="flex hover:!bg-indigo-600/50  items-center gap-x-4 text-gray-300 hover:sideBarBorder hover:text-white p-2  rounded-md">
-                                <div class="h-5 w-5 flex items-center ml-2"> <i class="fa-solid fa-chart-simple"></i>
+                            href="{{route("admin.cms",['slug'=>"about-us"])}}"
+                                class="flex hover:!bg-indigo-600/50  @if (request()->is('*cms/about-us*')) bg-indigo-600/50 text-white @endif  items-center gap-x-4 text-gray-300 hover:sideBarBorder hover:text-white p-2  rounded-md">
+                                <div class="h-5 w-5 flex items-center ml-2"> <i class="fas fa-users"></i>
                                 </div>
-                                <span class="text-sm font-medium ">Team</span>
+                                <span class="text-sm font-medium ">About Us</span>
+                            </a>
+                        </li>
+                        <li class=" rounded-md">
+                            <a
+                            href="{{route("admin.cms",['slug'=>"terms-and-conditions"])}}"
+                                class="flex hover:!bg-indigo-600/50 @if (request()->is('*cms/terms-and-conditions*')) bg-indigo-600/50 text-white @endif  items-center gap-x-4 text-gray-300 hover:sideBarBorder hover:text-white p-2  rounded-md">
+                                <div class="h-5 w-5 flex items-center ml-2"> <i class="fas fa-file-contract"></i>
+                                </div>
+                                <span class="text-sm font-medium ">Terms & Conditions</span>
+                            </a>
+                        </li>
+                        <li class=" rounded-md">
+                            <a
+                            href="{{route("admin.cms",['slug'=>"privacy-policy"])}}"
+                                class="flex hover:!bg-indigo-600/50  @if (request()->is('*cms/privacy-policy*')) bg-indigo-600/50 text-white @endif  items-center gap-x-4 text-gray-300 hover:sideBarBorder hover:text-white p-2  rounded-md">
+                                <div class="h-5 w-5 flex items-center ml-2"> <i class="fas fa-user-shield"></i>
+                                </div>
+                                <span class="text-sm font-medium ">Privacy policiy</span>
                             </a>
                         </li>
                     </ul>
                 </li>
                 <div class="flex w-full h-[1px] bg-indigo-700"></div>
-
+                @if ($user->role == $superAdmin)
+                    <li title="admin" class="peer">
+                        <a href="{{ route('admin.faqs.index') }}"
+                            class="flex @if (request()->is('*admin/faqs*')) bg-indigo-600/50 text-white @endif hover:bg-indigo-600/50 rounded-md items-center text-center overflow-hidden  peer-[.active]:sideBarBorder gap-x-4 text-gray-300  hover:sideBarBorder hover:text-white p-2 rounded-md">
+                            <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid fa-question"></i></div>
+                            <span
+                                class="text-sm font-medium opacity-100 md:opacity-0 group-[.active]:opacity-100 transition-opacity duration-300">Faqs</span>
+                        </a>
+                    </li>
+                    <div class="flex w-full h-[1px] bg-indigo-700"></div>
+                @endif
+                @if ($user->role == $superAdmin)
+                <li title="admin" class="peer">
+                    <a href="{{ route('admin.banners.index') }}"
+                        class="flex @if (request()->is('*banners*')) bg-indigo-600/50 text-white @endif hover:bg-indigo-600/50 rounded-md items-center text-center overflow-hidden  peer-[.active]:sideBarBorder gap-x-4 text-gray-300  hover:sideBarBorder hover:text-white p-2 rounded-md">
+                        <div class="h-5 w-5 flex items-center ml-2"><i class="fa-solid fa-image"></i></div>
+                        <span
+                            class="text-sm font-medium opacity-100 md:opacity-0 group-[.active]:opacity-100 transition-opacity duration-300">Banners</span>
+                    </a>
+                </li>
+                <div class="flex w-full h-[1px] bg-indigo-700"></div>
+            @endif
             </ul>
         </nav>
 

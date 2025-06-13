@@ -99,12 +99,7 @@
     <section class="bg-gray-100 min-h-screen">
         <div class="container mx-auto px-4 py-8">
             <div class="flex items-center w-full mb-6 justify-between">
-                <div class="border ml-auto flex flex-row rounded-full border-blue-500">
-                    <div id="activeGrid" class=" rounded-l-full border border-l-0 border-t-0 border-b-0 border-blue-500"> <i
-                            class="fa-solid p-1 pl-3 font-bold text-xl fa-grip-vertical"></i></div>
-                    <div id="activeTable" class="    p-1 pr-3  text-xl font-bold   rounded-r-full"><i
-                            class="fa-solid fa-bars"></i></div>
-                </div>
+              
             </div>
             <div class="flex  flex-col md:flex-row justify-between items-center mb-6 gap-4">
                 <div class="md:flex grid grid-cols-2 items-center gap-x-2 gap-y-1 md:flex-row md:gap-4">
@@ -148,12 +143,20 @@
                     </div>
                 </div>
 
-                <div class="flex md:block md:w-auto w-full justify-center md:justify-end">
+                <div class="flex flex-row items-center gap-2"><div class="flex md:block md:w-auto w-full justify-center md:justify-end">
                     <a href="{{ route('admin.vendors.create') }}"
                         class="w-fit cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
                         <i class="fas fa-plus"></i> Create Vendor
                     </a>
+                    
                 </div>
+                <div class="border ml-auto flex flex-row rounded-full border-blue-500">
+                    <div id="activeGrid" class=" rounded-l-full border border-l-0 border-t-0 border-b-0 border-blue-500"> <i
+                            class="fa-solid p-1 pl-3 font-bold text-xl fa-grip-vertical"></i></div>
+                    <div id="activeTable" class="    p-1 pr-3  text-xl font-bold   rounded-r-full"><i
+                            class="fa-solid fa-bars"></i></div>
+                </div>
+            </div>
             </div>
 
             <div class="vendorTable hidden">
@@ -351,11 +354,7 @@
 
                     $('#vendorTable').html(html);
 
-                    // Update pagination
-                    $('#showingFrom').text(response.meta.current_page == 1 ? 1 : response.meta.current_page * 10);
-                    $('#showingTo').text(parseInt(response.meta.current_page) + parseInt(response.meta.per_page) - 1 ||
-                        0);
-                    $('#totalRecords').text(response.meta.total || 0);
+            
 
                     let paginationHtml = '';
                     if (response.meta.last_page > 1) {
