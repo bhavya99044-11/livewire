@@ -96,22 +96,21 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
+@endpush
 
-    @endpush
-    @php
-
+@php
     $breadCrumbs = [
         [
             'name' => 'dashboard',
             'url' => route('admin.dashboard'),
         ],
         [
-            'name' => 'Faqs',
+            'name' => 'Banners',
             'url' => null,
         ],
-       
     ];
-    @endphp
+@endphp
+
 @section('content')
     @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
 
@@ -119,82 +118,43 @@
         <!-- Header -->
         <header class="bg-white shadow-sm border-b border-gray-200">
             <meta name="csrf-token" content="{{ csrf_token() }}">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center"></div>
-                    <div class="flex items-center space-x-4">
-                        <div class="relative">
-                            <input 
-                                type="text" 
-                                id="searchInput"
-                                placeholder="Search banners..." 
-                                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                            <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-3 top-3"></i>
-                        </div>
-                        <button 
-                            id="addBannerBtn" 
-                            class="btn-primary text-white px-4 py-2 rounded-lg flex items-center space-x-2"
-                        >
-                            <span>Add Banner</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
         </header>
-
         <!-- Main Content -->
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white rounded-xl p-6 card-shadow">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-blue-100 rounded-lg">
-                            <i class="fa-solid fa-image w-6 h-6 text-blue-600"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Total Banners</p>
-                            <p class="text-2xl font-bold text-gray-900" id="totalBanners">{{ $banners->count() }}</p>
-                        </div>
+            <!-- Filter and Actions Form -->
+            <div class="flex flex-row justify-between items-center mb-6 gap-4 bg-white p-4 rounded-lg shadow-sm">
+                <form method="GET" action="{{ route('admin.banners.index') }}" class="flex items-center gap-x-4 gap-y-2 flex-row md:gap-6" id="filterForm">
+                    <div class="flex flex-row">
+                        <label class="text-sm font-medium text-gray-700 mr-2" for="perPage">Per page</label>
+                        <select id="perPage" name="perPage" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white">
+                            <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
+                            <option value="20" {{ request('perPage', 10) == 20 ? 'selected' : '' }}>20</option>
+                            <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50</option>
+                        </select>
                     </div>
-                </div>
-                <div class="bg-white rounded-xl p-6 card-shadow">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-green-100 rounded-lg">
-                            <i class="fa-solid fa-circle-check text-xl text-green-600"></i>                        
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Active Banners</p>
-                            <p class="text-2xl font-bold text-gray-900" id="activeBanners">{{ $banners->where('status', true)->count() }}</p>
-                        </div>
+                    <div class="relative w-full md:w-64">
+                        <input id="search" name="search" type="text" value="{{ request('search') }}"
+                            placeholder="Search Banners..."
+                            class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <button type="submit" class="absolute left-3 top-2.5 text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
-                </div>
-                <div class="bg-white rounded-xl p-6 card-shadow">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-yellow-100 rounded-lg">
-                            <i class="fa-solid fa-circle-pause text-xl text-yellow-600"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Inactive Banners</p>
-                            <p class="text-2xl font-bold text-gray-900" id="inactiveBanners">{{ $banners->where('status', false)->count() }}</p>
-                        </div>
-                    </div>
-                </div>                  
-            </div>
 
-            <!-- Filter Tabs -->
-            <div class="bg-white rounded-xl p-6 card-shadow mb-6">
-                <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
-                    <button class="filter-tab active px-4 py-2 rounded-md text-sm font-medium transition-colors" data-filter="all">
-                        All Banners
-                    </button>
-                    <button class="filter-tab px-4 py-2 rounded-md text-sm font-medium transition-colors" data-filter="active">
-                        Active
-                    </button>
-                    <button class="filter-tab px-4 py-2 rounded-md text-sm font-medium transition-colors" data-filter="inactive">
-                        Inactive
-                    </button>
-                </div>
+                    <div class="flex flex-row items-center gap-2">
+                        <label class="text-sm font-medium text-gray-700" for="bulkAction">Actions</label>
+                        <select id="bulkAction" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white" disabled>
+                            <option value="0" selected disabled>Select Action</option>
+                            <option value="activate">Activate Selected</option>
+                            <option value="deactivate">Deactivate Selected</option>
+                        </select>
+                    </div>
+                </form>
+                <button 
+                id="addBannerBtn" 
+                class="btn-primary text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                <span>Add Banner</span>
+            </button>
             </div>
 
             <!-- Banners Table -->
@@ -206,9 +166,13 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <input type="checkbox" id="selectAll" class="rounded">
+                                </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Banner</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -216,7 +180,10 @@
                             @foreach($banners as $banner)
                                 <tr class="table-row">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <img src="{{ $banner->banner ? asset('storage/banners/' . $banner->banner) : 'storage/default-image.jpeg' }}" alt="{{ $banner->title }}" class="h-12 w-20 object-cover rounded-lg">
+                                        <input type="checkbox" class="row-checkbox rounded" data-id="{{ $banner->id }}">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <img src="{{ $banner->banner ? asset('storage/banners/' . $banner->banner) : asset('storage/default-image.jpeg') }}" alt="{{ $banner->title }}" class="h-12 w-20 object-cover rounded-lg">
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">{{ $banner->title }}</div>
@@ -226,6 +193,9 @@
                                             <input type="checkbox" {{ $banner->status ? 'checked' : '' }} onchange="toggleBannerStatus({{ $banner->id }})">
                                             <span class="slider"></span>
                                         </label>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $banner->created_at->format('M d, Y') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-2">
@@ -258,6 +228,10 @@
                     <button class="btn-primary text-white px-4 py-2 rounded-lg" onclick="openAddModal()">
                         Add Banner
                     </button>
+                </div>
+                <!-- Pagination -->
+                <div class="px-6 py-4">
+                    {{-- {{ $banners->appends(request()->query())->links('pagination::tailwind') }} --}}
                 </div>
             </div>
         </main>
@@ -293,23 +267,30 @@
                                 <div id="bannerImage" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-gray-400 transition-colors">
                                     <div class="space-y-1 text-center">
                                         <div id="imagePreview" class="hidden">
-                                            <img id="previewImg" src="" alt="Preview" class="mx-auto h-32 w-auto rounded-lg">
+                                            <div class="relative">
+                                                <img id="previewImg" src="" alt="Preview" class="mx-auto h-32 w-auto rounded-lg">
+                                                <button type="button" id="removeImageBtn" class="absolute bg-red-500 h-5 w-5 top-1 right-1 flex items-center justify-center rounded-full text-white">
+                                                    <i class="fa-solid fa-xmark "></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div id="uploadPlaceholder">
+                                        <div id="uploadPlaceholder" class="cursor cursor-pointer">
                                             <i class="fa-solid fa-upload"></i>
                                             <div class="flex text-sm text-gray-600">
                                                 <label for="bannerImage" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
                                                     <span>Upload a file</span>
+                                                    <input id="imageInput" name="image" type="file" class="sr-only" accept="image/*">
                                                 </label>
                                                 <p class="pl-1">or drag and drop</p>
                                             </div>
                                             <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                                         </div>
-                                        <input id="imageInput" name="image" type="file" class="sr-only" accept="image/*">
                                     </div>
                                 </div>
+                                <div id="bannerImageError" class="text-red-500 text-sm mt-1 hidden"></div>
                             </div>
-                            <div>
+                            <div class="flex items-center gap-2">
+                                <span class="ml-2 text-sm text-gray-700">Status</span>
                                 <label class="toggle-switch">
                                     <input type="hidden" name="status" value="0">
                                     <input type="checkbox" name="status" id="formStatus" value="1">
@@ -372,6 +353,7 @@
             </div>
         </div>
     </body>
+
 @push('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
@@ -385,23 +367,43 @@
                         minlength: 5
                     },
                     image: {
-                        required:true,
+                        required: function() {
+                            return !editingBannerId; // Image required only for create
+                        },
+                        extension: "jpg|jpeg|png|gif"
+                    }
+                },
+                messages: {
+                    image: {
+                        required: "Please upload an image",
+                        extension: "Please upload a valid image file (jpg, jpeg, png, gif)"
                     }
                 },
                 errorElement: 'div',
                 errorClass: 'text-red-500 text-sm mt-1',
-                success: function(label, element) {
+                errorPlacement: function(error, element) {
+                    if (element.attr('name') === 'image') {
+                        error.insertAfter('#bannerImage');
+                    } else {
+                        error.insertAfter(element);
+                    }
                 },
                 submitHandler: function(form) {
-                    handleFormSubmit(form)
+                    handleFormSubmit(form);
                 }
             });
-        });
 
-        let banners = @json($banners);
+            // Handle per page change
+            $('#perPage').on('change', function() {
+                $('#filterForm').submit();
+            });
+        });
+        let banners = @json($banners).data;
+        console.log(banners)
         let editingBannerId = null;
         let deletingBannerId = null;
         let currentFilter = 'all';
+        let removeImage = false;
 
         // DOM Elements
         const addBannerBtn = document.getElementById('addBannerBtn');
@@ -411,12 +413,28 @@
         const bannersTableBody = document.getElementById('bannersTableBody');
         const searchInput = document.getElementById('searchInput');
         const emptyState = document.getElementById('emptyState');
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const bulkActionSelect = document.getElementById('bulkAction');
+        const removeImageBtn = document.getElementById('removeImageBtn');
 
         // Event Listeners
         addBannerBtn.addEventListener('click', openAddModal);
+        selectAllCheckbox.addEventListener('change', handleSelectAll);
+        bulkActionSelect.addEventListener('change', handleBulkAction);
+        removeImageBtn.addEventListener('click', handleRemoveImage);
+        document.getElementById('bannerImage').addEventListener('click', handleImageUpload);
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    showImagePreview(e.target.result);
+                };
+                reader.readAsDataURL(file);
+                removeImage = false;
+            }
+        });
 
-        function renderBanners(){
-        }
         // Filter tabs
         document.querySelectorAll('.filter-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
@@ -432,37 +450,41 @@
             });
         });
 
-        // Image upload handling
-        document.getElementById('bannerImage').addEventListener('click', handleImageUpload);
-
         // Functions
         function openAddModal() {
             editingBannerId = null;
+            removeImage = false;
             document.getElementById('modalTitle').textContent = 'Add New Banner';
             document.getElementById('submitBtnText').textContent = 'Add Banner';
             document.getElementById('formMethod').value = 'POST';
             bannerForm.reset();
             hideImagePreview();
             bannerModal.classList.remove('hidden');
+            $('#bannerForm').validate().resetForm();
+            $('#bannerImageError').addClass('hidden');
         }
 
         function openEditModal(id) {
             const banner = banners.find(b => b.id === id);
             if (!banner) return;
-            console.log(banner)
             editingBannerId = id;
+            removeImage = false;
             document.getElementById('modalTitle').textContent = 'Edit Banner';
             document.getElementById('submitBtnText').textContent = 'Update Banner';
             document.getElementById('formMethod').value = 'PUT';
             
             document.getElementById('bannerTitle').value = banner.title;
-            document.getElementById('formStatus').checked = banner.status; // Fixed from bannerStatus
+            document.getElementById('formStatus').checked = banner.status;
             
             if (banner.banner) {
                 showImagePreview('{{ asset('storage/banners') }}/' + banner.banner);
+            } else {
+                hideImagePreview();
             }
             
             bannerModal.classList.remove('hidden');
+            $('#bannerForm').validate().resetForm();
+            $('#bannerImageError').addClass('hidden');
         }
 
         function closeBannerModal() {
@@ -470,6 +492,9 @@
             bannerForm.reset();
             hideImagePreview();
             editingBannerId = null;
+            removeImage = false;
+            $('#bannerForm').validate().resetForm();
+            $('#bannerTitleError, #bannerImageError').addClass('hidden');
         }
 
         function openDeleteModal(id) {
@@ -483,17 +508,17 @@
         }
 
         function handleFormSubmit(form) {
-            console.log(editingBannerId)
             const formData = new FormData(form);
+            if (removeImage && editingBannerId) {
+                formData.append('remove_image', '1');
+            }
             const url = editingBannerId 
                 ? `{{ route('admin.banners.update', ':id') }}`.replace(':id', editingBannerId)
                 : '{{ route('admin.banners.store') }}';
-            if(editingBannerId){
-                formData.append('__method','PUT')
-            }
+
             $.ajax({
                 url: url,
-                type: editingBannerId ? 'PUT' : 'POST',
+                type: editingBannerId ? 'POST' : 'POST', // Use POST for both due to _method
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -503,13 +528,12 @@
                 success: function(response) {
                     if (response.success) {
                         if (editingBannerId) {
-                            const index = banners.findIndex(b => b.id === editingBannerId);
-                            banners[index] = response.banner;
+                            swalSuccess(response.message)
+                           window.location.reload()
                         } else {
-                            banners.push(response.banner);
+                            swalSuccess(response.message)
+                           window.location.reload()
                         }
-                        renderBanners();
-                        updateStatistics();
                         closeBannerModal();
                     }
                 },
@@ -533,59 +557,111 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        banners = banners.filter(b => b.id !== id);
-                        renderBanners();
-                        updateStatistics();
-                        closeDeleteModal();
+                        swalSuccess(response.message)
+                        window.location.reload()
+                        
                     }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseJSON);
                 }
             });
         }
 
         function toggleBannerStatus(id) {
-    const banner = banners.find(b => b.id === id);
-    if (banner) {
-        $.ajax({
-            url: `{{ route('admin.banners.status', ':id') }}`.replace(':id', id),
-            type: 'PUT',
-            data: {
-                status: !banner.status,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if (response.success) {
-                    banner.status = !banner.status;
-                    renderBanners();
-                    updateStatistics();
-                }
-            },
-            error: function(xhr) {
-                console.error(xhr.responseJSON);
+            const banner = banners.find(b => b.id === id);
+            if (banner) {
+                $.ajax({
+                    url: `{{ route('admin.banners.status', ':id') }}`.replace(':id', id),
+                    type: 'PUT',
+                    data: {
+                        status: !banner.status,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            banner.status = !banner.status;
+                            renderBanners();
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseJSON);
+                    }
+                });
             }
-        });
-    }
-}
-
-        function handleImageUpload(e) {
-
-            document.getElementById('imageInput').click();
-            
         }
 
-        document.getElementById('imageInput').addEventListener('change',function(e){
+        document.querySelectorAll('.row-checkbox').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const selectedIds = Array.from(document.querySelectorAll('.row-checkbox:checked'));
+                if(selectedIds.length<=0){
+                    document.getElementById('bulkAction').disabled=true;
+                }else{
+                    
+                }
+            });
+        });
 
-            const file =  e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    showImagePreview(e.target.result);
-                };
-                reader.readAsDataURL(file);
+        function handleBulkAction() {
+            const action = bulkActionSelect.value;
+            const selectedIds = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.dataset.id);
+            
+            if (selectedIds.length === 0 || action === '0') {
+                bulkActionSelect.value = '0';
+                return;
             }
-        })
+
+            $.ajax({
+                url: '{{ route('admin.banners.bulk-status') }}',
+                type: 'post',
+                data: {
+                    ids: selectedIds,
+                    status: action === 'activate' ? 1 : 0,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        selectedIds.forEach(id => {
+                            const banner = banners.find(b => b.id == id);
+                            if (banner) {
+                                banner.status = action === 'activate' ? 1 : 0;
+                            }
+                        });
+                        window.location.reload()
+                        selectAllCheckbox.checked = false;
+                        toggleBulkActionSelect();
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseJSON);
+                }
+            });
+
+            bulkActionSelect.value = '0';
+        }
+
+        function handleSelectAll() {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+            toggleBulkActionSelect();
+        }
+
+        function toggleBulkActionSelect() {
+            const selectedCheckboxes = document.querySelectorAll('.row-checkbox:checked').length;
+            bulkActionSelect.disabled = selectedCheckboxes === 0;
+        }
+
+        function handleImageUpload() {
+            document.getElementById('imageInput').click();
+        }
+
+        function handleRemoveImage() {
+            removeImage = true;
+            hideImagePreview();
+            document.getElementById('imageInput').value = '';
+        }
 
         function showImagePreview(src) {
-            console.log(src)
             document.getElementById('previewImg').src = src;
             document.getElementById('imagePreview').classList.remove('hidden');
             document.getElementById('uploadPlaceholder').classList.add('hidden');
@@ -595,6 +671,9 @@
             document.getElementById('imagePreview').classList.add('hidden');
             document.getElementById('uploadPlaceholder').classList.remove('hidden');
         }
+
+
+
 
 
         function updateStatistics() {
@@ -627,12 +706,6 @@
             }
         });
 
-        // Initialize active filter tab
-        document.querySelector('.filter-tab[data-filter="all"]').classList.add('bg-white', 'text-blue-600', 'shadow-sm');
-
-        // Initial render
-        renderBanners();
-        updateStatistics();
     </script>
 @endpush
 @endsection

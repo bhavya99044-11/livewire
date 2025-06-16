@@ -21,7 +21,6 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        dd($this->status);
         return [
             'title' => 'required|string|min:5|max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:10240', // Image is optional for updates

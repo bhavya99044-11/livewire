@@ -22,16 +22,16 @@ $breadCrumbs = [
 
 @section('content')
 @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
-<div class="w-full ">
-    <div class="mt-10 mx-auto">
-        <form id="cmsForm" class="box mx-20 relative border border-rounded-lg p-6 bg-white shadow-md">
-            <input type="hidden" id="slug" value="{{$cms->slug}}"><input>
-            <span class="label absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-2 text-sm font-semibold">
+<div class=" px-4">
+    <div class="  bg-white  rounded-lg">
+        <form id="cmsForm" class="box flex flex-col  relative text-center  shadow-md">
+            <input type="hidden" id="slug" value="{{$cms->slug}}"></input>
+            <span class="label p-3 border-b  text-2xl font-semibold">
                 {{$cms->title}}
               </span>    
-            <div id="editor">{!!$cms->content!!}</div>
-            <div class="flex justify-end mt-4">
-                <button class="bg-blue-600 flex flex-row duration-150 items-center justify-center hover:opacity-70 transition-all  font-semibold text-white rounded-lg px-2 py-1">
+            <div class="p-3 border-b"><div class="" id="editor">{!!$cms->content!!}</div></div>
+            <div class="flex p-3 justify-end">
+                <button class="btn-primary">
                     Save  <div id="spin" class="hidden"><i class="fa fa-spinner fa-spin ml-1"></i></div></button>   
             </div>
         </form>

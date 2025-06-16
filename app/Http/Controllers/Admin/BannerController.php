@@ -15,10 +15,20 @@ class BannerController extends Controller
     /**
      * Display a listing of the banners.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $banners = Banner::all();
+            $perPage = $request->input('perPage', 10);
+            $search = $request->input('search');
+            
+            $query = Banner::query();
+            
+            if ($search) {
+                $query->where('title', 'like', '%' . $search . '%');
+            }
+            
+            $banners = $query->paginate($perPage);
+            
             return view('admin.pages.banner.index', compact('banners'));
         } catch (\Exception $e) {
             return back()->withErrors(['error' => __('messages.banner.error')]);
@@ -30,7 +40,6 @@ class BannerController extends Controller
      */
     public function create()
     {
-        // This method is not needed since the form is handled via a modal in the index view
         return redirect()->route('admin.banners.index');
     }
 
@@ -42,7 +51,6 @@ class BannerController extends Controller
         try {
             DB::beginTransaction();
 
-            // Handle image upload
             $fileName = time() . '_' . $request->file('image')->getClientOriginalName();
             $path = $request->file('image')->storeAs('banners', $fileName, 'public');
 
@@ -71,7 +79,7 @@ class BannerController extends Controller
     /**
      * Update the specified banner in storage.
      */
-    public function update($id,UpdateRequest $request)
+    public function update(UpdateRequest $request, $id)
     {
         try {
             DB::beginTransaction();
@@ -83,15 +91,18 @@ class BannerController extends Controller
                 'status' => $request->status ?? 0,
             ];
 
-            // Handle image upload if provided
+            if ($request->has('remove_image') && $request->remove_image == '1' && $banner->banner) {
+                Storage::disk('public')->delete('banners/' . $banner->banner);
+                $data['banner'] = null;
+            }
+
             if ($request->hasFile('image')) {
-                // Delete old image if exists
-                if ($banner->image) {
-                    Storage::disk('public')->delete($banner->image);
+                if ($banner->banner) {
+                    Storage::disk('public')->delete('banners/' . $banner->banner);
                 }
                 $fileName = time() . '_' . $request->file('image')->getClientOriginalName();
                 $path = $request->file('image')->storeAs('banners', $fileName, 'public');
-                $data['image'] = $path;
+                $data['banner'] = $fileName;
             }
 
             $banner->update($data);
@@ -122,13 +133,46 @@ class BannerController extends Controller
 
             $banner = Banner::findOrFail($id);
             $banner->update([
-                'status' => (bool)$request->status,
+                'status' => $request->status,
             ]);
 
             DB::commit();
             return response()->json([
                 'success' => true,
                 'banner' => $banner,
+                'message' => __('messages.banner.updated'),
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => __('messages.banner.update_error'),
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Update the status of multiple banners.
+     */
+    public function bulkStatusUpdate(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $ids = $request->input('ids', []);
+            $status = $request->input('status');
+
+            Banner::whereIn('id', $ids)->update([
+                'status' => $status,
+            ]);
+
+            $banners = Banner::whereIn('id', $ids)->get();
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'banners' => $banners,
                 'message' => __('messages.banner.updated'),
             ], 200);
         } catch (\Exception $e) {
@@ -150,9 +194,8 @@ class BannerController extends Controller
             DB::beginTransaction();
 
             $banner = Banner::findOrFail($id);
-            // Delete image if exists
-            if ($banner->image) {
-                Storage::disk('public')->delete($banner->image);
+            if ($banner->banner) {
+                Storage::disk('public')->delete('banners/' . $banner->banner);
             }
             $banner->delete();
 

@@ -21,9 +21,12 @@
 
     @endphp
     @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
-    <div class="container mx-auto px-4 py-8">
+    <div class="container bg-gray-200 px-4 pb-8 ">
 
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <div class=" bg-white rounded-lg shadow  overflow-hidden">
+
+        <h1 class="text-lg border font-semibold p-3">Admin List</h1>
+        <div class="flex flex-col border p-3 border-t-0 md:flex-row justify-between items-center gap-4">
 
             <div class="md:flex grid grid-cols-2 items-center gap-x-2 gap-y-1 md:flex-row md:gap-4">
                 <div>
@@ -78,9 +81,7 @@
                 @endif
             </div>
         </div>
-
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto border-t-0 border">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -98,7 +99,7 @@
                                 class="px-6  py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Role</th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Status</th>
                             <th scope="col"
                                 class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -131,17 +132,17 @@
                             </td>
                         
                             <td class="px-6 py-4 text-center whitespace-nowrap">
-                                <button
+                                <span
                                     wire:click="rolesEdit({{ $admin['id'] }})"
-                                    class="px-2 border inline-flex text-xs capitalize leading-5 rounded-full"
+                                    class="px-2  border inline-flex text-xs capitalize leading-5 rounded-lg"
                                     style="border-color: {{ $admin['role']['color'] }}; color: {{ $admin['role']['color'] }}; background-color:{{ $admin['role']['bgColor'] }};">
                                     {{ $admin['role']['label'] }}
-                                </button>
+                            </span>
                             </td>
                         
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-6 py-4 text-center whitespace-nowrap">
                                 <span
-                                    class="px-2 border inline-flex capitalize text-xs leading-5 rounded-full"
+                                    class="px-2 border inline-flex capitalize text-xs leading-5 rounded-lg"
                                     style="color: {{ $admin['status']['color'] }}; border-color: {{ $admin['status']['color'] }}; background-color: {{ $admin['status']['bgColor']}}">
                                     {{ $admin['status']['label'] }}
                                 </span>
@@ -177,8 +178,8 @@
                     </tbody>
                 </table>
             </div>
+           <div class="p-3"> {{ $admins->links( ) }}</div>
         </div>
-        {{ $admins->links( ) }}
     </div>
     @livewire('Admin.AdminForm')
 </section>

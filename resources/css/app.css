@@ -2,3 +2,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.input-style {
+    @apply mt-1 relative block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+           focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+  }
+
+  .btn-primary {
+    @apply w-fit cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white 
+           px-4 py-2 rounded-lg flex items-center gap-2 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md transition-colors;
+  }
+  

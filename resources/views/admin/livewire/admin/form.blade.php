@@ -20,8 +20,8 @@
                             <!-- Name -->
                             <div>
                                 <label class="block text-gray-700">Name</label>
-                                <input type="text" wire:model.defer="name"
-                                    class="w-full focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-1 border border-gray-500 rounded" />
+                                <input placeholder="Enter Name" type="text" wire:model.defer="name"
+                                class="input-style" />
                                 @error('name')
                                     <span class="text-red-500 text-sm">{{ $message }}</span>
                                 @enderror
@@ -30,8 +30,8 @@
                             <!-- Email -->
                             <div>
                                 <label class="block text-gray-700">Email</label>
-                                <input type="email" wire:model.defer="email"
-                                    class="w-full focus:outline-none focus:ring-2 focus:ring-blue-500 px-2 py-1 border border-gray-500 rounded" />
+                                <input type="email" placeholder="Enter Email" wire:model.defer="email"
+                                class="input-style" />
                                 @error('email')
                                     <span class="text-red-500 text-sm">{{ $message }}</span>
                                 @enderror
@@ -41,8 +41,8 @@
                             @unless ($adminId)
                                 <div>
                                     <label class="block text-gray-700">Password</label>
-                                    <input type="password" wire:model.defer="password"
-                                        class="w-full px-2 py-1 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded" />
+                                    <input type="password" placeholder="Enter Password" wire:model.defer="password"
+                                    class="input-style" />
                                     @error('password')
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror
@@ -52,7 +52,7 @@
                             <div class="col-span-2">
                                 <label class="block text-gray-700">Status</label>
                                 <select wire:model.defer="status"
-                                    class="max-w-full md:w-full text-sm md:text-base px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 border bg-white border-gray-500 rounded">
+                                    class="input-style">
                                     <option value="">Select Status</option>
                                     @foreach ($enumStatus as $statusOption)
                                         <option value="{{ $statusOption->value }}">{{ $statusOption->name }}</option>
@@ -64,9 +64,8 @@
                             </div>
                             
                         </div>
-                            <div class="mt-6 flex justify-end">
-                                
-                                <button type="button" wire:click="nextForm" class="bg-blue-500 text-white px-2 py-1 rounded">
+                            <div class="mt-6 flex justify-end">                                
+                                <button type="button" wire:click="nextForm" class="btn-primary">
                                     Next
                                 </button>
                         </div>     
@@ -92,11 +91,11 @@
                                         <span class="text-red-500 text-sm">{{ $message }}</span>
                                     @enderror
 
-                            <div class="mt-6 flex justify-end">
-                                <button type="button" wire:click="$set('nextPage',null)" class="bg-gray-500 mr-2 hover:opacity-90 text-white px-2 py-1 rounded">
+                            <div class="mt-6 flex justify-end gap-2">
+                                <button type="button" wire:click="$set('nextPage',null)" class="btn-secondary">
                                     Back
                                 </button>
-                                <button type="submit" class="bg-blue-500 text-white px-2 py-1 rounded">
+                                <button type="submit" class="btn-primary">
                                     {{ $adminId ? 'Update' : 'Create' }}
                                 </button>
                             </div>

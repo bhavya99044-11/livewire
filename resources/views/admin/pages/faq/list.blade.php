@@ -40,7 +40,7 @@ $breadCrumbs = [
 @section('content')
 @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
 <div class="">
-    <div class="mt-10 flex flex-col items-center justify-center  box mx-20 relative border border-rounded-lg p-6 bg-white shadow-md">
+    <div class="mt-10 flex flex-col items-center justify-center  box mx-20 relative border border-rounded-lg p-6 shadow-md">
          <div class="" style=""><i class="fa-solid text-5xl fa-circle-question"></i></div>
          <h3 class="text-2xl font-semibold mt-2">Frequently Asked Questions</h3>
 

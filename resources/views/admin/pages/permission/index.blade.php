@@ -66,6 +66,13 @@
             gap: 0px !important;
         }
     }
+
+    .datatable-headers {
+    padding: 12px;
+    border-width: 1px;
+    border-top: 0px;
+    border-color:#e5e7eb;
+}
 </style>
 @endpush
 
@@ -87,17 +94,21 @@
     @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <div class="container mx-auto px-4 py-8">
-        <div class="flex flex-col md:flex-row justify-end items-center mb-6 gap-4">
+    <div class="container px-4 bg-gray-200  ">
+        <div class="bg-white rounded-lg mb-8">
+
+
+            <h1 class="text-lg font-semibold p-3 border">Permission List</h1>
+        <div class="flex flex-col md:flex-row justify-end items-center">
             <div class="flex md:block md:w-auto w-full justify-end">
                 <!-- Button moved to DataTable initComplete -->
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow overflow-hidden table-container">
+        <div class=" rounded-lg shadow overflow-hidden table-container">
             <div class="">
-                <table id="permissionsTable" class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table id="permissionsTable" class="min-w-full p-3  divide-y divide-[#e5e7eb]">
+                    <thead class="">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 #
@@ -116,27 +127,26 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="divide-y divide-[#e5e7eb]">
                         <!-- DataTable will populate this -->
                     </tbody>
                 </table>
             </div>
         </div>
-    </div>
 
-    <div id="permissionModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-lg shadow-lg modal-content">
+    <div id="permissionModal" class="fixed  inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white w-2/6 p-6 rounded-lg shadow-lg modal-content">
             <h2 id="modalTitle" class="text-xl font-bold text-gray-800 mb-4"></h2>
             <form id="permissionForm">
                 <input type="hidden" id="permission_id">
                 <div class="mb-4">
                     <label for="module" class="block text-sm font-medium text-gray-700">{{ __('messages.permissions.module') }}</label>
-                    <input type="text" id="module" name="module" class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" placeholder="Enter Module Name" id="module" name="module" placeholder="Module " class="input-style">
                     <span class="text-red-500 text-sm error-message" id="error-module"></span>
                 </div>
                 <div class="mb-4">
                     <label for="name" class="block text-sm font-medium text-gray-700">{{ __('messages.permissions.name') }}</label>
-                    <input type="text" id="name" name="name" class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="name" placeholder="Enter Name" name="name" class="input-style">
                     <span class="text-red-500 text-sm error-message" id="error-name"></span>
                 </div>
                 <div class="flex justify-end gap-2">
@@ -150,6 +160,8 @@
             </form>
         </div>
     </div>
+</div>
+</div>
 </section>
 @endsection
 
@@ -177,9 +189,9 @@
         };
 
         var table = $('#permissionsTable').DataTable({
-            dom: "<'flex flex-wrap datatable-headers justify-between items-center mb-4'<'flex custom-header items-center gap-4'lf><'custom-btn-wrapper'>>" +
+            dom: "<'flex flex-wrap datatable-headers justify-between items-center'<'flex custom-header items-center gap-4'lf><'custom-btn-wrapper'>>" +
                  "<'w-full't>" +
-                 "<'flex justify-between items-center mt-4'<'text-sm'i><'text-sm'p>>",
+                 "<'flex justify-between items-center p-3 '<'text-sm'i><'text-sm'p>>",
             initComplete: function () {
                 if (@json(auth()->guard('admin')->user()->hasPermission('permission-add'))) {
                     $('.custom-btn-wrapper').html(`

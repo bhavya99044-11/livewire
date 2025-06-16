@@ -12,7 +12,7 @@
     <title>Sidebar</title>
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-200">
     <label for="sidebar-toggle"
         class="fixed top-5 left-3 z-30 md:hidden cursor-pointer bg-indigo-600 text-white p-1 rounded-md">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"

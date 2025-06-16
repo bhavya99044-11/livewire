@@ -86,5 +86,5 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
     Route::post('faqs/reorder', [FaqController::class, 'reorder'])->name('faqs.reorder');
 
     Route::resource('banners',BannerController::class);
-    Route::put('/banners/{banner}/status', [BannerController::class, 'statusUpdate'])->name('banners.status');
-});
+    Route::put('/banners/{id}/status', [BannerController::class, 'statusUpdate'])->name('banners.status');
+    Route::post('/banners/bulk-status', [BannerController::class, 'bulkStatusUpdate'])->name('banners.bulk-status');});

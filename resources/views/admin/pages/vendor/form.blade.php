@@ -33,227 +33,316 @@ $breadCrumbs=[
 
 @endphp
 @include('admin.components.bread-crumb',['breadCrumbs'=>$breadCrumbs])
-    <section class="bg-gray-100">
-        <div class="container mx-auto px-4 py-8">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">{{ isset($vendor) ? 'Edit Vendor' : 'Add Vendor' }}</h1>
-            <div class="bg-white p-6 rounded-lg shadow-md m-10">
-                <p class="text-gray-600">Please fill out the form below with vendor information.</p>
-                {{-- Grid Section --}}
-                <form id='vendorForm' class="m-10 space-y-3" enctype="multipart/form-data" 
+<section class="">
+    <div class="container mx-auto px-4 mb-8">
+        <div class=" rounded-lg mx-auto bg-white">
+            <div class="flex items-center p-3 border-b">
+                <h1 class="text-xl font-semibold text-gray-800">
+                    {{ isset($vendor) ? 'Edit Vendor' : 'Add New Vendor' }}
+                </h1>
+            </div>
+            
+            <div class="">
+                <div class="p-3 border border-b ">
+                    <h2 class="text-xl font-semibold text-gray-700">
+                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                        Vendor Information
+                    </h2>
+                    <p class="text-gray-500 text-sm mt-1">Please fill out the form below with vendor details</p>
+                </div>
+                
+                <form id="vendorForm" class="" enctype="multipart/form-data" 
                       action="{{ isset($vendor) ? route('admin.vendors.update', $vendor['id']) : route('admin.vendors.store') }}" 
                       method="POST">
                     @csrf
                     @if(isset($vendor))
                         @method('PATCH')
                     @endif
-                    <div class="grid grid-cols-2 gap-y-2 gap-x-2">
-                        <h1 class="col-span-2 text-lg mb-5">Vendor Information</h1>
-                        {{-- Name --}}
-                        <div class="mb-2">
-                            <div class="flex flex-row items-center gap-2">
-                                <label for="name" class="text-gray-700">Name :</label>
-                                <div class="parent flex flex-col">
-                                    <input type="text" name="name" class="bg-inherit form-input" 
-                                           value="{{ old('name', isset($vendor) ? $vendor['name'] : '') }}">
-                                </div>
-                            </div>
+                    
+                    <!-- Vendor Information Section -->
+                    <div class="grid grid-cols-1 p-3 border-b md:grid-cols-2 gap-6">
+                        <!-- Name -->
+                        <div class="space-y-1">
+                            <label for="name" class="block text-sm font-medium text-gray-700">
+                                <i class="fas fa-user text-blue-500 mr-1"></i> Full Name
+                            </label>
+                            <input type="text" name="name" id="name" 
+                                   class="input-style"
+                                   value="{{ old('name', isset($vendor) ? $vendor['name'] : '') }}"
+                                   placeholder="Enter vendor name">
                         </div>
-                        {{-- Email --}}
-                        <div class="mb-2">
-                            <div class="gap-2 flex flex-row items-center">
-                                <label for="email" class="block text-gray-700">Email :</label>
-                                <div class="parent flex flex-col">
-                                    <input type="email" name="email" class="bg-inherit form-input" 
-                                           value="{{ old('email', isset($vendor) ? $vendor['email'] : '') }}">
-                                </div>
-                            </div>
+                        
+                        <!-- Email -->
+                        <div class="space-y-1">
+                            <label for="email" class="block text-sm font-medium text-gray-700">
+                                <i class="fas fa-envelope text-blue-500 mr-1"></i> Email Address
+                            </label>
+                            <input type="email" name="email" id="email" 
+                                   class="input-style"
+                                   value="{{ old('email', isset($vendor) ? $vendor['email'] : '') }}"
+                                   placeholder="vendor@example.com">
                         </div>
-                        {{-- Number --}}
-                        <div class="mb-2">
-                            <div class="gap-2 flex flex-row items-center">
-                                <label for="contact_number" class="block text-gray-700">Number :</label>
-                                <div class="parent flex flex-col">
-                                    <input type="text" name="contact_number" class="bg-inherit form-input" 
-                                           value="{{ old('contact_number', isset($vendor) ? $vendor["contact_number"] : '') }}">
-                                </div>
-                            </div>
+                        
+                        <!-- Contact Number -->
+                        <div class="space-y-1">
+                            <label for="contact_number" class="block text-sm font-medium text-gray-700">
+                                <i class="fas fa-phone text-blue-500 mr-1"></i> Contact Number
+                            </label>
+                            <input type="text" name="contact_number" id="contact_number" 
+                            class="input-style"
+                                   value="{{ old('contact_number', isset($vendor) ? $vendor['contact_number'] : '') }}"
+                                   placeholder="+1 (123) 456-7890">
                         </div>
-                        {{-- Password --}}
+                        
+                        <!-- Password (only for new vendors) -->
                         @unless(isset($vendor))
-                        <div class="mb-2">
-                            <div class="gap-2 flex flex-row items-center">
-                                <label for="password" class="block text-gray-700">Password :</label>
-                                <div class="parent flex flex-col">
-                                    <input type="password" name="password" class="bg-inherit form-input" 
-                                           placeholder="{{ isset($vendor) ? 'Leave blank to keep unchanged' : '' }}">
-                                </div>
-                            </div>
+                        <div class="space-y-1">
+                            <label for="password" class="block text-sm font-medium text-gray-700">
+                                <i class="fas fa-lock text-blue-500 mr-1"></i> Password
+                            </label>
+                            <input type="password" name="password" id="password" 
+                            class="input-style"
+
+                                   placeholder="Create a strong password">
                         </div>
                         @endunless
                     </div>
-                    <div class="grid grid-cols-2 gap-y-2 gap-x-2">
-                        <h1 class="col-span-2 text-lg mb-5">Shop Information</h1>
-                        {{-- Shop Name --}}
-                        <div class="mb-2">
-                            <div class="gap-2 flex flex-row items-center">
-                                <label for="shop_name" class="block text-gray-700">Shop Name :</label>
-                                <div class="parent flex flex-col">
-                                    <input type="text" name="shop_name" class="form-input" 
-                                           value="{{ old('shop_name', isset($vendor) ? $vendor["shop_name"] : '') }}">
+                    
+                    <!-- Shop Information Section -->
+                    <div class="">
+                        <div class=" p-3 border-b">
+                            <h2 class="text-xl font-semibold text-gray-700">
+                                <i class="fas fa-store text-blue-500 mr-2"></i>
+                                Shop Information
+                            </h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 p-3 border-b md:grid-cols-2 gap-3">
+                            <!-- Shop Name -->
+                            <div class="space-y-1">
+                                <label for="shop_name" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-signature text-blue-500 mr-1"></i> Shop Name
+                                </label>
+                                <input type="text" name="shop_name" id="shop_name" 
+                                class="input-style"
+                                       value="{{ old('shop_name', isset($vendor) ? $vendor['shop_name'] : '') }}"
+                                       placeholder="Enter shop name">
+                            </div>
+                            
+                            <!-- Logo Upload -->
+                            <div class="space-y-1">
+                                <label class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-image text-blue-500 mr-1"></i> Shop Logo
+                                </label>
+                                <div class="flex items-center gap-4">
+                                    <label class="cursor-pointer inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Choose File</span>
+                                        <input type="file" accept="image/*" name="image" onchange="previewLogo(event)" class="hidden" id="shopLogo">
+                                    </label>
+                                    <div class="shrink-0 w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden">
+                                        <img id="logoPreview" class="w-full h-full object-cover" 
+                                             src="{{ isset($vendor) && $vendor['logo_url'] ? asset('storage/logos/'.$vendor['logo_url']) : asset('storage/logos/default_image.png') }}" 
+                                             alt="Logo Preview">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        {{-- Logo URL --}}
-                        <div class="flex items-center gap-4">
-                            <label class="cursor-pointer inline-flex items-center gap-2 bg-sideBarColor text-white px-4 py-2 rounded-lg hover:bg-violet-700 transition">
-                                <i class="fa-solid fa-upload"></i>
-                                <span>Upload Logo</span>
-                                <input type="file" accept="image/*" name="image" onchange="previewLogo(event)" class="hidden" id="shopLogo">
-                            </label>
-                            <div class="shrink-0 w-12 h-12 rounded-full border border-gray-300 overflow-hidden">
-                                <img id="logoPreview" class="w-full h-full object-cover" 
-                                     src="{{ isset($vendor) && $vendor["logo_url"] ? asset('storage/logos/'.$vendor["logo_url"]) : asset('storage/logos/default_image.png') }}" 
-                                     alt="Logo Preview">
+                            
+                            <!-- Address -->
+                            <div class="space-y-1 md:col-span-2">
+                                <label for="address" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-map-marker-alt text-blue-500 mr-1"></i> Address
+                                </label>
+                                <textarea name="address" id="address" rows="2"
+                                          class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                          placeholder="Enter full address">{{ old('address', isset($vendor) ? $vendor['address'] : '') }}</textarea>
                             </div>
-                        </div>
-                        {{-- Address --}}
-                        <div class="mb-2 gap-2 items-center flex flex-row">
-                            <label for="address" class="block text-gray-700">Address :</label>
-                            <div class="parent flex flex-col">
-                                <textarea name="address" class="form-input">{{ old('address', isset($vendor) ? $vendor["address"] : '') }}</textarea>
-                            </div>
-                        </div>
-                        {{-- City --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="city" class="block text-gray-700">City :</label>
-                            <div class="parent flex flex-col">
-                                <input type="text" name="city" class="form-input" 
-                                       value="{{ old('city', isset($vendor) ? $vendor["city"] : '') }}">
-                            </div>
-                        </div>
-                        {{-- State --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="state" class="block text-gray-700">State :</label>
-                            <div class="parent flex flex-col">
-                                <input type="text" name="state" class="form-input" 
-                                       value="{{ old('state', isset($vendor) ? $vendor["state"] : '') }}">
-                            </div>
-                        </div>
-                        {{-- Country --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="country" class="block text-gray-700">Country :</label>
-                            <div class="parent flex flex-col">
-                                <input type="text" name="country" class="form-input" 
-                                       value="{{ old('country', isset($vendor) ? $vendor["country"] : '') }}">
-                            </div>
-                        </div>
-                        {{-- Pincode --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="pincode" class="block text-gray-700">Pincode :</label>
-                            <div class="parent flex flex-col">
-                                <input type="text" name="pincode" class="form-input" 
-                                       value="{{ old('pincode', isset($vendor) ? $vendor["pincode"] : '') }}">
-                            </div>
-                        </div>
-                        {{-- Status --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="is_shop" class="block text-gray-700">Store :</label>
-                            <div class="parent flex flex-col">
-                        <select name="is_shop" class="bg-white form-input">
-                            @foreach ($shopStatuses as $status)
-                                <option value="{{ $status->value }}"
-                                    {{isset($vendor)?$vendor["is_shop"]['value']== $status->value?'selected':'' : '' }}>
-                                    {{ $status->label() }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div></div>
+                            
+                            <!-- City -->
+                            <div class="space-y-1">
+                                <label for="city" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-city text-blue-500 mr-1"></i> City
+                                </label>
+                                <input type="text" name="city" id="city" 
+                                class="input-style"
 
-                    <div class="mb-2 gap-2 flex flex-row items-center">
-                        <label for="is_approve" class="block text-gray-700">Approve :</label>
-                        <div class="parent flex flex-col">
-                        <select name="is_approved" id="isApproveSelecet" class="bg-white form-input" @if( isset($vendor) &&  $vendor['is_approved']['value']==1) disabled @endif>
-                            @foreach ($approveStatuses as $status)
-                                <option value="{{ $status->value }}"
-                                    {{isset($vendor)?$vendor["is_approved"]['value']== $status->value?'selected':'' : '' }}>
-                                    {{ $status->label() }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div></div>
+                                       value="{{ old('city', isset($vendor) ? $vendor['city'] : '') }}"
+                                       placeholder="Enter city">
+                            </div>
+                            
+                            <!-- State -->
+                            <div class="space-y-1">
+                                <label for="state" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-map text-blue-500 mr-1"></i> State/Province
+                                </label>
+                                <input type="text" name="state" id="state" 
+                                class="input-style"
 
-                    <div class="mb-2 gap-2 flex flex-row items-center">
-                        <label for="status" class="block text-gray-700">Status :</label>
-                        <div class="parent flex flex-col">
-                        <select name="status" class="bg-white form-input">
-                            @foreach ($generalStatuses as $status)
-                                <option value="{{ $status->value }}"
-                                    {{isset($vendor)?$vendor["status"]['value']== $status->value?'selected':'' : '' }}>
-                                    {{ $status->label() }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div></div>
-                        {{-- Latitude --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="latitude" class="block text-gray-700">Latitude :</label>
-                            <div class="parent flex flex-col">
-                                <input type="text" name="latitude" class="form-input" 
-                                       value="{{ old('latitude', isset($vendor) ? $vendor['latitude'] : '') }}">
+                                       value="{{ old('state', isset($vendor) ? $vendor['state'] : '') }}"
+                                       placeholder="Enter state">
+                            </div>
+                            
+                            <!-- Country -->
+                            <div class="space-y-1">
+                                <label for="country" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-globe text-blue-500 mr-1"></i> Country
+                                </label>
+                                <input type="text" name="country" id="country" 
+                                class="input-style"
+
+                                       value="{{ old('country', isset($vendor) ? $vendor['country'] : '') }}"
+                                       placeholder="Enter country">
+                            </div>
+                            
+                            <!-- Pincode -->
+                            <div class="space-y-1">
+                                <label for="pincode" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-mail-bulk text-blue-500 mr-1"></i> Postal/Zip Code
+                                </label>
+                                <input type="text" name="pincode" id="pincode" 
+                                class="input-style"
+
+                                       value="{{ old('pincode', isset($vendor) ? $vendor['pincode'] : '') }}"
+                                       placeholder="Enter postal code">
+                            </div>
+                            
+                            <!-- Store Status -->
+                            <div class="space-y-1">
+                                <label for="is_shop" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-store-alt text-blue-500 mr-1"></i> Store Status
+                                </label>
+                                <select name="is_shop" id="is_shop" 
+                                        class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                    @foreach ($shopStatuses as $status)
+                                        <option value="{{ $status->value }}"
+                                            {{ isset($vendor) && $vendor['is_shop']['value'] == $status->value ? 'selected' : '' }}>
+                                            {{ $status->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            
+                            <!-- Approval Status -->
+                            <div class="space-y-1">
+                                <label for="is_approved" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-check-circle text-blue-500 mr-1"></i> Approval Status
+                                </label>
+                                <select name="is_approved" id="isApproveSelecet" 
+                                        class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                        @if(isset($vendor) && $vendor['is_approved']['value'] == 1) disabled @endif>
+                                    @foreach ($approveStatuses as $status)
+                                        <option value="{{ $status->value }}"
+                                            {{ isset($vendor) && $vendor['is_approved']['value'] == $status->value ? 'selected' : '' }}>
+                                            {{ $status->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            
+                            <!-- Vendor Status -->
+                            <div class="space-y-1">
+                                <label for="status" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-power-off text-blue-500 mr-1"></i> Account Status
+                                </label>
+                                <select name="status" id="status" 
+                                        class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                    @foreach ($generalStatuses as $status)
+                                        <option value="{{ $status->value }}"
+                                            {{ isset($vendor) && $vendor['status']['value'] == $status->value ? 'selected' : '' }}>
+                                            {{ $status->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            
+                            <!-- Domain Selection -->
+                            <div class="space-y-1 md:col-span-2">
+                                <label for="domainSelect" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-tags text-blue-500 mr-1"></i> Business Domains
+                                </label>
+                                <select name="domain_id[]" id="domainSelect" multiple="multiple"
+                                class="input-style">
+                                    @foreach ($domains as $domain)
+                                        <option value="{{ $domain->id }}" 
+                                            @if(isset($vendor) && $vendor['domains']->contains('id', $domain['id'])) selected @endif>
+                                            {{ $domain->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple domains</p>
+                            </div>
+                            
+                            <!-- Location Coordinates -->
+                            <div class="space-y-1">
+                                <label for="latitude" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-map-pin text-blue-500 mr-1"></i> Latitude
+                                </label>
+                                <input type="text" name="latitude" id="latitude" 
+                                class="input-style"
+
+                                       value="{{ old('latitude', isset($vendor) ? $vendor['latitude'] : '') }}"
+                                       placeholder="e.g. 40.7128">
+                            </div>
+                            
+                            <div class="space-y-1">
+                                <label for="longitude" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-map-pin text-blue-500 mr-1"></i> Longitude
+                                </label>
+                                <input type="text" name="longitude" id="longitude" 
+                                class="input-style"
+
+                                       value="{{ old('longitude', isset($vendor) ? $vendor['longitude'] : '') }}"
+                                       placeholder="e.g. -74.0060">
+                            </div>
+                            
+                            <!-- Business Hours -->
+                            <div class="space-y-1">
+                                <label for="open_time" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-clock text-blue-500 mr-1"></i> Opening Time
+                                </label>
+                                <input type="time" name="open_time" id="open_time" 
+                                class="input-style"
+
+                                       value="{{ old('open_time', isset($vendor) ? \Carbon\Carbon::parse($vendor['open_time'])->format('H:i') : '') }}">
+                            </div>
+                            
+                            <div class="space-y-1">
+                                <label for="close_time" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-clock text-blue-500 mr-1"></i> Closing Time
+                                </label>
+                                <input type="time" name="close_time" id="close_time" 
+                                class="input-style"
+
+                                       value="{{ old('close_time', isset($vendor) ? \Carbon\Carbon::parse($vendor['close_time'])->format('H:i') : '') }}">
+                            </div>
+                            
+                            <!-- Processing Charges -->
+                            <div class="space-y-1">
+                                <label for="packaging_processing_charges" class="block text-sm font-medium text-gray-700">
+                                    <i class="fas fa-dollar-sign text-blue-500 mr-1"></i> Processing Charges
+                                </label>
+                                <input type="text" name="packaging_processing_charges" id="packaging_processing_charges" 
+                                class="input-style"
+
+                                       value="{{ old('packaging_processing_charges', isset($vendor) ? $vendor['packaging_processing_charges'] : '') }}"
+                                       placeholder="Enter amount">
                             </div>
                         </div>
-                        {{-- Longitude --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="longitude" class="block text-gray-700">Longitude :</label>
-                            <div class="parent flex flex-col">
-                                <input type="text" name="longitude" class="form-input" 
-                                       value="{{ old('longitude', isset($vendor) ? $vendor["longitude"] : '') }}">
-                            </div>
-                        </div>
-                        {{-- Open Time --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="open_time" class="block text-gray-700">Open Time :</label>
-                            <div class="parent flex flex-col">
-                                <input type="time" name="open_time" class="form-input" 
-                                       value="{{ old('open_time', isset($vendor) ? \Carbon\Carbon::parse($vendor["open_time"])->format('H:i') : '') }}">
-                            </div>
-                        </div>
-                        {{-- Close Time --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="close_time" class="block text-gray-700">Close Time :</label>
-                            <div class="parent flex flex-col">
-                                <input type="time" name="close_time" class="form-input" 
-                                       value="{{ old('close_time', isset($vendor) ? \Carbon\Carbon::parse($vendor["close_time"])->format('H:i')  : '') }}">
-                            </div>
-                        </div>
-                        {{-- Processing Charges --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="packaging_processing_charges" class="block text-gray-700">Processing Charges :</label>
-                            <div class="parent flex flex-col">
-                                <input type="text" name="packaging_processing_charges" class="form-input" 
-                                       value="{{ old('packaging_processing_charges', isset($vendor) ? $vendor["packaging_processing_charges"] : '') }}">
-                            </div>
-                        </div>
-                        {{-- Domain --}}
-                        <div class="mb-2 gap-2 flex flex-row items-center">
-                            <label for="domain_id" class="block text-gray-700">Domain :</label>
-                            <div class="parent flex flex-col">
-                            <select name="domain_id[]" id="domainSelect" multiple="multiple"  class="bg-white form-input">
-                                
-                                @foreach ($domains as $domain)
-                                    <option  value={{$domain->id}} @if(isset($vendor) && $vendor['domains']->contains('id',$domain["id"])) selected @endif>{{$domain->name}}</option>
-                                @endforeach
-                            </select>
-                        </div></div>
                     </div>
-                    <button type="submit"
-                        class="w-fit ms-auto cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                        {{ isset($vendor) ? 'Update Vendor' : 'Create Vendor' }}
-                    </button>
+                    
+                    <!-- Form Submission -->
+                    <div class="flex justify-end p-3">
+                        <button type="submit"
+                                class="btn-primary">
+                            <i class="fas fa-save mr-2"></i>
+                            {{ isset($vendor) ? 'Update Vendor' : 'Create Vendor' }}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
-    </section>
+    </div>
+</section>  
 @endsection
 
 @push('scripts')

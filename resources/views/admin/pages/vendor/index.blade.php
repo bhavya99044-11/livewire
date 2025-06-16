@@ -71,8 +71,8 @@
         .flip-card .front,
         .flip-card .back {
             position: absolute;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
             transition: all 0.5s;
             backface-visibility: hidden;
         }
@@ -96,12 +96,12 @@
     @endphp
 
     @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
-    <section class="bg-gray-100 min-h-screen">
-        <div class="container mx-auto px-4 py-8">
-            <div class="flex items-center w-full mb-6 justify-between">
-              
-            </div>
-            <div class="flex  flex-col md:flex-row justify-between items-center mb-6 gap-4">
+    <section class="">
+        <div class="container mx-auto px-4 mb-8">
+        
+            <div class="bg-white rounded-lg">
+                <h1 class="text-xl p-3 border font-semibold">Vendor List</h1>
+            <div class="flex  flex-col md:flex-row justify-between items-center p-3 border border-t-0 gap-4">
                 <div class="md:flex grid grid-cols-2 items-center gap-x-2 gap-y-1 md:flex-row md:gap-4">
                     <div class="vendorTable hidden">
                         <label class="text-sm capitalize" for="perPage">Per page</label>
@@ -112,10 +112,10 @@
                         </select>
                     </div>
 
-                    <div class="relative w-full md:w-64">
+                    <div class="relative">
                         <input id="search" type="text" placeholder="Search Vendors..."
-                            class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            class="input-style !pl-10">
+                        <i class="fas fa-search absolute left-3 top-[14px] text-gray-400"></i>
                     </div>
 
                     <div class="flex items-center gap-2">
@@ -150,17 +150,18 @@
                     </a>
                     
                 </div>
-                <div class="border ml-auto flex flex-row rounded-full border-blue-500">
-                    <div id="activeGrid" class=" rounded-l-full border border-l-0 border-t-0 border-b-0 border-blue-500"> <i
-                            class="fa-solid p-1 pl-3 font-bold text-xl fa-grip-vertical"></i></div>
-                    <div id="activeTable" class="    p-1 pr-3  text-xl font-bold   rounded-r-full"><i
+                <div class=" ml-auto flex flex-row rounded-lg items-center border-blue-500">
+                    <div id="activeGrid" class="pl-2 p-1 border border-blue-500 rounded-l-lg "> <i
+                            class="fa-solid   font-bold fa-grip-vertical"></i></div>
+                    <div id="activeTable" class="flex border-l-0 font-bold  border-blue-500 border p-1 rounded-r-lg"><i
                             class="fa-solid fa-bars"></i></div>
                 </div>
             </div>
             </div>
+        </div>
 
-            <div class="vendorTable hidden">
-                <div class="bg-white  rounded-lg shadow overflow-hidden">
+            <div class="mt-3 vendorTable hidden">
+                <div class="  rounded-lg shadow overflow-hidden">
                     <table class=" min-w-full divide-y divide-gray-200">
                         <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -212,8 +213,8 @@
                 @include('vendor.pagination.pagination')
             </div>
 
-            <div class="vendorGrid hidden">
-                <div id="gridContent" class="flip-list grid grid-cols-4 gap-y-8 gap-x-4">
+            <div class="vendorGrid mt-3 hidden">
+                <div id="gridContent" class="flip-list grid grid-cols-4 gap-2">
 
                 </div>
             </div>
@@ -314,22 +315,22 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vendor.contact_number}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vendor.shop_name}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                                        <span class="status-field inline-flex text-xs capitalize leading-5  rounded-full px-3 py-1 cursor-pointer
+                                        <span class="status-field inline-flex text-xs capitalize leading-5  rounded-lg px-3 py-1 cursor-pointer
                                             ${vendor.status.value === '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}"
                                             data-id="${vendor.id}" data-field="status" data-name="status" data-value="${vendor.status.value}">
                                     ${vendor.status.label}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                                        <span class="status-field inline-flex text-xs capitalize leading-5 rounded-full px-3 py-1 cursor-pointer
+                                        <span class="status-field inline-flex text-xs capitalize leading-5 rounded-lg px-3 py-1 cursor-pointer
                                             ${vendor.is_shop.value == '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}"
                                             data-id="${vendor.id}" data-field="is_shop" data-name="shop" data-value="${vendor.is_shop.value}">
                                             ${vendor.is_shop.label}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                                        <button  class="status-field inline-flex text-xs capitalize leading-5  rounded-full px-3 py-1 cursor-pointer
-                                            ${vendor.is_approved.value == '1' ? 'text-green-700 bg-green-100 border border-green-700 cursor-not-allowed ' : 'text-red-700 bg-red-100 border border-red-700'}"
+                                        <button  class="status-field inline-flex text-xs capitalize leading-5  rounded-lg px-3 py-1 cursor-pointer
+                                            ${vendor.is_approved.value == '1' ? 'text-green-700 bg-green-100 border border-green-700 !cursor-not-allowed ' : 'text-red-700 bg-red-100 border border-red-700'}"
                                             data-id="${vendor.id}" data-field="is_approved" data-name="approve" data-value="${vendor.is_approved.value}" ${vendor.is_approved.value == '1'?'Disabled':''}>
                                             ${vendor.is_approved.label}
                                         </button>
@@ -403,53 +404,53 @@
                     if (response.data.length > 0) {
                         response.data.forEach((data, index) => {
                             html += `
-        <div class="flip-card relative w-full max-w-md mx-auto h-96 perspective-1000 mb-6">
+        <div class="flip-card relative w-full max-w-md mx-auto h-96 perspective-1000">
             <!-- Flip Card Inner Container -->
-            <div class="card-inner relative w-full h-[300px] transition-transform duration-500 transform-style-preserve-3d group">
+            <div class="card-inner  rounded-lg relative w-full h-[300px] transition-transform duration-500 transform-style-preserve-3d group">
                 <!-- Front Side -->
-                <div class="front absolute w-full backface-hidden h-[300px] bg-gradient-to-br from-indigo-600 to-indigo-800 p-6  flex flex-col ">
+                <div class="front absolute w-full backface-hidden h-[300px] bg-white p-6  flex flex-col ">
                     <!-- Vendor Name -->
                     <div class="flex justify-between items-start mb-4">
-                        <h2 class="text-2xl font-bold text-white truncate flex-1">${data.name}</h2>
+                        <h2 class="text-2xl font-bold text-white truncate text-indigo-600 flex-1">${data.name}</h2>
                           <label class="inline-flex items-center cursor-pointer">
                             <input type="checkbox" class="peer hidden group-sync " data-id=${data.id} data-group="group-${data.id}">
                             <span class="w-6 h-6 flex items-center justify-center rounded-full border border-blue-500 
                                         bg-white text-blue-500 peer-checked:bg-blue-600 peer-checked:text-white 
                                         transition-colors duration-200">
-                            <i class="fa-solid fa-check text-xs"></i>
+                            <i class="fa-solid  fa-check text-xs"></i>
                             </span>
                         </label>
                     </div>
                     
                     <!-- Vendor Image Placeholder -->
-                    <div class="relative h-32 w-full mb-4 rounded-xl overflow-hidden bg-white/10 flex items-center justify-center">
+                    <div class="relative h-32 w-full mb-4 border border-gray-300  rounded-lg overflow-hidden bg-white/10 flex items-center justify-center">
                         ${data.logo_url ? 
                             `<img src="{{ asset('storage/logos') }}/${data.logo_url}" alt="${data.shop_name}" class="w-full h-full object-cover">` : 
                             `<i class="fas fa-store text-white/30 text-4xl"></i>`
                         }
                     </div>
                     <!-- Info Grid -->
-                    <div class="grid grid-cols-2 gap-3 text-white mb-4">
+                    <div class="flex flex-col gap-3 text-white mb-3">
                         <div class="flex items-center">
-                            <i class="fas fa-envelope text-indigo-200 mr-2 text-sm"></i>
-                            <span class="truncate text-sm text-indigo-100">${data.email}</span>
+                            <i class="fas fa-envelope text-indigo-600 mr-2 text-sm"></i>
+                            <span class="truncate text-sm text-indigo-600">${data.email}</span>
                         </div>
                         <div class="flex items-center">
-                            <i class="fas fa-phone-alt text-indigo-200 mr-2 text-sm"></i>
-                            <span class="truncate text-sm text-indigo-100">${data.contact_number}</span>
+                            <i class="fas fa-phone-alt text-indigo-600 mr-2 text-sm"></i>
+                            <span class="truncate text-sm text-indigo-600">${data.contact_number}</span>
                         </div>
                         <div class="flex items-center col-span-2">
-                            <i class="fas fa-sign text-indigo-200 mr-2 text-sm"></i>
-                            <span class="truncate text-sm text-indigo-100">${data.shop_name}</span>
+                            <i class="fas fa-sign text-indigo-600 mr-2 text-sm"></i>
+                            <span class="truncate text-sm text-indigo-600">${data.shop_name}</span>
                         </div>
                     </div>                                                          
                 </div>
                 
                 <!-- Back Side -->
-                <div class="back absolute w-full h-[300px] backface-hidden bg-gradient-to-br from-indigo-700 to-indigo-900 p-6   flex flex-col  ">
+                <div class="back absolute bg-white w-full h-[300px] backface-hidden p-6   flex flex-col  ">
                     <!-- Back Header -->
                     <div class="flex justify-between items-start mb-4">
-                        <h2 class="text-2xl font-bold text-white truncate flex-1">${data.shop_name}</h2>
+                        <h2 class="text-2xl font-bold text-indigo-600 text-white truncate flex-1">${data.shop_name}</h2>
                              <label class="inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="peer hidden group-sync vendorCheckbox " data-id=${data.id} data-group="group-${data.id}">
                                 <span class="w-6 h-6 flex items-center justify-center rounded-full border border-blue-500 
@@ -461,33 +462,32 @@
                     </div>
                     
                     <!-- Business Hours -->
-                    <div class="bg-white/10 rounded-xl p-3 mb-4">
+                    <div class="bg-gray-300/50 border border-gray-400 rounded-xl p-3 mb-4">
                         <div class="flex items-center justify-between text-white mb-2">
-                            <div class="flex items-center">
-                                <i class="far fa-clock text-indigo-200 mr-2"></i>
-                                <span class="font-medium text-indigo-100">Business Hours</span>
+                            <div class="flex items-center text-indigo-600">
+                                <i class="far fa-clock text-indigo-600 mr-2"></i>
+                                <span class="font-medium">Business Hours</span>
                             </div>
-                            <span class="text-xs bg-white/20 px-2 py-1 rounded-full text-indigo-100">${data.open_days || 'Mon-Sun'}</span>
                         </div>
                         <div class="grid grid-cols-2 gap-2 text-sm">
-                            <div class="flex items-center text-indigo-100">
-                                <i class="fas fa-door-open text-indigo-200 mr-2"></i>
-                                <span>${data.open_time || '9:00 AM'}</span>
+                            <div class="flex items-center text-indigo-600">
+                                <i class="fas fa-door-open text-indigo-200 mr-2 text-indigo-600"></i>
+                                <span class="text-indigo-600">${data.open_time || '9:00 AM'}</span>
                             </div>
-                            <div class="flex items-center text-indigo-100">
-                                <i class="fas fa-door-closed text-indigo-200 mr-2"></i>
+                            <div class="flex items-center text-indigo-600">
+                                <i class="fas text-indigo-600 fa-door-closed text-indigo-200 mr-2"></i>
                                 <span>${data.close_time || '9:00 PM'}</span>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Address -->
-                    <div class="mb-4">
+                    <div class="mb-4 text-indigo-600">
                         <div class="flex items-start">
-                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-indigo-200"></i>
+                            <i class="fas fa-map-marker-alt mt-1 mr-2"></i>
                             <div>
-                                <h4 class="font-medium text-indigo-100 mb-1">Address</h4>
-                                <p class="text-sm text-indigo-100 opacity-90">${data.address || 'No address provided'}</p>
+                                <h4 class="font-medium mb-1">Address</h4>
+                                <p class="text-sm opacity-90">${data.address || 'No address provided'}</p>
                             </div>
                         </div>
                     </div>
@@ -497,7 +497,7 @@
                 </div>
             </div>
               <!-- Status Badges -->
-                <div class=" p-2 flex flex-col rounded-b-[20px] bg-gradient-to-br from-indigo-600 to-indigo-800 gap-2">
+                <div class=" p-2 flex flex-col rounded-b-[20px] border bg-white border-t border-b-0  gap-2">
                      <div class="flex flex-row justify-center items-center gap-2">
                          <div class=" flex-col">
                                 <a title="Edit" href="/admin/vendors/${data.id}/edit" class="text-blue-400 flex  items-center justify-center bg-gray-100/10 p-3 rounded-full hover:text-blue-800 h-5 w-5 rounded"><i class="fas fa-edit"></i></a>
@@ -505,23 +505,27 @@
                              <div class="flex items-center flex-col">
                                  <button title="Delete" data-id="${data.id}" class="delete-btn hover:text-red-800 text-red-500  flex items-center justify-center bg-gray-100/10 p-3 rounded-full h-5 w-5"><i class="fas fa-trash"></i></button>
                              </div>   
+
+                              <div class="flex items-center flex-col">
+                                          <a href="" title="Product Create" data-id="${data.id}" class="createProduct hover:text-blue-800 text-blue-500 py-1 rounded"><i class="fa-solid fa-plus"></i></i></a>
+                                        </div>
                     </div>
                     <div class="flex flex-row items-center justify-center gap-2">
-                        <button class="status-field flex items-center justify-center text-xs rounded-full px-2 py-1 cursor-pointer transition-all
+                        <button title="Status" class="status-field flex items-center justify-center text-xs rounded-lg px-2 py-1 cursor-pointer transition-all
                             ${data.status.value === '1' ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
                             data-id="${data.id}" data-field="status" data-name="status" data-value="${data.status.value}">
                             
                             ${data.status.label}
                         </button>
                         
-                        <button class="status-field flex items-center justify-center text-xs rounded-full px-2 py-1 cursor-pointer transition-all
+                        <button title="Shop Status" class="status-field flex items-center justify-center text-xs rounded-lg px-2 py-1 cursor-pointer transition-all
                             ${data.is_shop.value == '1' ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
                             data-id="${data.id}" data-field="is_shop" data-name="shop" data-value="${data.is_shop.value}">
                             ${data.is_shop.label}
                         </button>
                         
-                        <button class="status-field flex items-center justify-center text-xs rounded-full px-2 py-1 cursor-pointer transition-all
-                            ${data.is_approved.value == '1' ? 'bg-green-100 text-green-800 border border-green-300 cursor-not-allowed' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
+                        <button title="Shop Approval" class="status-field flex items-center justify-center text-xs rounded-lg px-2 py-1 cursor-pointer transition-all
+                            ${data.is_approved.value == '1' ? 'bg-green-100 text-green-800 border border-green-300 !cursor-not-allowed' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
                             data-id="${data.id}" data-field="is_approved" data-name="approve" data-value="${data.is_approved.value}" ${data.is_approved.value == '1' ? 'disabled' : ''}>
                             ${data.is_approved.label}
                         </button>

@@ -19,11 +19,11 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
     </head>
 
-    <section class="bg-gray-100 min-h-screen">
+    <section class="container mx-auto  px-4 mb-8">   
         @csrf
-        <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg">
             <!-- Filters -->
-            <div class="flex flex-row justify-between items-center mb-6 gap-4 bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex flex-row border  justify-between items-center gap-4  p-3 rounded-lg shadow-sm">
                 <form method="GET" action="#" class="flex  items-center gap-x-4 gap-y-2 flex-row md:gap-6">
                     <div class="flex flex-row">
                         <div class="text-sm font-medium text-gray-700" for="perPage">Per page</div>
@@ -55,11 +55,11 @@
                     </div>
                 </form>
             </div>
-
+            
             <!-- Products Table -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+            <div class=" shadow overflow-hidden">
+                <table class="min-w-full divide-y p-3">
+                    <thead class="">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 <input id="allSelect" type="checkbox" class="cursor-pointer rounded text-blue-600 focus:ring
@@ -68,8 +68,8 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
                             <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approval Status</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Approval Status</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -82,15 +82,15 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $product['name'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $product['vendor']['name'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">{{ $product['slug'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    <span class="status-field inline-flex text-xs capitalize leading-5 rounded-full px-3 py-1 cursor-pointer
+                                <td class="px-6 text-center py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <span class="status-field inline-flex text-xs capitalize leading-5 rounded-lg px-3 py-1 cursor-pointer
                                         {{ $product['is_approve']['value'] == '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700' }}"
                                         data-field="is_approve" data-vendor="{{$product['vendor']['id']}}" data-name="is_approve" data-value="{{ $product['is_approve']['value'] }}" data-id="{{ $product['id'] }}">
                                         {{ $product['is_approve']['label'] }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    <div class="flex space-x-2">
+                                <td class="px-6 text-center py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <div class="flex space-x-2 items-center justify-center">
                                         <a href="{{ route('admin.products.show', ['vendor_id' =>$product['vendor']['id'], 'product_id' => $product['id'],'is-product'=>true]) }}"
                                             class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded transition-colors duration-150" title="View">
                                             <i class="fas fa-eye"></i>

@@ -130,7 +130,8 @@
                         <div class="mb-4">
                             <label for="createName" class="block text-sm font-medium text-gray-700">Name</label>
                             <input type="text" id="createName" name="name" value="{{ old('name') }}"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm
+                                " placeholder="Enter domain name">
                             @error('name')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
@@ -138,16 +139,17 @@
                         <div class="mb-4">
                             <label for="createUrl" class="block text-sm font-medium text-gray-700">URL</label>
                             <input type="text" id="createUrl" name="url" value="{{ old('url') }}"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                                                placeholder="e.g www.domain.com">
                             @error('url')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="flex justify-end gap-2">
                             <button type="button" onclick="closeCreateModal()"
-                                class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
+                                class="btn-secondary">Cancel</button>
                             <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Create</button>
+                                class="btn-primary">Create</button>
                         </div>
                     </form>
                 </div>
@@ -173,7 +175,8 @@
                         <div class="mb-4">
                             <label for="editUrl" class="block text-sm font-medium text-gray-700">URL</label>
                             <input type="text" id="editUrl" name="url"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                >
                             @error('url')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
