@@ -28,4 +28,27 @@ enum ShopStatus: Int
             ]
         ])->toArray();
     }
+
+    public static function toArray(): array
+    {
+        return collect(self::cases())->mapWithKeys(fn($case) => [
+            $case->value => $case->label()
+        ])->toArray();
+    }
+
+    public function color()
+    {
+        return match ($this) {
+            self::OPEN => '#16a34a',
+            self::CLOSE => '#ca8a04',
+        };
+    }
+    
+    public function bgColor()
+    {
+        return match ($this) {
+            self::OPEN => '#dcfce7',
+            self::CLOSE => '#fef9c3',
+        };
+    }
 }

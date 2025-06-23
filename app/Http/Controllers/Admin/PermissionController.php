@@ -33,10 +33,10 @@ class PermissionController extends Controller
                 ->addColumn('action', function ($permission) {
                     $actions = '<div class="flex gap-3 p-2">';
                     if ($this->user->hasPermission('permission-edit')) {
-                        $actions .= '<a href="javascript:void(0)" class="edit text-blue-500 mr-1" data-id="' . $permission->id . '"><i class="fas fa-edit"></i></a>';
+                        $actions .= '<a href="javascript:void(0)" class="edit btn-edit" data-id="' . $permission->id . '"><i class="fas fa-edit"></i></a>';
                     }
                     if ($this->user->hasPermission('permission-delete')) {
-                        $actions .= '<a href="javascript:void(0)" class="delete text-red-500" data-id="' . $permission->id . '"><i class="fas fa-trash"></i></a>';
+                        $actions .= '<a href="javascript:void(0)" class="delete btn-delete" data-id="' . $permission->id . '"><i class="fas fa-trash"></i></a>';
                     }
                     $actions .= '</div>';
 

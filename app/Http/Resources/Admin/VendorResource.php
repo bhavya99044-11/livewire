@@ -40,6 +40,8 @@ class VendorResource extends JsonResource
             [
                 'value' => $this->is_shop,
                 'label' => ShopStatus::from($this->is_shop)->label(),
+                'color' => ShopStatus::from($this->is_shop)->color(),
+                'bgColor' => ShopStatus::from($this->is_shop)->bgColor(),
             ],
             'latitude'                    => $this->latitude,
             'longitude'                   => $this->longitude,
@@ -50,6 +52,7 @@ class VendorResource extends JsonResource
                 'value' => $this->is_approved,
                 'label' => ApproveStatus::from($this->is_approved)->label(),
                 'color' => ApproveStatus::from($this->is_approved)->color(),
+                'bgColor' => ApproveStatus::from($this->is_approved)->bgColor(),
             ],
            'domains'=> $this->domains->map(function($domain) {
                 return [

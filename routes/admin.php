@@ -37,7 +37,8 @@ Route::middleware(LoginCheckMiddleware::class)->group(function () {
     Route::get('reset-password/{token}', [AuthController::class, 'resetPasswordView'])->name('reset-password.view');
     Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password.post');
 });
-Route::middleware(AdminAuthMiddleware::class)->group(function () {
+
+Route::middleware('auth:admin')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', function () {
         return view('admin.pages.dashboard');
@@ -63,7 +64,7 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
     Route::resource('domains', DomainController::class);
     Route::resource('/vendor/{vendor_id}/products', \App\Http\Controllers\Admin\ProductController::class);
     Route::get('/products/search/vendor', [\App\Http\Controllers\Admin\ProductController::class, 'searchVendor'])->name('products.search-vendor');
-    Route::prefix('/vendor/{vendor_id?}/products')->group(function () {
+    Route::prefix('/vendors/{vendor_id?}/products')->group(function () {
         // Create
         Route::post('store-step-1', [ProductController::class, 'productStepOne'])->name('products.store-step-1');
         Route::post('store-step-2', [ProductController::class, 'productStepTwo'])->name('products.store-step-2');
@@ -76,6 +77,7 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
         Route::get('{product_id}/edit', [ProductController::class, 'edit'])->name('products.edit');
         Route::get('{product_id}/show', [ProductController::class, 'show'])->name('products.show');
     });
+    Route::get('product/{product_id}/vendor-id/{vendor_id?}', [ProductController::class, 'newProductView'])->name('products.new-product');
     Route::delete('/product/{product_id}/delete', [ProductController::class, 'delete'])->name('products.destroy');
     Route::post('product/update-actions', [ProductController::class, 'updateActions'])->name('products.update-actions');
     Route::get('product/list', [ProductController::class, 'list'])->name('products.list');
@@ -86,5 +88,5 @@ Route::middleware(AdminAuthMiddleware::class)->group(function () {
     Route::post('faqs/reorder', [FaqController::class, 'reorder'])->name('faqs.reorder');
 
     Route::resource('banners',BannerController::class);
-    Route::put('/banners/{id}/status', [BannerController::class, 'statusUpdate'])->name('banners.status');
+    Route::post('/banners/{id}/status', [BannerController::class, 'statusUpdate'])->name('banners.status');
     Route::post('/banners/bulk-status', [BannerController::class, 'bulkStatusUpdate'])->name('banners.bulk-status');});

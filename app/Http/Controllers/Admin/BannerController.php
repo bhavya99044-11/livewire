@@ -109,14 +109,14 @@ class BannerController extends Controller
 
             DB::commit();
             return response()->json([
-                'success' => true,
-                'banner' => $banner,
+                'error'=>null,
+                'data' => $banner,
                 'message' => __('messages.banner.updated'),
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'success' => false,
+                'data'=> null,
                 'message' => __('messages.banner.update_error'),
                 'error' => $e->getMessage(),
             ], 500);
@@ -133,19 +133,19 @@ class BannerController extends Controller
 
             $banner = Banner::findOrFail($id);
             $banner->update([
-                'status' => $request->status,
+                'status' => (int)$request->status,
             ]);
 
             DB::commit();
             return response()->json([
-                'success' => true,
-                'banner' => $banner,
+                'data' => $banner,
+                'error'=>null,
                 'message' => __('messages.banner.updated'),
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'success' => false,
+                'data'=> null,                
                 'message' => __('messages.banner.update_error'),
                 'error' => $e->getMessage(),
             ], 500);

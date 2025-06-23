@@ -248,6 +248,21 @@ class ProductController extends Controller
         }
     }
 
+    public function newProductView($vendorId,$product){
+        try{
+            $isProduct=false;
+            if(request('is-product')){
+                $isProduct=true;
+            }
+            $productFind = Product::findOrFail($product);
+            $product = (new ProductResource($productFind))->toArray(request());
+            return view('admin.pages.products.edit', compact(['product','isProduct']));
+        } catch (\Exception $e) {
+            return back()->with('error', __('messages.product.fetch_error'))->withInput();
+        }
+    }
+
+
     public function productStepTwo(Request $request)
     {
         try {

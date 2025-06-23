@@ -22,9 +22,9 @@
     <head>
         <meta name="csrf-token" content="{{ csrf_token() }}">
     </head>
-    <section class="bg-gray-100 min-h-screen">
+    <section class=" mb-8 mx-4">
         @csrf
-        <div class="container mx-auto px-4 py-8">
+        <div class="container bg-white rounded-lg shadow-md">
             <!-- Flash Messages -->
             @if (session('success'))
                 <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
@@ -37,12 +37,13 @@
                 </div>
             @endif
 
+            <h1 class="text-xl border-b p-3 font-semibold">Product List</h1>
             <!-- Filters -->
-            <div class="flex flex-col md:flex-row justify-between !items-center gap-4">
+            <div class="flex flex-col md:flex-row p-3 border-b justify-between !items-center gap-4">
                 <form method="GET" action="#"
                     class="md:flex grid grid-cols-2 justify-center items-center text-center gap-x-2 gap-y-1 md:flex-row md:gap-4">
-                    <div>
-                        <label class="text-sm capitalize" for="perPage">Per page</label>
+                    <div class="flex flex-row gap-2 items-center">
+                        <div class="text-sm capitalize" for="perPage">Per pages</div>
                         <select id="perPage" name="perPage"
                             class="bg-white px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                             onchange="this.form.submit()">
@@ -94,7 +95,7 @@
                 <div class="flex  md:justify-end">
                     <a 
                        href="{{route("admin.vendors.create-product",['vendor_Id'=>request()->route('vendor_Id')])}}" class="w-fit cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                        <i class="fas fa-plus"></i> Create Product
+                      Create Product
                     </a>
                 </div>
             </div>
@@ -112,15 +113,15 @@
                                 Name
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-center  text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left  text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Slug
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Status
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Approval Status
                             </th>                           
                             <th scope="col"
@@ -137,35 +138,42 @@
                                     <input type="checkbox" data-approve="{{$product['is_approve']['value']}}" class="productCheckbox" data-id="{{ $product['id'] }}">
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $product['name'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">{{ $product['slug'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    <span class="status-field inline-flex text-xs capitalize leading-5  rounded-full px-3 py-1 cursor-pointer
-                                         {{$product['status']['value'] == '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}}"
+                                <td class="px-6 py-4 whitespace-nowrap text-left text-sm text-gray-900">{{ $product['slug'] }}</td>
+                                <td title="status" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                                    <span class="status-field inline-flex text-xs capitalize border  rounded-lg px-3 py-1 cursor-pointer"
+                                         style="background-color: {{$product['status']['bgColor']}}; border-color:{{$product['status']['color']}}; color: {{$product['status']['color']}};"
                                             data-field="status" data-id={{$product['id']}} data-name="status" data-value="{{$product['status']['value']}}">
                                            {{$product['status']['label']}}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    <button class="status-field inline-flex text-xs capitalize leading-5  rounded-full px-3 py-1 cursor-pointer
-                                         {{$product['is_approve']['value'] == '1' ? 'text-green-700  !cursor-not-allowed bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}}"
-                                            data-field="is_approve" data-id={{$product['id']}} data-name="is_approve" data-value="{{$product['is_approve']['value']}}" {{$product['is_approve']['value'] == '1'?'disabled':""}}>
-                                           {{$product['is_approve']['label']}}
-                                </button>
+                                <td title="Approval Status" class="px-6 py-4 whitespace-nowrap text-center text-sm ">
+                                    <span 
+                                    class="status-field inline-flex text-xs capitalize leading-5 rounded-lg px-3 py-1 border cursor-pointer {{ $product['is_approve']['value'] == '1' ? '!cursor-not-allowed' : '' }}"
+                                    style="background-color: {{ $product['is_approve']['bgColor'] }}; border-color: {{ $product['is_approve']['color'] }}; color: {{ $product['is_approve']['color'] }};"
+                                    data-field="is_approve"
+                                    data-id="{{ $product['id'] }}"
+                                    data-name="is_approve"
+                                    data-value="{{ $product['is_approve']['value'] }}"
+                                    {{ $product['is_approve']['value'] == '1' ? 'disabled' : '' }}
+                                >
+                                    {{ $product['is_approve']['label'] }}
+                                </span>
+                                
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <a
                                         href="{{route('admin.products.show',['vendor_id'=>request()->route('vendor_Id'),'product_id'=>$product['id']])}}"
-                                        class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded" title="View">
+                                        class="btn-view" title="View">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a
                                         href="{{route('admin.products.edit',['vendor_id'=>request()->route('vendor_Id'),'product_id'=>$product['id']])}}"
-                                        class="text-green-500 hover:text-green-800 px-2 py-1 rounded" title="Edit">
+                                        class="btn-edit" title="Edit">
                                         <i class="fas fa-edit"></i>
                                 </a>
                                     <button data-id="{{ $product['id'] }}"
                                     data-vendor={{ request()->route('vendor_Id') }}
-                                        class="deleteProduct text-red-500 hover:text-red-800 px-2 py-1 rounded" title="Delete">
+                                        class="btn-delete" title="Delete">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>

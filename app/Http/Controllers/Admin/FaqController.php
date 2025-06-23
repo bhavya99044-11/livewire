@@ -93,11 +93,11 @@ class FaqController extends Controller
         try{
             Db::beginTransaction();
             
-            $order=$request->newOrderIds;
-            sort($order);
+            $neworder=$request->newOrderIds;
+            sort($neworder);
             foreach($request->newOrder as $index=>$order){
                 Faq::find($order)->update([
-                    'order_id'=>$order[$index]
+                    'order_id'=>(int)$neworder[$index]
                 ]);
             }
             Db::commit();
@@ -107,7 +107,6 @@ class FaqController extends Controller
                 'error'=>null
             ],201);
         }catch(\Exception $e){
-            dd($e->getMessage());
             Db::rollback();
             return response()->json([
                 'message'=>__('messages.faq.update_error'),
@@ -116,6 +115,4 @@ class FaqController extends Controller
             ],$e->getCode());
         }
     }
-
-
 }

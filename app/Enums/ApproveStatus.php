@@ -31,18 +31,22 @@ enum ApproveStatus: Int
         ])->toArray();
     }
 
-    public function color(){
+    public function color()
+    {
         return match ($this) {
-            self::APPROVED => 'text-green-500',
-            self::PENDING => 'text-yellow-500',
-            self::REJECT => 'text-red-500',
+            self::APPROVED => '#16a34a',
+            self::PENDING => '#ca8a04',
+            self::REJECT  => '#dc2626',
         };
     }
-    public function bgColor(){
+    
+    public function bgColor()
+    {
         return match ($this) {
-            self::APPROVED => 'bg-green-100',
-            self::PENDING => 'bg-yellow-100',
-            self::REJECT => 'bg-red-100',
+            self::APPROVED => '#dcfce7',
+            self::PENDING => '#fef9c3',
+            self::REJECT  => '#fee2e2',
         };
     }
+    
 }

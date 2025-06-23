@@ -43,7 +43,7 @@ $breadCrumbs=[
             </div>
             
             <div class="">
-                <div class="p-3 border border-b ">
+                <div class="p-3  border-b ">
                     <h2 class="text-xl font-semibold text-gray-700">
                         <i class="fas fa-info-circle text-blue-500 mr-2"></i>
                         Vendor Information

@@ -20,9 +20,9 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <!-- Other meta tags, styles, etc. -->
     </head>
-    <section class="bg-gray-100 min-h-screen">
+    <section class=" mx-4 min-h-screen">
         @csrf
-        <div class="container mx-auto px-4 py-8">
+        <div class="container card bg-white rounded-lg mx-auto">
             <!-- Flash Messages -->
             @if (session('success'))
                 <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
@@ -35,12 +35,13 @@
                 </div>
             @endif
 
+            <h1 class="text-xl p-3 font-semibold border-b">Domain List</h1>
             <!-- Filters -->
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <div class="flex flex-col md:flex-row justify-between items-center p-3 border-b gap-4">
                 <form method="GET" action="{{ route('admin.domains.index') }}"
-                    class="md:flex grid grid-cols-2 items-center gap-x-2 gap-y-1 md:flex-row md:gap-4">
+                    class="md:flex grid grid-cols-2 !mb-0 items-center gap-x-2 gap-y-1 md:flex-row md:gap-4">
                     <div>
-                        <label class="text-sm capitalize" for="perPage">Per page</label>
+                        <label class="text-sm capitalize" for="perPage">Per pages</label>
                         <select id="perPage" name="perPage"
                             class="bg-white px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                             onchange="this.form.submit()">
@@ -49,7 +50,7 @@
                             <option value="50" {{ $domains['meta']['per_page']== 50 ? 'selected' : '' }}>50</option>
                         </select>
                     </div>
-
+                    
                     <div class="relative w-full md:w-64">
                         <input id="search" name="search" type="text" value="{{ $search ?? '' }}"
                             placeholder="Search Domains..."
@@ -63,15 +64,15 @@
                 <div class="flex md:block md:w-auto w-full justify-center md:justify-end">
                     <button onclick="openCreateModal()"
                         class="w-fit cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                        <i class="fas fa-plus"></i> Create Domain
+                        Create Domain
                     </button>
                 </div>
             </div>
 
             <!-- Domains Table -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class=" rounded-lg  overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="">
                         <tr>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -86,7 +87,7 @@
                                 URL
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
@@ -97,16 +98,16 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <input type="checkbox" class="domainCheckbox" data-id="{{ $domain['id'] }}">
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $domain['name'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $domain['url'] }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm ">{{ $domain['name'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">{{ $domain['url'] }}</td>
+                                <td class="px-6 py-4 text-center whitespace-nowrap text-sm">
                                     <button
                                         onclick="openEditModal({{ $domain['id'] }}, '{{ addslashes($domain['name']) }}', '{{ $domain['url'] }}')"
-                                        class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded">
+                                        class="btn-edit">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button data-id="{{ $domain['id'] }}" type="submit"
-                                        class="deleteDomain text-red-500 hover:text-red-800 px-2 py-1 rounded">
+                                        class="deleteDomain btn-delete">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -123,9 +124,9 @@
             <!-- Create Modal -->
             <div id="createModal"
                 class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
-                <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-                    <h2 class="text-xl font-bold mb-4">Create Domain</h2>
-                    <form id="createForm" method="POST" action="{{ route('admin.domains.store') }}">
+                <div class="bg-white rounded-lg shadow-lg  w-full max-w-md">
+                    <h2 class="text-xl font-bold p-3 border-b">Create Domain</h2>
+                    <form id="createForm" method="POST" class="p-3" action="{{ route('admin.domains.store') }}">
                         @csrf
                         <div class="mb-4">
                             <label for="createName" class="block text-sm font-medium text-gray-700">Name</label>
@@ -158,9 +159,9 @@
             <!-- Edit Modal -->
             <div id="editModal"
                 class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
-                <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-                    <h2 class="text-xl font-bold mb-4">Edit Domain</h2>
-                    <form id="editForm" method="POST">
+                <div class="bg-white rounded-lg shadow-lg  w-full max-w-md">
+                    <h2 class="text-xl font-bold  p-3 border-b">Edit Domain</h2>
+                    <form id="editForm" class="p-3" method="POST">
                         @csrf
                         @method('PUT')
                         <input type="hidden" id="editDomainId" name="id">
@@ -183,9 +184,9 @@
                         </div>
                         <div class="flex justify-end gap-2">
                             <button type="button" onclick="closeEditModal()"
-                                class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
+                                class="btn-secondary">Cancel</button>
                             <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save</button>
+                                class="btn-primary">Save</button>
                         </div>
                     </form>
                 </div>

@@ -122,7 +122,7 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {{ __('messages.permissions.slug') }}
                             </th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-3 m-auto text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {{ __('messages.permissions.actions') }}
                             </th>
                         </tr>
@@ -135,9 +135,9 @@
         </div>
 
     <div id="permissionModal" class="fixed  inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white w-2/6 p-6 rounded-lg shadow-lg modal-content">
-            <h2 id="modalTitle" class="text-xl font-bold text-gray-800 mb-4"></h2>
-            <form id="permissionForm">
+        <div class="bg-white w-2/6  rounded-lg shadow-lg modal-content">
+            <h2 id="modalTitle" class="text-xl font-bold p-3 border-b text-gray-800 "></h2>
+            <form id="permissionForm" class="p-3">
                 <input type="hidden" id="permission_id">
                 <div class="mb-4">
                     <label for="module" class="block text-sm font-medium text-gray-700">{{ __('messages.permissions.module') }}</label>
@@ -196,13 +196,14 @@
                 if (@json(auth()->guard('admin')->user()->hasPermission('permission-add'))) {
                     $('.custom-btn-wrapper').html(`
                         <div class="flex md:block permission-button md:w-auto w-full justify-end">
-                            <button id="createPermission" class="w-fit cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                                <i class="fas fa-plus"></i> ${translations.add_permission}
+                            <button id="createPermission" class="btn-primary">
+                                 ${translations.add_permission}
                             </button>
                         </div>
                     `);
                 }
-            },
+            },       
+                 
             processing: true,
             serverSide: true,
             ajax: "{{ route('admin.permissions.index') }}",
@@ -223,7 +224,7 @@
                     data: 'name',
                     name: 'name',
                     className: 'px-6 py-4 whitespace-nowrap capitalize text-sm'
-                },
+                },                                
                 {
                     data: 'slug',
                     name: 'slug',
@@ -234,7 +235,7 @@
                     name: 'action',
                     orderable: false,
                     searchable: false,
-                    className: 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium'
+                    className: 'px-6 py-4 whitespace-nowrap flex justify-center text-center text-sm font-medium'
                 }
             ]
         });

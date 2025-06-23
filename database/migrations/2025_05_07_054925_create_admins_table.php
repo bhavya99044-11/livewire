@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('status', [Status::values()])->default(Status::ACTIVE->value);
-            $table->enum('role', [AdminRoles::values()])->default(AdminRoles::ADMIN->value);
+            $table->boolean('status')->default(1); // or
+            $table->integer('role');
             $table->string('forgot_password_token')->nullable();
             $table->string('forgot_password_token_expiry')->nullable();
             $table->timestamps();

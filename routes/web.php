@@ -15,3 +15,8 @@ use Lubusin\Decomposer\Controllers\DecomposerController;
 
 
 Route::get('/decompose',[DecomposerController::class,'index']);
+
+
+Route::get('/login',function(){
+    dd(1);
+})->name('login');

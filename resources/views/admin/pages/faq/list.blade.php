@@ -39,40 +39,44 @@ $breadCrumbs = [
 
 @section('content')
 @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
-<div class="">
-    <div class="mt-10 flex flex-col items-center justify-center  box mx-20 relative border border-rounded-lg p-6 shadow-md">
-         <div class="" style=""><i class="fa-solid text-5xl fa-circle-question"></i></div>
-         <h3 class="text-2xl font-semibold mt-2">Frequently Asked Questions</h3>
+<div class="px-4">
+    <div class=" flex flex-col items-center justify-center  box  relative border border-rounded-lg">
+        <div class="bg-white flex rounded-lg flex-col items-center w-5/6">
+             <div class="text-center p-3 border-b w-full" style="">
+                <i class="fa-solid text-5xl fa-circle-question"></i>
+         <h1 class="text-2xl font-semibold mt-2">Frequently Asked Questions</h1>
+        </div>
 
-         <div class="flex mt-4 items-center justify-center gap-2 w-5/6">
-               <form method="GET" action="{{ route('admin.faqs.index') }}" class="w-full mt-5 flex items-center justify-center">
+         <div class="flex  items-center justify-center p-3 w-full gap-2 ">
+               <form method="GET" action="{{ route('admin.faqs.index') }}" class="w-full !mb-0  flex items-center justify-center">
                     <input name="faq" value="{{request()->query('faq')}}" class="flex-grow w-full border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:border-blue-600 focus:ring-blue-600" type="text" placeholder="Search FAQ..."></input>
                     <button type="submit" hidden></button> <!-- Hidden but triggers form on Enter -->
                </form>
-            <button id="newFaq" type="button" class=" bg-blue-600 hover:opacity-70 text-white font-semibold py-2 px-4 rounded-lg flex items-center whitespace-nowrap">
-                <i class="fa-solid fa-plus mr-1"></i> Add New FAQ
+            <button id="newFaq" type="button" class=" btn-primary whitespace-nowrap">
+                Add New FAQ
             </button>
         </div>
-        <form id="faqForm" class="w-full flex items-center justify-center">       
+        <form id="faqForm" class="w-full !mb-0 flex items-center justify-center">       
         </form>
-        <div id="faqList" class="mt-5 faqList w-5/6 space-y-2">
+    </div>
+        <div id="faqList" class="mt-5 faqList w-5/6 mb-8 space-y-2">
             @foreach($faqs as $faq)
-            <div data-id="{{$faq->id}}" data-order="{{$faq->order_id}}" class="faqContent group border flex flex-col border-gray-300 transition-all duration-100 p-4 rounded">
+            <div data-id="{{$faq->id}}" data-order="{{$faq->order_id}}" class="faqContent bg-white group border flex flex-col border-gray-300 transition-all duration-100 p-4 rounded">
                 <div class="question flex items-center justify-between">
                     <span class="questionText text-lg font-semibold">{{$faq->question}}</span>
                     <div class="flex items-center space-x-2">
-                        <button class="editFaq text-blue-600 hover:text-blue-800">
+                        <button class="editFaq btn-edit">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </button>
-                        <button class="deleteFaq text-red-600 hover:text-red-800">
+                        <button class="deleteFaq btn-delete">
                             <i class="fa-solid fa-trash"></i>
                         </button>
-                        <button class="questionPopup">
+                        <button class="questionPopup p-1">
                             <i class="fa-solid fa-chevron-down group-[.active]:rotate-180"></i>
                         </button>
                     </div>
                 </div>
-                <div class="answer">{{$faq->answer}}</div>
+                <div class="answer text-gray-600">{{$faq->answer}}</div>
             </div>
             @endforeach
         </div>
@@ -116,13 +120,13 @@ $breadCrumbs = [
                 <div class="p-5  border border-rounded-lg border-b-gray-400">Add New FAQ </div>
                 <div class="flex flex-col p-5" id="faqSection">
                     <label class=" mt-2">Question</label>
-                    <input id="question" class="border p-2 rounded-lg border-gray-300" type="text" placeholder="Enter Your Question" name="question"></input>
+                    <input id="question" class="input-style" type="text" placeholder="Enter Your Question" name="question"></input>
 
                     <label class="mt-2">Answer</label>
-                    <textarea id="answer" class="border p-2 rounded-lg border-gray-300" type="text" placeholder="Enter Your Answer" name="answer"></textarea>
+                    <textarea id="answer" class="input-style" type="text" placeholder="Enter Your Answer" name="answer"></textarea>
                     <div class="flex justify-end mt-4 gap-3">
-                        <button id="removeForm" type="button" class="p-2 text-blue-600 border border-blue-600 rounded font-semibold">Cancel</button>
-                        <button type="submit" class="p-2 bg-blue-600 rounded-lg font-semibold text-white"><i class="fa-solid fa-plus mr-1"></i> Add FAQ</button>
+                        <button id="removeForm" type="button" class="btn-secondary">Cancel</button>
+                        <button type="submit" class="btn-primary">Add FAQ</button>
                     </div>
                 </div>
             </div>
@@ -232,7 +236,7 @@ $breadCrumbs = [
                         </button>
                     </div>
                 </div>
-                <div class="answer">${response.data.answer}</div>
+                <div class="answer text-gray-400">${response.data.answer}</div>
             </div>`
         )
 
@@ -274,7 +278,7 @@ $breadCrumbs = [
         console.log(answer)
         document.getElementById('faqForm').innerHTML=`
              <div id="updateFaq" class="flex flex-col mt-5 border-rounded-lg border w-5/6 border-gray-400 rounded-lg">
-                <div class="p-5  border border-rounded-lg border-b-gray-400">Add New FAQ </div>
+                <div class="p-5  border border-rounded-lg border-b-gray-400">Edit FAQ </div>
                 <div class="flex flex-col p-5" id="faqSection">
                     <label class=" mt-2">Question</label>
                     <input value="${question}" id="question" class="border p-2 rounded-lg border-gray-300" type="text" placeholder="Enter Your Question" name="question"></input>
@@ -282,8 +286,8 @@ $breadCrumbs = [
                     <label class="mt-2">Answer</label>
                     <textarea id="answer" class="border p-2 rounded-lg border-gray-300" type="text" placeholder="Enter Your Answer" name="answer">${answer}</textarea>
                     <div class="flex justify-end mt-4 gap-3">
-                        <button type="button" class="p-2 text-blue-600 border border-blue-600 rounded font-semibold">Cancel</button>
-                        <button type="submit" class="p-2 bg-blue-600 rounded-lg font-semibold text-white"><i class="fas fa-save"></i> Save FAQ</button>
+                        <button type="button" class="btn-secondary">Cancel</button>
+                        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save FAQ</button>
                     </div>
                 </div>
             </div>

@@ -146,7 +146,7 @@
                 <div class="flex flex-row items-center gap-2"><div class="flex md:block md:w-auto w-full justify-center md:justify-end">
                     <a href="{{ route('admin.vendors.create') }}"
                         class="w-fit cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                        <i class="fas fa-plus"></i> Create Vendor
+                        Create Vendor
                     </a>
                     
                 </div>
@@ -158,7 +158,6 @@
                 </div>
             </div>
             </div>
-        </div>
 
             <div class="mt-3 vendorTable hidden">
                 <div class="  rounded-lg shadow overflow-hidden">
@@ -188,15 +187,15 @@
                                     Shop Name
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Status
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Store
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Approve
                                 </th>
                                 <th scope="col"
@@ -210,9 +209,8 @@
                         </tbody>
                     </table>
                 </div>
-                @include('vendor.pagination.pagination')
             </div>
-
+        </div>
             <div class="vendorGrid mt-3 hidden">
                 <div id="gridContent" class="flip-list grid grid-cols-4 gap-2">
 
@@ -315,37 +313,38 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vendor.contact_number}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vendor.shop_name}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                                        <span class="status-field inline-flex text-xs capitalize leading-5  rounded-lg px-3 py-1 cursor-pointer
-                                            ${vendor.status.value === '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}"
+                                        <span class="status-field inline-flex border text-xs capitalize leading-5  rounded-lg px-3 py-1 cursor-pointer"
+                                             style="background-color: ${vendor.status.bgColor}; border-color:${vendor.status.color}; color: ${vendor.status.color};"
                                             data-id="${vendor.id}" data-field="status" data-name="status" data-value="${vendor.status.value}">
                                     ${vendor.status.label}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                                        <span class="status-field inline-flex text-xs capitalize leading-5 rounded-lg px-3 py-1 cursor-pointer
+                                        <span class="status-field inline-flex border text-xs capitalize leading-5 rounded-lg px-3 py-1 cursor-pointer
                                             ${vendor.is_shop.value == '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700'}"
                                             data-id="${vendor.id}" data-field="is_shop" data-name="shop" data-value="${vendor.is_shop.value}">
                                             ${vendor.is_shop.label}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                                        <button  class="status-field inline-flex text-xs capitalize leading-5  rounded-lg px-3 py-1 cursor-pointer
-                                            ${vendor.is_approved.value == '1' ? 'text-green-700 bg-green-100 border border-green-700 !cursor-not-allowed ' : 'text-red-700 bg-red-100 border border-red-700'}"
+                                        <button  class="status-field inline-flex border text-xs capitalize leading-5  rounded-lg px-3 py-1 cursor-pointer
+                                            ${vendor.is_approved.value == '1' ? '!cursor-not-allowed ' : ''}"
+                                            style="background-color: ${vendor.is_approved.bgColor}; border-color:${vendor.is_approved.color}; color: ${vendor.is_approved.color};"
                                             data-id="${vendor.id}" data-field="is_approved" data-name="approve" data-value="${vendor.is_approved.value}" ${vendor.is_approved.value == '1'?'Disabled':''}>
                                             ${vendor.is_approved.label}
                                         </button>
                                     </td>
                                     <td class="px-6 py-4 gap-2 flex flex-row whitespace-nowrap text-sm text-gray-900">
                                         <div class="flex items-center flex-col">
-                                            <a title="Edit" href="/admin/vendors/${vendor.id}/edit" class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded"><i class="fas fa-edit"></i></a>
+                                            <a title="Edit" href="/admin/vendors/${vendor.id}/edit" class="btn-edit"><i class="fas fa-edit"></i></a>
                                             <span>Edit</span>
                                         </div>
                                         <div class="flex items-center flex-col">
-                                          <button title="Delete" data-id="${vendor.id}" class="delete-btn hover:text-red-800 text-red-500 py-1 rounded"><i class="fas fa-trash"></i></button>
+                                          <button title="Delete" data-id="${vendor.id}" class="btn-delete"><i class="fas fa-trash"></i></button>
                                             <span>Delete</span>
                                         </div>
                                         <div class="flex items-center flex-col">
-                                          <a href="" title="Create" data-id="${vendor.id}" class="createProduct hover:text-blue-800 text-blue-500 py-1 rounded"><i class="fa-solid fa-plus"></i></i></a>
+                                          <a href="" title="Create" data-id="${vendor.id}" class="createProduct btn-edit"><i class="fa-solid fa-plus"></i></i></a>
                                             <span>Product</span>
                                         </div>
                                     </td>
@@ -500,32 +499,32 @@
                 <div class=" p-2 flex flex-col rounded-b-[20px] border bg-white border-t border-b-0  gap-2">
                      <div class="flex flex-row justify-center items-center gap-2">
                          <div class=" flex-col">
-                                <a title="Edit" href="/admin/vendors/${data.id}/edit" class="text-blue-400 flex  items-center justify-center bg-gray-100/10 p-3 rounded-full hover:text-blue-800 h-5 w-5 rounded"><i class="fas fa-edit"></i></a>
+                                <a title="Edit" href="/admin/vendors/${data.id}/edit" class="btn-edit"><i class="fas fa-edit"></i></a>
                              </div>
                              <div class="flex items-center flex-col">
-                                 <button title="Delete" data-id="${data.id}" class="delete-btn hover:text-red-800 text-red-500  flex items-center justify-center bg-gray-100/10 p-3 rounded-full h-5 w-5"><i class="fas fa-trash"></i></button>
+                                 <button title="Delete" data-id="${data.id}" class="delete-btn btn-delete"><i class="fas fa-trash"></i></button>
                              </div>   
 
                               <div class="flex items-center flex-col">
-                                          <a href="" title="Product Create" data-id="${data.id}" class="createProduct hover:text-blue-800 text-blue-500 py-1 rounded"><i class="fa-solid fa-plus"></i></i></a>
+                                          <a href="" title="Product Create" data-id="${data.id}" class="createProduct btn-edit"><i class="fa-solid fa-plus"></i></i></a>
                                         </div>
                     </div>
                     <div class="flex flex-row items-center justify-center gap-2">
-                        <button title="Status" class="status-field flex items-center justify-center text-xs rounded-lg px-2 py-1 cursor-pointer transition-all
-                            ${data.status.value === '1' ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
-                            data-id="${data.id}" data-field="status" data-name="status" data-value="${data.status.value}">
-                            
+                        <button title="Status" class="status-field flex items-center justify-center text-xs border rounded-lg px-2 py-1 cursor-pointer transition-all"
+                            style="background-color: ${data.status.bgColor}; border-color:${data.status.color}; color: ${data.status.color};"
+                            data-id="${data.id}" data-field="status" data-name="status" data-value="${data.status.value}">                            
                             ${data.status.label}
                         </button>
                         
-                        <button title="Shop Status" class="status-field flex items-center justify-center text-xs rounded-lg px-2 py-1 cursor-pointer transition-all
-                            ${data.is_shop.value == '1' ? 'bg-green-100 text-green-800 border border-green-300 hover:bg-green-200' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
+                        <button title="Shop Status" class="status-field flex items-center border justify-center text-xs rounded-lg px-2 py-1 cursor-pointer transition-all"
+                            style="background-color: ${data.is_shop.bgColor}; border-color:${data.is_shop.color}; color: ${data.is_shop.color};"                        
                             data-id="${data.id}" data-field="is_shop" data-name="shop" data-value="${data.is_shop.value}">
                             ${data.is_shop.label}
                         </button>
                         
-                        <button title="Shop Approval" class="status-field flex items-center justify-center text-xs rounded-lg px-2 py-1 cursor-pointer transition-all
-                            ${data.is_approved.value == '1' ? 'bg-green-100 text-green-800 border border-green-300 !cursor-not-allowed' : 'bg-red-100 text-red-800 border border-red-300 hover:bg-red-200'}"
+                        <button title="Shop Approval" class="status-field flex items-center justify-center border text-xs rounded-lg px-2 py-1 cursor-pointer transition-all
+                            ${data.is_approved.value == '1' ? ' !cursor-not-allowed' : ''}"
+                                                        style="background-color: ${data.is_approved.bgColor}; border-color:${data.is_approved.color}; color: ${data.is_approved.color};"                        
                             data-id="${data.id}" data-field="is_approved" data-name="approve" data-value="${data.is_approved.value}" ${data.is_approved.value == '1' ? 'disabled' : ''}>
                             ${data.is_approved.label}
                         </button>

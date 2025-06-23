@@ -6,7 +6,7 @@
 @endphp
 
 
-<section class="bg-gray-100">
+<section class="">
     @php
         $breadCrumbs = [
             [
@@ -21,7 +21,7 @@
 
     @endphp
     @include('admin.components.bread-crumb', ['breadCrumbs' => $breadCrumbs])
-    <div class="container bg-gray-200 px-4 pb-8 ">
+    <div class="container px-4 mb-8">
 
         <div class=" bg-white rounded-lg shadow  overflow-hidden">
 
@@ -76,7 +76,7 @@
                 @if ($user->hasPermission('admin-add'))
                     <a wire:click="$dispatch('createAdmin')"
                         class="w-fit cursor-pointer md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                        <i class="fas fa-plus"></i> Create Admin
+                    Create Admin
                     </a>
                 @endif
             </div>
@@ -121,7 +121,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div
-                                        class="@if ($admin['id'] == Auth::guard('admin')->user()->id) !text-blue-500 @endif text-sm font-medium text-gray-900">
+                                        class="@if ($admin['id'] == Auth::guard('admin')->user()->id) !text-blue-500 @endif text-sm  ">
                                         {{ $admin['name'] }}
                                     </div>
                                 </div>
@@ -134,7 +134,7 @@
                             <td class="px-6 py-4 text-center whitespace-nowrap">
                                 <span
                                     wire:click="rolesEdit({{ $admin['id'] }})"
-                                    class="px-2  border inline-flex text-xs capitalize leading-5 rounded-lg"
+                                    class="px-3 py-1  border inline-flex text-xs capitalize leading-5 rounded-lg"
                                     style="border-color: {{ $admin['role']['color'] }}; color: {{ $admin['role']['color'] }}; background-color:{{ $admin['role']['bgColor'] }};">
                                     {{ $admin['role']['label'] }}
                             </span>
@@ -142,7 +142,7 @@
                         
                             <td class="px-6 py-4 text-center whitespace-nowrap">
                                 <span
-                                    class="px-2 border inline-flex capitalize text-xs leading-5 rounded-lg"
+                                    class="px-3 py-1 border inline-flex capitalize text-xs leading-5 rounded-lg"
                                     style="color: {{ $admin['status']['color'] }}; border-color: {{ $admin['status']['color'] }}; background-color: {{ $admin['status']['bgColor']}}">
                                     {{ $admin['status']['label'] }}
                                 </span>

@@ -23,6 +23,5 @@ class AdminSeeder extends Seeder
         ]);
         $admin->permissions()->attach(Permission::all()->pluck('id')->toArray());
         Admin::factory()->count(10)->create();
-
     }
 }

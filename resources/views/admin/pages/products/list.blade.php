@@ -21,12 +21,12 @@
 
     <section class="container mx-auto  px-4 mb-8">   
         @csrf
-        <div class="bg-white rounded-lg">
+        <div class="bg-white card">
             <!-- Filters -->
-            <div class="flex flex-row border  justify-between items-center gap-4  p-3 rounded-lg shadow-sm">
-                <form method="GET" action="#" class="flex  items-center gap-x-4 gap-y-2 flex-row md:gap-6">
-                    <div class="flex flex-row">
-                        <div class="text-sm font-medium text-gray-700" for="perPage">Per page</div>
+            <h1 class="text-xl p-3  border-b font-semibold">New Products List</h1>
+                <form method="GET" action="#" class="flex p-3 border-b items-center gap-x-4  flex-row md:gap-6">
+                    <div class="flex flex-row items-center gap-2">
+                        <div class="text-sm whitespace-nowrap font-medium text-gray-700" for="perPage">Per pages</div>
                         <select id="perPage" name="perPage" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white">
                             <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10</option>
                             <option value="20" {{ request('perPage', 10) == 20 ? 'selected' : '' }}>20</option>
@@ -54,11 +54,10 @@
                         </select>
                     </div>
                 </form>
-            </div>
             
             <!-- Products Table -->
-            <div class=" shadow overflow-hidden">
-                <table class="min-w-full divide-y p-3">
+            <div class=" overflow-hidden">
+                <table class="w-full divide-y p-3">
                     <thead class="">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -72,7 +71,7 @@
                             <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-200">
                         @forelse ($products as $product)                        
                             <tr class="hover:bg-gray-50 transition-colors duration-150">  
                                 <input type="hidden" class="reject-reason" value={{$product['rejection_reason']}}></input>                              
@@ -83,16 +82,16 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $product['vendor']['name'] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">{{ $product['slug'] }}</td>
                                 <td class="px-6 text-center py-4 whitespace-nowrap text-sm text-gray-900">
-                                    <span class="status-field inline-flex text-xs capitalize leading-5 rounded-lg px-3 py-1 cursor-pointer
-                                        {{ $product['is_approve']['value'] == '1' ? 'text-green-700 bg-green-100 border border-green-700' : 'text-red-700 bg-red-100 border border-red-700' }}"
+                                    <span class="status-field border inline-flex text-xs capitalize leading-5 rounded-lg px-3 py-1 cursor-pointer"
+                                        style="background-color: {{ $product['is_approve']['bgColor'] }}; color: {{ $product['is_approve']['color'] }}; border-color: {{ $product['is_approve']['color'] }};"
                                         data-field="is_approve" data-vendor="{{$product['vendor']['id']}}" data-name="is_approve" data-value="{{ $product['is_approve']['value'] }}" data-id="{{ $product['id'] }}">
                                         {{ $product['is_approve']['label'] }}
                                     </span>
                                 </td>
                                 <td class="px-6 text-center py-4 whitespace-nowrap text-sm text-gray-900">
                                     <div class="flex space-x-2 items-center justify-center">
-                                        <a href="{{ route('admin.products.show', ['vendor_id' =>$product['vendor']['id'], 'product_id' => $product['id'],'is-product'=>true]) }}"
-                                            class="text-blue-500 hover:text-blue-800 px-2 py-1 rounded transition-colors duration-150" title="View">
+                                        <a href="{{ route('admin.products.new-product', ['vendor_id' =>$product['vendor']['id'], 'product_id' => $product['id'],'is-product'=>true]) }}"
+                                            class="btn-view" title="View">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </div>
@@ -100,7 +99,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-gray-500">No products found.</td>
+                                <td colspan="7" class="text-center p-3 text-gray-500">No products found.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -108,9 +107,11 @@
             </div>
 
             <!-- Pagination -->
-            <div class="mt-6">
-                {{ $products->links() }}
-            </div>
+            @if($products->hasPages())
+                <div class="p-3 border-t">
+                    {{ $products->links() }}
+                </div>
+            @endif
 
             <!-- Status Change Modal -->
             <div id="statusModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
