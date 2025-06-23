@@ -20,6 +20,7 @@ class AdminSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'password' => Hash::make('Admin@1234'),
             'role' => AdminRoles::SUPER_ADMIN->value,
+            'status' => 1,
         ]);
         $admin->permissions()->attach(Permission::all()->pluck('id')->toArray());
         Admin::factory()->count(10)->create();
