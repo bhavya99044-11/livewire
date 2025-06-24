@@ -9,6 +9,7 @@ use App\Http\Middleware\Admin\AdminAuthMiddleware;
 use App\Http\Middleware\Admin\LoginCheckMiddleware;
 use App\Livewire\Admin\AdminList;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -18,7 +19,9 @@ Route::get('/login',function(){
     dd(1);
 })->name('login');
 
+
 Route::get('/test-session', function () {
-    session(['test_key' => 'test_value']);
-    return session('test_key');
+   return view('session');
 });
+
+Route::post('test',[TestController::class,'test'])->name('test');

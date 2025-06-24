@@ -20,7 +20,7 @@ class AuthController extends Controller
     /**
      * Handle admin login.
      */
-    public function login(LoginRequest $request)
+    public function login(Request $request)
     {
         try {
             dd($request->all());
