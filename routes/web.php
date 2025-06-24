@@ -11,10 +11,7 @@ use App\Livewire\Admin\AdminList;
 use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
-use Lubusin\Decomposer\Controllers\DecomposerController;
 
-
-Route::get('/decompose',[DecomposerController::class,'index']);
 
 
 Route::get('/login',function(){
