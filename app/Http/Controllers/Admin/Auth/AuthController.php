@@ -23,6 +23,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         try {
+            dd($request->all());
             $credentials = $request->only('email', 'password');
 
             if ($this->admin->attempt($credentials)) {
