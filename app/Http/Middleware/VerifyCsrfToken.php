@@ -17,7 +17,7 @@ class VerifyCsrfToken
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next,$permission): Response
+    public function handle(Request $request, Closure $next): Response
     {
         Log::info('bhavya jain');
         Log::info('CSRF Token from form input (_token):', [$request->input('_token')]);
